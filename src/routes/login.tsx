@@ -33,7 +33,7 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back");
-    navigate({ to: "/" });
+    navigate({ to: "/app" });
   };
 
   return (

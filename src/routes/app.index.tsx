@@ -2,15 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, Coffee, FileText, Play, Zap, TrendingUp, Activity, Target } from "lucide-react";
+import { Brain, Coffee, FileText, Zap, TrendingUp, Activity, Target } from "lucide-react";
 import { useAux } from "@/lib/aux-store";
 import { formatDuration, formatShortDuration } from "@/lib/format";
 import { useAuth } from "@/lib/auth";
 import { useDailyStats } from "@/lib/use-daily-stats";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ManagerNotes } from "@/components/ManagerNotes";
+import { AdherenceRing } from "@/components/AdherenceRing";
 
-export const Route = createFileRoute("/_app/")({
+export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
       { title: "Command Center — ALIOS" },
@@ -47,7 +49,7 @@ function CommandCenter() {
   const quickActions = [
     { label: "Deep Work", icon: Brain, find: "Deep Work", color: "from-violet-500 to-fuchsia-500" },
     { label: "Take Break", icon: Coffee, find: "Break", color: "from-amber-500 to-orange-500" },
-    { label: "Mind Map", icon: FileText, to: "/mindmap", color: "from-cyan-500 to-blue-500" },
+    { label: "Mind Map", icon: FileText, to: "/app/mindmap", color: "from-cyan-500 to-blue-500" },
   ];
 
   return (
@@ -152,7 +154,7 @@ function CommandCenter() {
       <div className="glass rounded-2xl p-4 lg:p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold">Today's timeline</h3>
-          <Link to="/timeline" className="text-xs text-muted-foreground hover:text-foreground">
+          <Link to="/app/timeline" className="text-xs text-muted-foreground hover:text-foreground">
             View full →
           </Link>
         </div>
@@ -191,12 +193,15 @@ function CommandCenter() {
         />
       </div>
 
-      {/* AI Insight + Goal ring */}
+      {/* Manager Notes + Goal ring + Adherence */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2 glass rounded-2xl p-6">
-          <AiInsightCard />
+          <ManagerNotes />
         </div>
-        <GoalRingCard />
+        <div className="grid gap-4">
+          <GoalRingCard />
+          <AdherenceRing />
+        </div>
       </div>
     </div>
   );
@@ -325,50 +330,3 @@ function GoalRingCard() {
   );
 }
 
-function AiInsightCard() {
-  const [insight, setInsight] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const generate = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/ai-insights", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      setInsight(data.insight ?? "Track more sessions to unlock insights.");
-    } catch {
-      setInsight("Add a few more sessions, then I'll spot patterns for you.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400">
-            <Zap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <h3 className="text-sm font-semibold">AI Insight</h3>
-        </div>
-        <Button variant="ghost" size="sm" onClick={generate} disabled={loading}>
-          <Play className="h-3 w-3 mr-1" />
-          {loading ? "Thinking…" : insight ? "Refresh" : "Generate"}
-        </Button>
-      </div>
-      <div className="mt-4 flex-1 flex items-center">
-        {insight ? (
-          <p className="text-base leading-relaxed text-foreground/90">{insight}</p>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Tap <span className="text-foreground font-medium">Generate</span> to get a smart take on your day so far.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}

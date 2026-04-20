@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from "lucide-react"
 import { formatShortDuration, formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_app/timeline")({
+export const Route = createFileRoute("/app/timeline")({
   head: () => ({
     meta: [
       { title: "Timeline — ALIOS" },
