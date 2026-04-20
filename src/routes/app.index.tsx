@@ -328,5 +328,5 @@ function GoalRingCard() {
       </p>
     </div>
   );
-
+}
 
