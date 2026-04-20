@@ -80,6 +80,12 @@ export function AuxProvider({ children }: { children: ReactNode }) {
   const switchTo = useCallback(
     async (statusId: string) => {
       if (!user) return;
+      // No-op if user clicks on already-active status — do NOT reset timer
+      if (activeSession && activeSession.status_id === statusId) {
+        const target = statuses.find((s) => s.id === statusId);
+        toast.info(`Already in ${target?.name ?? "this status"}`);
+        return;
+      }
       const now = new Date().toISOString();
       // End active session if exists
       if (activeSession) {

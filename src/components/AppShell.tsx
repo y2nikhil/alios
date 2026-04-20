@@ -16,11 +16,11 @@ import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", label: "Command", icon: LayoutDashboard },
-  { to: "/timeline", label: "Timeline", icon: Activity },
-  { to: "/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/mindmap", label: "Mind Map", icon: Brain },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/app", label: "Command", icon: LayoutDashboard },
+  { to: "/app/timeline", label: "Timeline", icon: Activity },
+  { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/app/mindmap", label: "Mind Map", icon: Brain },
+  { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
 function LiveTimer() {
@@ -99,20 +99,22 @@ function ShellInner() {
       {/* Sidebar */}
       <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-white/5 bg-[oklch(0.13_0.02_265)]/80 backdrop-blur-xl">
         <div className="flex h-14 items-center gap-2 px-4 border-b border-white/5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
-            <Sparkles className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-bold tracking-tight">ALIOS</p>
-            <p className="text-[10px] text-muted-foreground -mt-0.5">AI Life OS</p>
-          </div>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-bold tracking-tight">ALIOS</p>
+              <p className="text-[10px] text-muted-foreground -mt-0.5">AI Life OS</p>
+            </div>
+          </Link>
         </div>
 
         <nav className="px-2 py-3 space-y-0.5">
           {NAV.map((item) => {
             const active =
-              item.to === "/"
-                ? location.pathname === "/"
+              item.to === "/app"
+                ? location.pathname === "/app" || location.pathname === "/app/"
                 : location.pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
@@ -190,7 +192,9 @@ function ShellInner() {
         <nav className="lg:hidden flex border-t border-white/5 bg-background/80 backdrop-blur-xl">
           {NAV.map((item) => {
             const active =
-              item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
+              item.to === "/app"
+                ? location.pathname === "/app" || location.pathname === "/app/"
+                : location.pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
               <Link
