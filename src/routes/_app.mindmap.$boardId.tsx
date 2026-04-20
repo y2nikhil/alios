@@ -262,9 +262,13 @@ function Canvas() {
     if (!text) return toast.error("No text to process");
     toast.loading("AI thinking…", { id: "ai" });
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch("/api/ai-mindmap", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({ action, text }),
       });
       const data = await res.json();
