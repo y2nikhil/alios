@@ -35,7 +35,7 @@ function BoardsPage() {
     if (!user) return;
     const { data, error } = await supabase.from("mindmap_boards").insert({ user_id: user.id, title: "Untitled board" }).select().single();
     if (error) return toast.error(error.message);
-    navigate({ to: "/mindmap/$boardId", params: { boardId: data.id } });
+    navigate({ to: "/app/mindmap/$boardId", params: { boardId: data.id } });
   };
 
   const remove = async (id: string) => {
@@ -66,7 +66,7 @@ function BoardsPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {boards.map((b) => (
             <div key={b.id} className="glass rounded-2xl p-5 group hover:bg-white/[0.07] transition-colors relative">
-              <Link to="/mindmap/$boardId" params={{ boardId: b.id }} className="block">
+              <Link to="/app/mindmap/$boardId" params={{ boardId: b.id }} className="block">
                 <div className="h-24 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-400/20 flex items-center justify-center mb-3">
                   <Brain className="h-8 w-8 text-foreground/40" />
                 </div>
