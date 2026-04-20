@@ -201,7 +201,7 @@ function Canvas() {
         } as NodeData,
         selected: true,
       };
-      setNodes((nds) => nds.map((n) => ({ ...n, selected: false })).concat(newNode));
+      setNodes((nds) => [...nds.map((n) => ({ ...n, selected: false })), newNode]);
       await supabase.from("mindmap_nodes").insert({
         id, board_id: boardId, user_id: user.id, node_type: kind,
         position_x: position.x, position_y: position.y,
