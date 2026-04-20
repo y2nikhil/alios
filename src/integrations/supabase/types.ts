@@ -14,7 +14,290 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_insights: {
+        Row: {
+          confidence: number | null
+          content: string
+          created_at: string
+          generated_for_date: string
+          id: string
+          insight_type: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          content: string
+          created_at?: string
+          generated_for_date?: string
+          id?: string
+          insight_type: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          confidence?: number | null
+          content?: string
+          created_at?: string
+          generated_for_date?: string
+          id?: string
+          insight_type?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      aux_sessions: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          note: string | null
+          started_at: string
+          status_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          note?: string | null
+          started_at?: string
+          status_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          note?: string | null
+          started_at?: string
+          status_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aux_sessions_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "aux_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aux_statuses: {
+        Row: {
+          category: Database["public"]["Enums"]["aux_category"]
+          color: string
+          created_at: string
+          id: string
+          is_default: boolean
+          is_paid: boolean
+          name: string
+          shortcut_key: string | null
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["aux_category"]
+          color?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          is_paid?: boolean
+          name: string
+          shortcut_key?: string | null
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["aux_category"]
+          color?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          is_paid?: boolean
+          name?: string
+          shortcut_key?: string | null
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mindmap_boards: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mindmap_edges: {
+        Row: {
+          board_id: string
+          created_at: string
+          id: string
+          source_handle: string | null
+          source_node_id: string
+          target_handle: string | null
+          target_node_id: string
+          user_id: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          id?: string
+          source_handle?: string | null
+          source_node_id: string
+          target_handle?: string | null
+          target_node_id: string
+          user_id: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          id?: string
+          source_handle?: string | null
+          source_node_id?: string
+          target_handle?: string | null
+          target_node_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mindmap_edges_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "mindmap_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mindmap_edges_source_node_id_fkey"
+            columns: ["source_node_id"]
+            isOneToOne: false
+            referencedRelation: "mindmap_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mindmap_edges_target_node_id_fkey"
+            columns: ["target_node_id"]
+            isOneToOne: false
+            referencedRelation: "mindmap_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mindmap_nodes: {
+        Row: {
+          board_id: string
+          color: string | null
+          created_at: string
+          data: Json
+          height: number | null
+          id: string
+          node_type: Database["public"]["Enums"]["mindmap_node_type"]
+          position_x: number
+          position_y: number
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+          width: number | null
+        }
+        Insert: {
+          board_id: string
+          color?: string | null
+          created_at?: string
+          data?: Json
+          height?: number | null
+          id?: string
+          node_type?: Database["public"]["Enums"]["mindmap_node_type"]
+          position_x?: number
+          position_y?: number
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+          width?: number | null
+        }
+        Update: {
+          board_id?: string
+          color?: string | null
+          created_at?: string
+          data?: Json
+          height?: number | null
+          id?: string
+          node_type?: Database["public"]["Enums"]["mindmap_node_type"]
+          position_x?: number
+          position_y?: number
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mindmap_nodes_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "mindmap_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          daily_goal_minutes: number
+          display_name: string | null
+          id: string
+          theme: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          daily_goal_minutes?: number
+          display_name?: string | null
+          id: string
+          theme?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          daily_goal_minutes?: number
+          display_name?: string | null
+          id?: string
+          theme?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +306,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      aux_category: "productive" | "neutral" | "unproductive"
+      mindmap_node_type: "text" | "image" | "link" | "task"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +434,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      aux_category: ["productive", "neutral", "unproductive"],
+      mindmap_node_type: ["text", "image", "link", "task"],
+    },
   },
 } as const
