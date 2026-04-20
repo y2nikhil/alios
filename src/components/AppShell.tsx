@@ -94,8 +94,14 @@ function SidebarAuxList() {
 
 function ShellInner() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  const { isAdmin, isSuperAdmin } = useRole();
+
+  const NAV = [
+    ...BASE_NAV,
+    ...(isAdmin ? [{ to: "/app/admin" as const, label: "Admin", icon: Shield }] : []),
+    ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
+  ];
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
@@ -131,7 +137,7 @@ function ShellInner() {
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/30",
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className={cn("h-4 w-4", item.label === "Super" && "text-amber-400")} />
                 {item.label}
               </Link>
             );
@@ -141,26 +147,8 @@ function ShellInner() {
         <div className="h-px bg-white/5 mx-2" />
         <SidebarAuxList />
 
-        <div className="border-t border-white/5 p-3 space-y-2">
-          <div className="flex items-center gap-2 rounded-lg bg-white/5 p-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-xs font-bold text-white">
-              {(user?.email?.[0] ?? "?").toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium truncate">{user?.email}</p>
-              <p className="text-[10px] text-muted-foreground">Signed in</p>
-            </div>
-            <button
-              onClick={async () => {
-                await signOut();
-                navigate({ to: "/login" });
-              }}
-              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-white/5"
-              title="Sign out"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
-          </div>
+        <div className="border-t border-white/5 p-3">
+          <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
         </div>
       </aside>
 
@@ -174,9 +162,12 @@ function ShellInner() {
             <span className="font-bold">ALIOS</span>
           </div>
           <LiveTimer />
-          <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
-            <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono">1-9</kbd>
-            <span>switch status</span>
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
+              <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono">1-9</kbd>
+              <span>switch</span>
+            </div>
+            <ProfileMenu />
           </div>
         </header>
 
@@ -192,7 +183,7 @@ function ShellInner() {
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="lg:hidden flex border-t border-white/5 bg-background/80 backdrop-blur-xl">
+        <nav className="lg:hidden flex border-t border-white/5 bg-background/80 backdrop-blur-xl overflow-x-auto">
           {NAV.map((item) => {
             const active =
               item.to === "/app"
@@ -204,7 +195,7 @@ function ShellInner() {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors",
+                  "flex-1 min-w-[72px] flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors",
                   active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
