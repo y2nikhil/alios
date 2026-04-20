@@ -169,7 +169,7 @@ function AnalyticsPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ background: "oklch(0.18 0.025 265)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8, fontSize: 12 }}
-                  formatter={(v: number) => formatShortDuration(v)}
+                  formatter={(v) => formatShortDuration(Number(v) || 0)}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -192,7 +192,7 @@ function AnalyticsPage() {
                 <YAxis tick={{ fontSize: 10, fill: "oklch(0.65 0.03 260)" }} axisLine={false} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: "oklch(0.18 0.025 265)", border: "1px solid oklch(1 0 0 / 0.1)", borderRadius: 8, fontSize: 12 }}
-                  formatter={(v: number) => `${v} min`}
+                  formatter={(v) => `${Number(v) || 0} min`}
                   cursor={{ fill: "oklch(1 0 0 / 0.05)" }}
                 />
                 <Bar dataKey="minutes" radius={[6, 6, 0, 0]}>
