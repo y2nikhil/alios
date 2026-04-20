@@ -9,60 +9,268 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
+import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
+import { Route as AppTimelineRouteImport } from './routes/_app.timeline'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
+import { Route as AppMindmapIndexRouteImport } from './routes/_app.mindmap.index'
+import { Route as AppMindmapBoardIdRouteImport } from './routes/_app.mindmap.$boardId'
 
-const IndexRoute = IndexRouteImport.update({
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const ApiAiMindmapRoute = ApiAiMindmapRouteImport.update({
+  id: '/api/ai-mindmap',
+  path: '/api/ai-mindmap',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiInsightsRoute = ApiAiInsightsRouteImport.update({
+  id: '/api/ai-insights',
+  path: '/api/ai-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTimelineRoute = AppTimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMindmapIndexRoute = AppMindmapIndexRouteImport.update({
+  id: '/mindmap/',
+  path: '/mindmap/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMindmapBoardIdRoute = AppMindmapBoardIdRouteImport.update({
+  id: '/mindmap/$boardId',
+  path: '/mindmap/$boardId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/analytics': typeof AppAnalyticsRoute
+  '/settings': typeof AppSettingsRoute
+  '/timeline': typeof AppTimelineRoute
+  '/api/ai-insights': typeof ApiAiInsightsRoute
+  '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/mindmap/': typeof AppMindmapIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/analytics': typeof AppAnalyticsRoute
+  '/settings': typeof AppSettingsRoute
+  '/timeline': typeof AppTimelineRoute
+  '/api/ai-insights': typeof ApiAiInsightsRoute
+  '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/': typeof AppIndexRoute
+  '/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/mindmap': typeof AppMindmapIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_app/analytics': typeof AppAnalyticsRoute
+  '/_app/settings': typeof AppSettingsRoute
+  '/_app/timeline': typeof AppTimelineRoute
+  '/api/ai-insights': typeof ApiAiInsightsRoute
+  '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/_app/mindmap/': typeof AppMindmapIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/analytics'
+    | '/settings'
+    | '/timeline'
+    | '/api/ai-insights'
+    | '/api/ai-mindmap'
+    | '/mindmap/$boardId'
+    | '/mindmap/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/login'
+    | '/signup'
+    | '/analytics'
+    | '/settings'
+    | '/timeline'
+    | '/api/ai-insights'
+    | '/api/ai-mindmap'
+    | '/'
+    | '/mindmap/$boardId'
+    | '/mindmap'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/login'
+    | '/signup'
+    | '/_app/analytics'
+    | '/_app/settings'
+    | '/_app/timeline'
+    | '/api/ai-insights'
+    | '/api/ai-mindmap'
+    | '/_app/'
+    | '/_app/mindmap/$boardId'
+    | '/_app/mindmap/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
+  ApiAiInsightsRoute: typeof ApiAiInsightsRoute
+  ApiAiMindmapRoute: typeof ApiAiMindmapRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/api/ai-mindmap': {
+      id: '/api/ai-mindmap'
+      path: '/api/ai-mindmap'
+      fullPath: '/api/ai-mindmap'
+      preLoaderRoute: typeof ApiAiMindmapRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-insights': {
+      id: '/api/ai-insights'
+      path: '/api/ai-insights'
+      fullPath: '/api/ai-insights'
+      preLoaderRoute: typeof ApiAiInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/timeline': {
+      id: '/_app/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof AppTimelineRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/analytics': {
+      id: '/_app/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/mindmap/': {
+      id: '/_app/mindmap/'
+      path: '/mindmap'
+      fullPath: '/mindmap/'
+      preLoaderRoute: typeof AppMindmapIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/mindmap/$boardId': {
+      id: '/_app/mindmap/$boardId'
+      path: '/mindmap/$boardId'
+      fullPath: '/mindmap/$boardId'
+      preLoaderRoute: typeof AppMindmapBoardIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppTimelineRoute: typeof AppTimelineRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
+  AppMindmapIndexRoute: typeof AppMindmapIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAnalyticsRoute: AppAnalyticsRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppTimelineRoute: AppTimelineRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
+  AppMindmapIndexRoute: AppMindmapIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
+  ApiAiInsightsRoute: ApiAiInsightsRoute,
+  ApiAiMindmapRoute: ApiAiMindmapRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
