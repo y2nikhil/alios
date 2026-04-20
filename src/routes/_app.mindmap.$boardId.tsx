@@ -421,11 +421,11 @@ const KIND_ICON: Record<NodeKind, typeof Brain> = {
   task: CheckSquare,
 };
 
-function AliosNode({ data, id, selected }: NodeProps<NodeData> & { onUpdate?: (p: Partial<NodeData>) => void } & any) {
-  const { onUpdate } = (arguments[0] as any);
+function AliosNode(props: NodeProps<NodeData> & { onUpdate?: (p: Partial<NodeData>) => void }) {
+  const { data, selected, onUpdate } = props;
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const Icon = KIND_ICON[data.kind] ?? Brain;
+  const Icon = KIND_ICON[data.kind as NodeKind] ?? Brain;
   const accent = data.color ?? "oklch(0.72 0.18 280)";
 
   return (
