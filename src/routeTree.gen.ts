@@ -15,8 +15,10 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
+import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
 import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
@@ -52,6 +54,11 @@ const AppTimelineRoute = AppTimelineRouteImport.update({
   path: '/timeline',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSuperRoute = AppSuperRouteImport.update({
+  id: '/super',
+  path: '/super',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -60,6 +67,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
 const ApiAiMindmapRoute = ApiAiMindmapRouteImport.update({
@@ -90,8 +102,10 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -103,8 +117,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app': typeof AppIndexRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -118,8 +134,10 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -134,8 +152,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/app/admin'
     | '/app/analytics'
     | '/app/settings'
+    | '/app/super'
     | '/app/timeline'
     | '/app/'
     | '/app/mindmap/$boardId'
@@ -147,8 +167,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/app/admin'
     | '/app/analytics'
     | '/app/settings'
+    | '/app/super'
     | '/app/timeline'
     | '/app'
     | '/app/mindmap/$boardId'
@@ -161,8 +183,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/app/admin'
     | '/app/analytics'
     | '/app/settings'
+    | '/app/super'
     | '/app/timeline'
     | '/app/'
     | '/app/mindmap/$boardId'
@@ -222,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTimelineRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/super': {
+      id: '/app/super'
+      path: '/super'
+      fullPath: '/app/super'
+      preLoaderRoute: typeof AppSuperRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/settings': {
       id: '/app/settings'
       path: '/settings'
@@ -234,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/app/analytics'
       preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/admin': {
+      id: '/app/admin'
+      path: '/admin'
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
     '/api/ai-mindmap': {
@@ -268,8 +306,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppSettingsRoute: typeof AppSettingsRoute
+  AppSuperRoute: typeof AppSuperRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
@@ -277,8 +317,10 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppSettingsRoute: AppSettingsRoute,
+  AppSuperRoute: AppSuperRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
