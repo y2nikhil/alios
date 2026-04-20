@@ -328,52 +328,5 @@ function GoalRingCard() {
       </p>
     </div>
   );
-}
 
-function AiInsightCard() {
-  const [insight, setInsight] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  const generate = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/ai-insights", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      setInsight(data.insight ?? "Track more sessions to unlock insights.");
-    } catch {
-      setInsight("Add a few more sessions, then I'll spot patterns for you.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400">
-            <Zap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <h3 className="text-sm font-semibold">AI Insight</h3>
-        </div>
-        <Button variant="ghost" size="sm" onClick={generate} disabled={loading}>
-          <Play className="h-3 w-3 mr-1" />
-          {loading ? "Thinking…" : insight ? "Refresh" : "Generate"}
-        </Button>
-      </div>
-      <div className="mt-4 flex-1 flex items-center">
-        {insight ? (
-          <p className="text-base leading-relaxed text-foreground/90">{insight}</p>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Tap <span className="text-foreground font-medium">Generate</span> to get a smart take on your day so far.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
