@@ -298,7 +298,7 @@ function Canvas() {
   const nodeTypes = useMemo(
     () => ({
       alios: (props: NodeProps<NodeData>) => (
-        <AliosNode {...props} onUpdate={(p) => updateNodeData(props.id, p)} />
+        <AliosNode {...props} onUpdate={(p: Partial<NodeData>) => updateNodeData(props.id, p)} />
       ),
     }),
     [updateNodeData],
