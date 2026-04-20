@@ -1,119 +1,99 @@
 
-# ALIOS — AI Life Operating System
+# ALIOS — Big Update: Landing Page, Mind Map Polish, Admin/Teams, Schedule Adherence
 
-A premium, dark-first personal workforce & productivity tool. Track your status (AUX), see your day as a timeline, get analytics, and capture ideas on an infinite mind map — all powered by AI insights.
+A lot to unpack. I'll tackle it in **two waves** to keep things stable. Wave 1 ships the visible UX changes you called out. Wave 2 adds the heavier Admin/Teams/Adherence platform work.
 
 ---
 
-## v1 Scope (this build)
+## Wave 1 — UX & Mind Map (this build)
 
-**1. Auth & accounts**
-- Email/password sign in via Lovable Cloud
-- Cloud sync so your data follows you across devices
-- Per-user data isolation (RLS)
+### 1. Marketing landing page at `/`
+- Move authenticated app from `/` → `/app` (so `/app`, `/app/timeline`, `/app/mindmap`, etc.)
+- Build a new public landing page at `/` based on your reference image:
+  - Hero: ALIOS logo + tagline "The All-In-One Productivity & Management App"
+  - Feature checklist (Track day in real-time, Mind map, Insights, AI focus, Team-ready)
+  - Mocked product screenshots/cards collage with glow
+  - "Get Started" / "Sign in" CTAs in **top-right corner**
+  - Footer
+- Logged-in users hitting `/` get auto-redirected to `/app`
+- Logged-out users hitting any `/app/*` route get sent to `/login`
 
-**2. AUX Status System (the core)**
-- Sidebar with default statuses: Available, On Queue, Deep Work, Meeting, Break, Lunch, Away, Busy, Idle
-- Each status has: name, color, category (Productive / Neutral / Unproductive), paid/unpaid
-- Click a status → it activates, live HH:MM:SS timer starts, previous session is logged
-- Manage / Create / Edit / Delete custom statuses
-- Active status pulses with its color (premium micro-animation)
-- Keyboard shortcuts (1–9) for fast switching
-- Auto-detect idle (no input for X mins) → optional auto-switch to Idle
+### 2. Don't reset timer on same-status click
+Fix in `aux-store`: if `statusId === activeSession.status_id`, no-op (toast: "Already in this status").
 
-**3. Command Center (Home dashboard)**
-- Big live status card with running timer + quick switch buttons
-- Today's focus score + daily goal progress ring
-- Mini timeline strip across the top
-- AI Insight card (e.g. "Most productive 10 AM–1 PM")
-- Quick actions: Start Deep Work, Take Break, Open Mind Map, Add Note
+### 3. Manager Notes / Comments (replaces AI Insight on home)
+- New `manager_notes` table (author, recipient, body, color, created_at)
+- Card on Command Center with:
+  - Scrollable list of notes (newest first)
+  - "+ Add note" inline composer (admins / self-notes for now)
+  - "View all" link → opens full notes drawer/page
+- AI Insight feature isn't deleted — it moves to a smaller spot on the Analytics page
 
-**4. Timeline view**
-- Full-day color-coded horizontal timeline
-- Zoom: 15min / hour / day / week
-- Hover any block → exact time + status + duration
-- Click a block → details panel (edit / delete / add note)
-- "Replay Day" animation that scrubs through your day
+### 4. Mind Map — major polish & bug fixes
+- **Double-click on empty canvas** → creates a node with the text input **already focused and editable** (auto-edit mode for first 5s or until blur)
+- **Double-click inside a node** → enters rename/edit mode only; does NOT bubble up to create a new node (stop propagation)
+- **Reposition controls**: move React Flow `Controls` panel to `bottom-left` (currently default cut off); MiniMap to `bottom-right` with proper padding so nothing clips
+- **Three-dot menu on every node** (visible on hover, top-right corner of node):
+  - Rename
+  - Change color (palette swatches)
+  - Assign to team member (dropdown of team — placeholder list now, real list in Wave 2)
+  - Add tag
+  - Delete
+- **Delete key** on selected node(s) removes them (with edges cleanup)
+- **Performance**: memoize `nodeTypes` correctly, debounce position persistence (500ms), batch edge cleanup on delete
+- **Visual polish**: tighter spacing, refined glow, smoother edges (bezier instead of smoothstep), softer background grid
 
-**5. Analytics dashboard**
-- Productivity ring (big circular Focus Score)
-- Total time per AUX (bar + pie)
-- % productive vs unproductive
-- Longest focus streak, average break duration
-- GitHub-style productivity heatmap (week grid)
-- Daily / weekly / monthly comparisons
-- "Reality Check" card with honest stats
-- CSV export
+### 5. Schedule Adherence Score widget on home
+Placeholder ring (alongside the daily goal ring) showing "Adherence: —" until Wave 2 lights it up. Keeps the visual slot in place.
 
-**6. AI Insights (real, via Lovable AI)**
-- Pattern detection: peak hours, common idle triggers, break frequency
-- Personalized suggestions ("Try a longer break at 2 PM")
-- Confidence score on each insight
-- Refreshes daily or on demand
+---
 
-**7. Mind Map canvas**
-- Infinite pannable/zoomable canvas (React Flow)
-- Double-click anywhere → new editable node
-- Drag from any of 4 connection points → release to create connected child node
-- Node types: Text, Image, Link (auto-preview), Task (checkbox)
-- Smart paste (Ctrl+V): text → text node, image → image node, URL → link card
-- Long text auto-collapses with "Show more" + resizable boxes
-- Right-click menu: Delete, Change color, Add tag, **AI: Summarize / Expand / Convert to tasks**
-- Multiple boards, autosave to cloud
-- Soft glowing connection lines, dark premium styling
+## Wave 2 — Admin Panel, Teams & Schedules (next build, after you approve Wave 1)
 
-**8. Goals & gamification**
-- Set daily goal (e.g. 5h Deep Work)
-- Progress bar + Focus Score (0–100)
-- Daily streak counter
+### Admin role system (RLS-safe)
+- `app_role` enum (`admin`, `member`)
+- `user_roles` table (user_id, role) — separate table per security best practice
+- `has_role(user_id, role)` security-definer function
+- First user to sign up auto-promoted to admin; future admins promoted via panel
+
+### Teams
+- `teams` (id, name, owner_id)
+- `team_members` (team_id, user_id, invited_email, status)
+- Admin can invite by email; if email matches an existing user → instant link, else pending invite
+
+### Schedules
+- `schedules` (team_id, day_of_week, start_time, end_time, required_status, break_window_start, break_window_end, break_max_minutes)
+- Admin defines per-team weekly schedule
+- Members view their schedule on a new `/app/schedule` page
+
+### Task assignments
+- `tasks` (id, team_id, assigned_to, title, description, due_at, status)
+- Admin assigns tasks; members see them on dashboard
+
+### Schedule Adherence Score (0–100)
+Computed daily per user from `aux_sessions` vs `schedules`:
+- Penalty for being off the required status during scheduled hours
+- Penalty for break overruns
+- Penalty for missing scheduled hours
+- Score surfaced in: home dashboard ring, admin team monitor, analytics
+
+### Admin Panel (`/app/admin`, gated by `has_role('admin')`)
+- **Teams** tab — create teams, invite members
+- **Schedules** tab — define weekly schedules per team
+- **Tasks** tab — assign and monitor
+- **Live Monitor** tab — real-time view of every member's current AUX, today's adherence, recent activity (uses Supabase Realtime)
+- **Members** tab — promote/demote admins
+
+### Member vs Admin separation
+- Sidebar shows "Admin" section only when `has_role('admin')`
+- All schedule/task tables: members SELECT only their own rows; admins SELECT all in their teams (via RLS using `has_role` + team membership)
 
 ---
 
 ## Visual direction
-
-Premium SaaS, dark-first:
-- Deep near-black backgrounds with subtle gradient washes
-- Glassmorphic cards with soft inner glow
-- Vibrant but muted status dots (emerald, amber, rose, violet, slate)
-- Smooth Framer Motion micro-animations (status pulse, timer tick, card hover lift, page transitions)
-- Inter / Geist font, generous spacing, rounded-2xl cards
-- Light mode toggle as a polish item
+Stays premium dark-first. Landing page leans into the cosmic/glow aesthetic from your reference image. Admin panel gets a slightly denser, data-heavy layout (more like a console).
 
 ---
 
-## App structure
-
-| Route | Purpose |
-|---|---|
-| `/login`, `/signup` | Auth |
-| `/` | Command Center dashboard |
-| `/timeline` | Full timeline view |
-| `/analytics` | Analytics + heatmap + insights |
-| `/mindmap` | Mind map boards list |
-| `/mindmap/$boardId` | Canvas |
-| `/settings` | Manage AUX statuses, goals, shortcuts |
-
-Persistent left sidebar with AUX list (always-visible status switcher) + nav.
-
----
-
-## Data model (Lovable Cloud)
-
-- `profiles` — display name, avatar, daily goal
-- `aux_statuses` — user's custom + default statuses
-- `aux_sessions` — every status switch with start/end timestamps
-- `mindmap_boards`, `mindmap_nodes`, `mindmap_edges`
-- `daily_summaries` — cached focus scores & analytics
-- `ai_insights` — generated insights cache
-
-All tables RLS-protected to the owning user.
-
----
-
-## Out of scope for v1 (saved for later)
-- Google Calendar integration
-- Voice command status switching
-- Mobile app (Tempo-style)
-- Shift trades / team features
-
-After v1 ships, we'll layer these on based on what you actually use most.
+## What I'd like you to confirm
+I'll proceed with **Wave 1 first** unless you say otherwise — it's already a big build (landing page + mind map overhaul + manager notes + active-status fix). Wave 2 is queued and ready to go right after.
