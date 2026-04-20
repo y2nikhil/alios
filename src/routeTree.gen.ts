@@ -17,6 +17,7 @@ import { Route as AppTimelineRouteImport } from './routes/_app.timeline'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
 import { Route as AppMindmapIndexRouteImport } from './routes/_app.mindmap.index'
+import { Route as AppMindmapBoardIdRouteImport } from './routes/_app.mindmap.$boardId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -57,6 +58,11 @@ const AppMindmapIndexRoute = AppMindmapIndexRouteImport.update({
   path: '/mindmap/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMindmapBoardIdRoute = AppMindmapBoardIdRouteImport.update({
+  id: '/mindmap/$boardId',
+  path: '/mindmap/$boardId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AppAnalyticsRoute
   '/settings': typeof AppSettingsRoute
   '/timeline': typeof AppTimelineRoute
+  '/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/mindmap/': typeof AppMindmapIndexRoute
 }
 export interface FileRoutesByTo {
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsRoute
   '/timeline': typeof AppTimelineRoute
   '/': typeof AppIndexRoute
+  '/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/mindmap': typeof AppMindmapIndexRoute
 }
 export interface FileRoutesById {
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsRoute
   '/_app/timeline': typeof AppTimelineRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/_app/mindmap/': typeof AppMindmapIndexRoute
 }
 export interface FileRouteTypes {
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/settings'
     | '/timeline'
+    | '/mindmap/$boardId'
     | '/mindmap/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/timeline'
     | '/'
+    | '/mindmap/$boardId'
     | '/mindmap'
   id:
     | '__root__'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/_app/timeline'
     | '/_app/'
+    | '/_app/mindmap/$boardId'
     | '/_app/mindmap/'
   fileRoutesById: FileRoutesById
 }
@@ -182,6 +194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMindmapIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/mindmap/$boardId': {
+      id: '/_app/mindmap/$boardId'
+      path: '/mindmap/$boardId'
+      fullPath: '/mindmap/$boardId'
+      preLoaderRoute: typeof AppMindmapBoardIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -190,6 +209,7 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
   AppMindmapIndexRoute: typeof AppMindmapIndexRoute
 }
 
@@ -198,6 +218,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
+  AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
   AppMindmapIndexRoute: AppMindmapIndexRoute,
 }
 
@@ -211,3 +232,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
