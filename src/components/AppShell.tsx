@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard,
@@ -6,16 +6,19 @@ import {
   BarChart3,
   Brain,
   Settings,
-  LogOut,
   Sparkles,
+  Shield,
+  Crown,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
 import { useEffect, useState } from "react";
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useRole } from "@/lib/use-role";
+import { ProfileMenu } from "@/components/ProfileMenu";
 
-const NAV = [
+const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
