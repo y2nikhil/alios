@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ManagerNotes } from "@/components/ManagerNotes";
 import { AdherenceRing } from "@/components/AdherenceRing";
+import { MyTasks } from "@/components/MyTasks";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -193,10 +194,13 @@ function CommandCenter() {
         />
       </div>
 
-      {/* Manager Notes + Goal ring + Adherence */}
+      {/* Manager Notes + Tasks + Goal/Adherence */}
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2 glass rounded-2xl p-6">
+        <div className="glass rounded-2xl p-6">
           <ManagerNotes />
+        </div>
+        <div className="glass rounded-2xl p-6">
+          <MyTasks />
         </div>
         <div className="grid gap-4">
           <GoalRingCard />

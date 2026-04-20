@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
+import { useTodayAdherence } from "@/lib/use-adherence";
 
-/**
- * Schedule Adherence Score widget.
- * Placeholder for Wave 1 — gets wired to real schedule data in Wave 2.
- */
 export function AdherenceRing() {
+  const { score, hasSchedule } = useTodayAdherence();
   const r = 56;
   const c = 2 * Math.PI * r;
+  const pct = score ?? 0;
+  const offset = c - (pct / 100) * c;
 
   return (
     <div className="glass rounded-2xl p-6 flex flex-col items-center justify-center">
@@ -28,9 +28,9 @@ export function AdherenceRing() {
             strokeLinecap="round"
             strokeDasharray={c}
             initial={{ strokeDashoffset: c }}
-            animate={{ strokeDashoffset: c }}
+            animate={{ strokeDashoffset: hasSchedule ? offset : c }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            opacity={0.4}
+            opacity={hasSchedule ? 1 : 0.4}
           />
           <defs>
             <linearGradient id="adherenceGrad" x1="0" y1="0" x2="1" y2="1">
@@ -40,12 +40,22 @@ export function AdherenceRing() {
           </defs>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-3xl font-bold text-muted-foreground">—</p>
-          <p className="text-[10px] text-muted-foreground">awaiting schedule</p>
+          <p className={`text-3xl font-bold ${hasSchedule ? "" : "text-muted-foreground"}`}>
+            {hasSchedule && score !== null ? score : "—"}
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            {hasSchedule ? "out of 100" : "no schedule"}
+          </p>
         </div>
       </div>
       <p className="mt-3 text-xs text-center text-muted-foreground max-w-[180px]">
-        Set up a team schedule to start tracking adherence
+        {hasSchedule
+          ? score !== null && score >= 90
+            ? "On track — great work"
+            : score !== null && score >= 70
+              ? "Slightly off schedule"
+              : "Behind schedule"
+          : "Set up a team schedule to start tracking adherence"}
       </p>
     </div>
   );
