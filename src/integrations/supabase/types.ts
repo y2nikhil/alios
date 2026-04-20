@@ -130,6 +130,36 @@ export type Database = {
         }
         Relationships: []
       }
+      manager_notes: {
+        Row: {
+          author_id: string
+          body: string
+          color: string
+          created_at: string
+          id: string
+          recipient_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          color?: string
+          created_at?: string
+          id?: string
+          recipient_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          color?: string
+          created_at?: string
+          id?: string
+          recipient_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mindmap_boards: {
         Row: {
           created_at: string
