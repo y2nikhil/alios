@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Pencil } from "lucide-react";
 
-export const Route = createFileRoute("/_app/settings")({
+export const Route = createFileRoute("/app/settings")({
   head: () => ({
     meta: [
       { title: "Settings — ALIOS" },

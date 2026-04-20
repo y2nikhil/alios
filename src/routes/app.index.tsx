@@ -10,7 +10,7 @@ import { useDailyStats } from "@/lib/use-daily-stats";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_app/")({
+export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
       { title: "Command Center — ALIOS" },

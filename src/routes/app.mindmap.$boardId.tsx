@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Plus, Sparkles, Trash2, Brain, FileImage, Link as LinkIcon, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_app/mindmap/$boardId")({
+export const Route = createFileRoute("/app/mindmap/$boardId")({
   head: () => ({
     meta: [
       { title: "Mind Map — ALIOS" },

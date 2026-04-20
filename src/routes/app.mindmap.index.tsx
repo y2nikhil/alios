@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 type Board = { id: string; title: string; description: string | null; updated_at: string };
 
-export const Route = createFileRoute("/_app/mindmap/")({
+export const Route = createFileRoute("/app/mindmap/")({
   head: () => ({
     meta: [
       { title: "Mind Maps — ALIOS" },

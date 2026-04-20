@@ -10,7 +10,7 @@ import { formatShortDuration } from "@/lib/format";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_app/analytics")({
+export const Route = createFileRoute("/app/analytics")({
   head: () => ({
     meta: [
       { title: "Analytics — ALIOS" },
