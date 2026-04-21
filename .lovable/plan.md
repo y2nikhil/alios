@@ -1,99 +1,132 @@
 
-# ALIOS — Big Update: Landing Page, Mind Map Polish, Admin/Teams, Schedule Adherence
 
-A lot to unpack. I'll tackle it in **two waves** to keep things stable. Wave 1 ships the visible UX changes you called out. Wave 2 adds the heavier Admin/Teams/Adherence platform work.
+# ALIOS — Wave 3 (Single Build): Tracking, YouTube, Chat, Mind Map Collab, Notifications, Theme
 
----
-
-## Wave 1 — UX & Mind Map (this build)
-
-### 1. Marketing landing page at `/`
-- Move authenticated app from `/` → `/app` (so `/app`, `/app/timeline`, `/app/mindmap`, etc.)
-- Build a new public landing page at `/` based on your reference image:
-  - Hero: ALIOS logo + tagline "The All-In-One Productivity & Management App"
-  - Feature checklist (Track day in real-time, Mind map, Insights, AI focus, Team-ready)
-  - Mocked product screenshots/cards collage with glow
-  - "Get Started" / "Sign in" CTAs in **top-right corner**
-  - Footer
-- Logged-in users hitting `/` get auto-redirected to `/app`
-- Logged-out users hitting any `/app/*` route get sent to `/login`
-
-### 2. Don't reset timer on same-status click
-Fix in `aux-store`: if `statusId === activeSession.status_id`, no-op (toast: "Already in this status").
-
-### 3. Manager Notes / Comments (replaces AI Insight on home)
-- New `manager_notes` table (author, recipient, body, color, created_at)
-- Card on Command Center with:
-  - Scrollable list of notes (newest first)
-  - "+ Add note" inline composer (admins / self-notes for now)
-  - "View all" link → opens full notes drawer/page
-- AI Insight feature isn't deleted — it moves to a smaller spot on the Analytics page
-
-### 4. Mind Map — major polish & bug fixes
-- **Double-click on empty canvas** → creates a node with the text input **already focused and editable** (auto-edit mode for first 5s or until blur)
-- **Double-click inside a node** → enters rename/edit mode only; does NOT bubble up to create a new node (stop propagation)
-- **Reposition controls**: move React Flow `Controls` panel to `bottom-left` (currently default cut off); MiniMap to `bottom-right` with proper padding so nothing clips
-- **Three-dot menu on every node** (visible on hover, top-right corner of node):
-  - Rename
-  - Change color (palette swatches)
-  - Assign to team member (dropdown of team — placeholder list now, real list in Wave 2)
-  - Add tag
-  - Delete
-- **Delete key** on selected node(s) removes them (with edges cleanup)
-- **Performance**: memoize `nodeTypes` correctly, debounce position persistence (500ms), batch edge cleanup on delete
-- **Visual polish**: tighter spacing, refined glow, smoother edges (bezier instead of smoothstep), softer background grid
-
-### 5. Schedule Adherence Score widget on home
-Placeholder ring (alongside the daily goal ring) showing "Adherence: —" until Wave 2 lights it up. Keeps the visual slot in place.
+Shipping everything in one go. Here's the full scope and build order so nothing is missed.
 
 ---
 
-## Wave 2 — Admin Panel, Teams & Schedules (next build, after you approve Wave 1)
+## 1. Super Admin tracking & audit log
 
-### Admin role system (RLS-safe)
-- `app_role` enum (`admin`, `member`)
-- `user_roles` table (user_id, role) — separate table per security best practice
-- `has_role(user_id, role)` security-definer function
-- First user to sign up auto-promoted to admin; future admins promoted via panel
+- **`account_events`** table — every signup writes a row via trigger on `auth.users` (event_type, email, created_at, ip best-effort)
+- **`audit_log`** table — `actor_id`, `action`, `target_user_id`, `target_id`, `metadata`, `created_at`. Every approve/reject/grant/revoke/task-delete/mindmap-share writes a row
+- **Super Admin Panel** gets new tabs:
+  - **Accounts** — full user list (email, signup date, role, last AUX, weekly hours, current status) with realtime updates and **Revoke account** action (sets `auth.users.banned_until` via secure RPC)
+  - **Activity Log** — filterable feed of every admin action
+  - **All Teams**, **All Tasks**, **All Chats**, **All Mind Maps** — read-only oversight of everything across the platform
+- **Admin Panel** gets a scoped **Activity Log** for their teams only
 
-### Teams
-- `teams` (id, name, owner_id)
-- `team_members` (team_id, user_id, invited_email, status)
-- Admin can invite by email; if email matches an existing user → instant link, else pending invite
+## 2. Light/Dark theme toggle
 
-### Schedules
-- `schedules` (team_id, day_of_week, start_time, end_time, required_status, break_window_start, break_window_end, break_max_minutes)
-- Admin defines per-team weekly schedule
-- Members view their schedule on a new `/app/schedule` page
+- `ThemeProvider` persisted to `localStorage` + `profiles.theme`
+- Refined light palette in `styles.css` with proper contrast (off-white surface, slate cards, vibrant accents, glass effect that works in both modes)
+- Sun/moon toggle inside the **ProfileMenu** dropdown (top-right, under account section)
+- Tighter typography scale and smoother transitions across the app
 
-### Task assignments
-- `tasks` (id, team_id, assigned_to, title, description, due_at, status)
-- Admin assigns tasks; members see them on dashboard
+## 3. Manager Notes upgrade
 
-### Schedule Adherence Score (0–100)
-Computed daily per user from `aux_sessions` vs `schedules`:
-- Penalty for being off the required status during scheduled hours
-- Penalty for break overruns
-- Penalty for missing scheduled hours
-- Score surfaced in: home dashboard ring, admin team monitor, analytics
+- Extend `manager_notes`: add `team_id` (nullable) + `pinned` boolean
+- Admin can assign a note to a **specific user** OR a **whole team**
+- New **`note_comments`** table — threaded replies under each note
+- "View All" drawer with filters (mine, my team's, pinned)
+- Notification fired to recipients on note creation
 
-### Admin Panel (`/app/admin`, gated by `has_role('admin')`)
-- **Teams** tab — create teams, invite members
-- **Schedules** tab — define weekly schedules per team
-- **Tasks** tab — assign and monitor
-- **Live Monitor** tab — real-time view of every member's current AUX, today's adherence, recent activity (uses Supabase Realtime)
-- **Members** tab — promote/demote admins
+## 4. Tasks: statuses, self-assign, comments, edit/delete
 
-### Member vs Admin separation
-- Sidebar shows "Admin" section only when `has_role('admin')`
-- All schedule/task tables: members SELECT only their own rows; admins SELECT all in their teams (via RLS using `has_role` + team membership)
+- Status dropdown with full set: `todo`, `in_progress`, `pending`, `overdue`, `completed` (auto-mark overdue when `due_at < now()` in UI)
+- Members can **create tasks for themselves**; admin sees them in the team view
+- New **`task_comments`** table — threaded comments
+- Admin can edit/delete any task in their team (writes to audit log)
+- Task status changes notify the assigner
+
+## 5. YouTube playlist tasks (distraction-free player)
+
+- Extend `tasks` with `task_type` (`standard`, `youtube_checklist`)
+- New **`task_videos`** table: `task_id`, `video_id`, `title`, `thumbnail`, `duration`, `order_index`
+- New **`task_video_progress`** table: per-user completion of each video in the checklist
+- Server function parses YouTube URLs (single video → oEmbed; playlist → fetch playlist HTML and extract video IDs/titles — no API key needed)
+- Embedded player uses `youtube-nocookie.com` with params `rel=0&modestbranding=1&iv_load_policy=3&showinfo=0` to kill end screens, related videos, and annotations
+- Checklist UI: video list with ✓ Done toggles, progress bar, auto-queue next video
+
+## 6. Collaborate hub (team chat)
+
+- New **Collaborate** sidebar item (`/app/collaborate`)
+- **`chat_channels`** (one per team, auto-created with team) + **`chat_messages`** (`channel_id`, `user_id`, `body`, `attachments`, `reply_to`)
+- Realtime via Supabase Realtime — messages appear live
+- @mention parsing (`@email`) → fires notification to mentioned user
+- Page layout: left = teams I'm in, right = active channel, composer at bottom
+- Super admin sees all channels (read-only) in the Super Panel
+
+## 7. Notifications (bell icon in header)
+
+- New **`notifications`** table: `user_id`, `type`, `title`, `body`, `link`, `read_at`, `created_at`
+- Bell icon in top header next to ProfileMenu with unread badge
+- Dropdown shows last 10 + "Mark all read" + "View all" → `/app/notifications`
+- Triggers fire on: task assigned, manager note assigned, mindmap shared, @mention in chat, request approved/rejected, comment reply
+- Realtime so notifications pop in with a soft toast
+
+## 8. Mind Map collaboration
+
+- New **`mindmap_collaborators`** table: `board_id`, `user_id` (or `team_id`), `role` (`viewer`/`editor`)
+- RLS update: owner OR collaborator OR member of shared team can SELECT; editors can write nodes/edges
+- **Share** button on each board: pick a user (email lookup) or whole team → fires notification
+- **"Shared with me"** section on `/app/mindmap` boards list
+- Create-board flow: option to **start as collaborative** with team picker
+- Realtime sync of nodes/edges (debounced 300ms) so co-editors see live changes
+- New dashboard widget: "Shared mind maps"
+
+## 9. Mind Map polish
+
+- **Persistent color outline** — node keeps a 2px ring of its color even when deselected (currently disappears on blur)
+- **Modern connectors** — bezier curves with gradient stroke, subtle animated dash flow, glow on hover, larger handles
+- **Mini-map** node colors match node colors
+- **Three-dot menu refinement** — replace `prompt()` with proper inline popovers; Assign uses real team dropdown now that teams exist; add "Open in collaboration mode"
+- **Performance** — memoize edge components, virtualize when count > 50
+
+## 10. Profile menu enhancements
+
+- Already has Apply for Admin, Request Time Off, Logout
+- Add: **Theme toggle**, **My Profile** link, **My Notifications** link
+
+---
+
+## Data model additions (summary)
+
+| Table | Purpose |
+|---|---|
+| `account_events` | Signup tracking for super admin |
+| `audit_log` | Every approval/rejection/role change/deletion |
+| `note_comments` | Comments on manager notes |
+| `task_comments` | Comments on tasks |
+| `task_videos` | YouTube videos attached to a task |
+| `task_video_progress` | Per-user video completion |
+| `chat_channels`, `chat_messages` | Team chat |
+| `notifications` | Bell-icon feed |
+| `mindmap_collaborators` | Mind map sharing |
+
+Plus column additions: `manager_notes.team_id`, `manager_notes.pinned`, `tasks.task_type`, `profiles.theme`.
+
+All RLS-protected:
+- Super admin SELECT all everywhere
+- Admins SELECT within their teams
+- Members SELECT own / team-scoped rows
+
+---
+
+## Build order (one continuous build)
+
+1. **Migration** — all new tables, columns, enums, triggers, RPCs (`revoke_account`, `parse_youtube_url`, audit-log helpers)
+2. **Theme system** — ThemeProvider, light palette, ProfileMenu toggle
+3. **Tracking & audit** — Super Admin Accounts/Activity tabs, audit-log writers in existing approve/reject flows
+4. **Notifications infrastructure** — bell, dropdown, page, realtime hook
+5. **Manager Notes v2** — team assignment, comments, View All drawer
+6. **Tasks v2** — statuses, self-assign, comments, edit/delete, YouTube task type + player
+7. **Collaborate hub** — chat channels, messages, realtime, @mentions
+8. **Mind Map collab + polish** — sharing, realtime sync, persistent color outline, modern connectors, popover menu
 
 ---
 
 ## Visual direction
-Stays premium dark-first. Landing page leans into the cosmic/glow aesthetic from your reference image. Admin panel gets a slightly denser, data-heavy layout (more like a console).
 
----
+Premium SaaS, dark by default with a clean professional light option. Notification toasts use Sonner with branded styling. Admin/Super panels gain a slightly denser console layout. Chat and mind map get tight micro-animations.
 
-## What I'd like you to confirm
-I'll proceed with **Wave 1 first** unless you say otherwise — it's already a big build (landing page + mind map overhaul + manager notes + active-status fix). Wave 2 is queued and ready to go right after.
