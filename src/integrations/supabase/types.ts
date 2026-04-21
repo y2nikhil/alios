@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_events: {
+        Row: {
+          created_at: string
+          email: string | null
+          event_type: string
+          id: string
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_requests: {
         Row: {
           created_at: string
@@ -80,6 +107,39 @@ export type Database = {
           insight_type?: string
           metadata?: Json | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          target_id: string | null
+          target_type: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string | null
+          target_user_id?: string | null
         }
         Relationships: []
       }
@@ -166,6 +226,80 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_channels: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          team_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          team_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_channels_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          attachments: Json
+          body: string
+          channel_id: string
+          created_at: string
+          id: string
+          reply_to: string | null
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json
+          body: string
+          channel_id: string
+          created_at?: string
+          id?: string
+          reply_to?: string | null
+          user_id: string
+        }
+        Update: {
+          attachments?: Json
+          body?: string
+          channel_id?: string
+          created_at?: string
+          id?: string
+          reply_to?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "chat_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_adherence: {
         Row: {
           break_overrun_minutes: number
@@ -206,7 +340,9 @@ export type Database = {
           color: string
           created_at: string
           id: string
-          recipient_id: string
+          pinned: boolean
+          recipient_id: string | null
+          team_id: string | null
           updated_at: string
         }
         Insert: {
@@ -215,7 +351,9 @@ export type Database = {
           color?: string
           created_at?: string
           id?: string
-          recipient_id: string
+          pinned?: boolean
+          recipient_id?: string | null
+          team_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -224,10 +362,20 @@ export type Database = {
           color?: string
           created_at?: string
           id?: string
-          recipient_id?: string
+          pinned?: boolean
+          recipient_id?: string | null
+          team_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "manager_notes_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mindmap_boards: {
         Row: {
@@ -255,6 +403,51 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      mindmap_collaborators: {
+        Row: {
+          added_by: string
+          board_id: string
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["collab_role"]
+          team_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          added_by: string
+          board_id: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["collab_role"]
+          team_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          added_by?: string
+          board_id?: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["collab_role"]
+          team_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mindmap_collaborators_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "mindmap_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mindmap_collaborators_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mindmap_edges: {
         Row: {
@@ -367,6 +560,74 @@ export type Database = {
           },
         ]
       }
+      note_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          note_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          note_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          note_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_comments_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "manager_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          metadata: Json
+          read_at: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -444,6 +705,117 @@ export type Database = {
           },
         ]
       }
+      task_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_video_progress: {
+        Row: {
+          completed: boolean
+          id: string
+          updated_at: string
+          user_id: string
+          video_row_id: string
+          watched_seconds: number
+        }
+        Insert: {
+          completed?: boolean
+          id?: string
+          updated_at?: string
+          user_id: string
+          video_row_id: string
+          watched_seconds?: number
+        }
+        Update: {
+          completed?: boolean
+          id?: string
+          updated_at?: string
+          user_id?: string
+          video_row_id?: string
+          watched_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_video_progress_video_row_id_fkey"
+            columns: ["video_row_id"]
+            isOneToOne: false
+            referencedRelation: "task_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_videos: {
+        Row: {
+          added_by: string
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          order_index: number
+          task_id: string
+          thumbnail: string | null
+          title: string | null
+          video_id: string
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          order_index?: number
+          task_id: string
+          thumbnail?: string | null
+          title?: string | null
+          video_id: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          order_index?: number
+          task_id?: string
+          thumbnail?: string | null
+          title?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_videos_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assigned_by: string
@@ -454,6 +826,7 @@ export type Database = {
           id: string
           priority: number
           status: Database["public"]["Enums"]["task_status"]
+          task_type: Database["public"]["Enums"]["task_type"]
           team_id: string | null
           title: string
           updated_at: string
@@ -467,6 +840,7 @@ export type Database = {
           id?: string
           priority?: number
           status?: Database["public"]["Enums"]["task_status"]
+          task_type?: Database["public"]["Enums"]["task_type"]
           team_id?: string | null
           title: string
           updated_at?: string
@@ -480,6 +854,7 @@ export type Database = {
           id?: string
           priority?: number
           status?: Database["public"]["Enums"]["task_status"]
+          task_type?: Database["public"]["Enums"]["task_type"]
           team_id?: string | null
           title?: string
           updated_at?: string
@@ -630,6 +1005,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_edit_board: {
+        Args: { _board: string; _user: string }
+        Returns: boolean
+      }
+      can_view_board: {
+        Args: { _board: string; _user: string }
+        Returns: boolean
+      }
       find_user_by_email: { Args: { _email: string }; Returns: string }
       get_user_email: { Args: { _user_id: string }; Returns: string }
       has_role: {
@@ -643,13 +1026,57 @@ export type Database = {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
       }
+      notify_user: {
+        Args: {
+          _body?: string
+          _link?: string
+          _metadata?: Json
+          _title: string
+          _type: Database["public"]["Enums"]["notification_type"]
+          _user_id: string
+        }
+        Returns: string
+      }
+      restore_account: { Args: { _user_id: string }; Returns: undefined }
+      revoke_account: { Args: { _user_id: string }; Returns: undefined }
+      write_audit: {
+        Args: {
+          _action: string
+          _metadata?: Json
+          _target_id?: string
+          _target_type?: string
+          _target_user?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "member"
       aux_category: "productive" | "neutral" | "unproductive"
+      collab_role: "viewer" | "editor"
       mindmap_node_type: "text" | "image" | "link" | "task"
+      notification_type:
+        | "task_assigned"
+        | "task_status_changed"
+        | "task_comment"
+        | "note_assigned"
+        | "note_comment"
+        | "mindmap_shared"
+        | "chat_mention"
+        | "request_approved"
+        | "request_rejected"
+        | "role_granted"
+        | "role_revoked"
+        | "account_revoked"
       request_status: "pending" | "approved" | "rejected"
-      task_status: "todo" | "in_progress" | "done" | "cancelled"
+      task_status:
+        | "todo"
+        | "in_progress"
+        | "done"
+        | "cancelled"
+        | "pending"
+        | "overdue"
+      task_type: "standard" | "youtube_checklist"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -779,9 +1206,32 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "admin", "member"],
       aux_category: ["productive", "neutral", "unproductive"],
+      collab_role: ["viewer", "editor"],
       mindmap_node_type: ["text", "image", "link", "task"],
+      notification_type: [
+        "task_assigned",
+        "task_status_changed",
+        "task_comment",
+        "note_assigned",
+        "note_comment",
+        "mindmap_shared",
+        "chat_mention",
+        "request_approved",
+        "request_rejected",
+        "role_granted",
+        "role_revoked",
+        "account_revoked",
+      ],
       request_status: ["pending", "approved", "rejected"],
-      task_status: ["todo", "in_progress", "done", "cancelled"],
+      task_status: [
+        "todo",
+        "in_progress",
+        "done",
+        "cancelled",
+        "pending",
+        "overdue",
+      ],
+      task_type: ["standard", "youtube_checklist"],
     },
   },
 } as const
