@@ -19,6 +19,7 @@ import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
+import { Route as ApiYoutubeParseRouteImport } from './routes/api.youtube-parse'
 import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
 import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
@@ -74,6 +75,11 @@ const AppAdminRoute = AppAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiYoutubeParseRoute = ApiYoutubeParseRouteImport.update({
+  id: '/api/youtube-parse',
+  path: '/api/youtube-parse',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiMindmapRoute = ApiAiMindmapRouteImport.update({
   id: '/api/ai-mindmap',
   path: '/api/ai-mindmap',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
     | '/app/settings'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
     | '/app/settings'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
     | '/app/settings'
@@ -200,6 +212,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   ApiAiInsightsRoute: typeof ApiAiInsightsRoute
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
+  ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/youtube-parse': {
+      id: '/api/youtube-parse'
+      path: '/api/youtube-parse'
+      fullPath: '/api/youtube-parse'
+      preLoaderRoute: typeof ApiYoutubeParseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai-mindmap': {
       id: '/api/ai-mindmap'
       path: '/api/ai-mindmap'
@@ -336,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   ApiAiInsightsRoute: ApiAiInsightsRoute,
   ApiAiMindmapRoute: ApiAiMindmapRoute,
+  ApiYoutubeParseRoute: ApiYoutubeParseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
