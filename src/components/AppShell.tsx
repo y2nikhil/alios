@@ -170,6 +170,7 @@ function ShellInner() {
               <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono">1-9</kbd>
               <span>switch</span>
             </div>
+            <NotificationBell />
             <ProfileMenu />
           </div>
         </header>
