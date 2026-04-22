@@ -10,8 +10,9 @@ type Task = {
   title: string;
   description: string | null;
   due_at: string | null;
-  status: "todo" | "in_progress" | "done" | "cancelled";
+  status: "todo" | "in_progress" | "done" | "cancelled" | "pending" | "overdue";
   priority: number;
+  task_type?: "standard" | "youtube_checklist";
 };
 
 export function MyTasks() {
