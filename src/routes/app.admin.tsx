@@ -305,14 +305,14 @@ function AdminPanel() {
                 <Plus className="h-3.5 w-3.5 mr-1" /> Assign task
               </Button>
             </div>
-            <div className="glass rounded-2xl divide-y divide-white/5">
+            <div className="glass rounded-2xl divide-y divide-border">
               {tasks.length === 0 && <div className="p-6 text-sm text-muted-foreground">No tasks assigned.</div>}
               {tasks.map((t) => (
                 <div key={t.id} className="p-4 flex items-start gap-3 justify-between flex-wrap">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-medium">{t.title}</p>
-                      <Badge variant={t.status === "done" ? "secondary" : "default"}>{t.status.replace("_", " ")}</Badge>
+                      {t.task_type === "youtube_checklist" && <Badge variant="outline" className="text-[10px]">YouTube</Badge>}
                     </div>
                     {t.description && <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>}
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -320,12 +320,29 @@ function AdminPanel() {
                       {t.due_at && ` · Due ${new Date(t.due_at).toLocaleDateString()}`}
                     </p>
                   </div>
-                  <Button size="sm" variant="ghost" className="text-destructive" onClick={async () => {
-                    await supabase.from("tasks").delete().eq("id", t.id);
-                    if (activeTeam) loadTeamData(activeTeam);
-                  }}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={t.status}
+                      onValueChange={async (v) => {
+                        await supabase.from("tasks").update({ status: v }).eq("id", t.id);
+                        if (activeTeam) loadTeamData(activeTeam);
+                      }}
+                    >
+                      <SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {STATUSES.map((s) => (
+                          <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button size="sm" variant="ghost" className="text-destructive" onClick={async () => {
+                      await supabase.from("tasks").delete().eq("id", t.id);
+                      await supabase.rpc("write_audit", { _action: "task_deleted", _target_id: t.id, _target_type: "task" });
+                      if (activeTeam) loadTeamData(activeTeam);
+                    }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
