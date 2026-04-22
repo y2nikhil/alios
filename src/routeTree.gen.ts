@@ -15,7 +15,6 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
-import { Route as AppTasksRouteImport } from './routes/app.tasks'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
@@ -56,11 +55,6 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppTimelineRoute = AppTimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppTasksRoute = AppTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSuperRoute = AppSuperRouteImport.update({
@@ -133,7 +127,6 @@ export interface FileRoutesByFullPath {
   '/app/notifications': typeof AppNotificationsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
-  '/app/tasks': typeof AppTasksRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -152,7 +145,6 @@ export interface FileRoutesByTo {
   '/app/notifications': typeof AppNotificationsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
-  '/app/tasks': typeof AppTasksRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app': typeof AppIndexRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -173,7 +165,6 @@ export interface FileRoutesById {
   '/app/notifications': typeof AppNotificationsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
-  '/app/tasks': typeof AppTasksRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -195,7 +186,6 @@ export interface FileRouteTypes {
     | '/app/notifications'
     | '/app/settings'
     | '/app/super'
-    | '/app/tasks'
     | '/app/timeline'
     | '/app/'
     | '/app/mindmap/$boardId'
@@ -214,7 +204,6 @@ export interface FileRouteTypes {
     | '/app/notifications'
     | '/app/settings'
     | '/app/super'
-    | '/app/tasks'
     | '/app/timeline'
     | '/app'
     | '/app/mindmap/$boardId'
@@ -234,7 +223,6 @@ export interface FileRouteTypes {
     | '/app/notifications'
     | '/app/settings'
     | '/app/super'
-    | '/app/tasks'
     | '/app/timeline'
     | '/app/'
     | '/app/mindmap/$boardId'
@@ -293,13 +281,6 @@ declare module '@tanstack/react-router' {
       path: '/timeline'
       fullPath: '/app/timeline'
       preLoaderRoute: typeof AppTimelineRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/tasks': {
-      id: '/app/tasks'
-      path: '/tasks'
-      fullPath: '/app/tasks'
-      preLoaderRoute: typeof AppTasksRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/super': {
@@ -389,7 +370,6 @@ interface AppRouteChildren {
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSuperRoute: typeof AppSuperRoute
-  AppTasksRoute: typeof AppTasksRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
@@ -403,7 +383,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppNotificationsRoute: AppNotificationsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSuperRoute: AppSuperRoute,
-  AppTasksRoute: AppTasksRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
