@@ -324,7 +324,7 @@ function AdminPanel() {
                     <Select
                       value={t.status}
                       onValueChange={async (v) => {
-                        await supabase.from("tasks").update({ status: v }).eq("id", t.id);
+                        await supabase.from("tasks").update({ status: v as Task["status"] }).eq("id", t.id);
                         if (activeTeam) loadTeamData(activeTeam);
                       }}
                     >
