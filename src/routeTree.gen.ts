@@ -18,6 +18,7 @@ import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiYoutubeParseRouteImport } from './routes/api.youtube-parse'
@@ -71,6 +72,11 @@ const AppNotificationsRoute = AppNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollaborateRoute = AppCollaborateRouteImport.update({
+  id: '/collaborate',
+  path: '/collaborate',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/collaborate': typeof AppCollaborateRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/collaborate': typeof AppCollaborateRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/collaborate': typeof AppCollaborateRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/collaborate'
     | '/app/notifications'
     | '/app/settings'
     | '/app/super'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/collaborate'
     | '/app/notifications'
     | '/app/settings'
     | '/app/super'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/collaborate'
     | '/app/notifications'
     | '/app/settings'
     | '/app/super'
@@ -292,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/collaborate': {
+      id: '/app/collaborate'
+      path: '/collaborate'
+      fullPath: '/app/collaborate'
+      preLoaderRoute: typeof AppCollaborateRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/analytics': {
       id: '/app/analytics'
       path: '/analytics'
@@ -347,6 +366,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppCollaborateRoute: typeof AppCollaborateRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSuperRoute: typeof AppSuperRoute
@@ -359,6 +379,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
+  AppCollaborateRoute: AppCollaborateRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSuperRoute: AppSuperRoute,

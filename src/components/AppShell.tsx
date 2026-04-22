@@ -9,6 +9,7 @@ import {
   Sparkles,
   Shield,
   Crown,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -17,12 +18,14 @@ import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/lib/use-role";
 import { ProfileMenu } from "@/components/ProfileMenu";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
+  { to: "/app/collaborate", label: "Collaborate", icon: MessageSquare },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -167,6 +170,7 @@ function ShellInner() {
               <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono">1-9</kbd>
               <span>switch</span>
             </div>
+            <NotificationBell />
             <ProfileMenu />
           </div>
         </header>
