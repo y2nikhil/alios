@@ -10,6 +10,7 @@ import {
   Shield,
   Crown,
   MessageSquare,
+  ListChecks,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -22,6 +23,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
+  { to: "/app/tasks", label: "Tasks", icon: ListChecks },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
