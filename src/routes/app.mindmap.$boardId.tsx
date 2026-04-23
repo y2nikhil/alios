@@ -128,6 +128,63 @@ function Canvas() {
     })();
   }, [user, boardId, setNodes, setEdges]);
 
+  // Realtime collaboration sync
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`board-${boardId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "mindmap_nodes", filter: `board_id=eq.${boardId}` },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const id = (payload.old as { id: string }).id;
+            setNodes((nds) => nds.filter((n) => n.id !== id));
+          } else {
+            const n = payload.new as {
+              id: string; node_type: NodeKind; position_x: number; position_y: number;
+              data: Record<string, unknown>; color: string | null; tags: string[] | null;
+              user_id: string;
+            };
+            // ignore own writes (we already updated local state)
+            if (n.user_id === user.id) return;
+            setNodes((nds) => {
+              const exists = nds.find((x) => x.id === n.id);
+              const next: Node<NodeData> = {
+                id: n.id,
+                type: "alios",
+                position: { x: n.position_x, y: n.position_y },
+                data: { ...(n.data || {}), kind: n.node_type, color: n.color ?? undefined, tags: n.tags ?? [] } as NodeData,
+              };
+              return exists ? nds.map((x) => (x.id === n.id ? { ...x, ...next, data: { ...x.data, ...next.data } } : x)) : [...nds, next];
+            });
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "mindmap_edges", filter: `board_id=eq.${boardId}` },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const id = (payload.old as { id: string }).id;
+            setEdges((eds) => eds.filter((e) => e.id !== id));
+          } else {
+            const e = payload.new as { id: string; source_node_id: string; target_node_id: string; user_id: string };
+            if (e.user_id === user.id) return;
+            setEdges((eds) =>
+              eds.find((x) => x.id === e.id)
+                ? eds
+                : [...eds, { id: e.id, source: e.source_node_id, target: e.target_node_id, ...EDGE_OPTIONS }],
+            );
+          }
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [user, boardId, setNodes, setEdges]);
+
   const persistNode = useCallback(
     async (n: Node<NodeData>) => {
       if (!user) return;
