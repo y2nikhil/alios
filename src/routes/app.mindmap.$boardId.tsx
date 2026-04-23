@@ -94,6 +94,11 @@ function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId: string } | null>(null);
+  const [inputPopover, setInputPopover] = useState<
+    | { kind: "assignee" | "tag"; nodeId: string; x: number; y: number }
+    | null
+  >(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const rf = useReactFlow();
   const connectStartRef = useRef<{ nodeId: string | null; handleId: string | null } | null>(null);
