@@ -402,10 +402,17 @@ function Canvas() {
             className="bg-transparent font-semibold text-base focus:outline-none focus:bg-white/5 rounded px-2 py-1 min-w-0 truncate"
           />
         </div>
-        <div className="hidden md:flex gap-1.5 text-xs text-muted-foreground">
-          Double-click empty area to add · Drag handles to connect · Del to remove
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex gap-1.5 text-xs text-muted-foreground">
+            Double-click empty area · Drag handles to connect · Del to remove
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setShareOpen(true)}>
+            <Share2 className="h-3.5 w-3.5 mr-1.5" /> Share
+          </Button>
         </div>
       </div>
+
+      <ShareDialog open={shareOpen} onOpenChange={setShareOpen} boardId={boardId} />
 
       <div ref={wrapRef} className="flex-1 relative" onDoubleClick={onWrapperDoubleClick}>
         <ReactFlow
