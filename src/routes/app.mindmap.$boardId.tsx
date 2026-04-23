@@ -37,8 +37,13 @@ import {
   Palette,
   UserPlus,
   Tag,
+  Share2,
+  X as XIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/app/mindmap/$boardId")({
   head: () => ({
