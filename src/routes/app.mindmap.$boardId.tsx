@@ -766,3 +766,205 @@ function AliosNode(props: NodeProps<NodeData>) {
     </div>
   );
 }
+
+// ---------- Inline Popover for assignee / tag ----------
+function InlineInputPopover({
+  kind,
+  x,
+  y,
+  onClose,
+  onSubmit,
+}: {
+  kind: "assignee" | "tag";
+  x: number;
+  y: number;
+  onClose: () => void;
+  onSubmit: (value: string) => void;
+}) {
+  const [val, setVal] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+  return (
+    <div
+      className="fixed z-50 alios-controls glass rounded-xl p-2.5 shadow-2xl border border-white/10"
+      style={{ left: x, top: y }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center gap-2">
+        <Input
+          ref={inputRef}
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          placeholder={kind === "assignee" ? "Assign to (email or name)" : "Tag name"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && val.trim()) onSubmit(val.trim());
+            if (e.key === "Escape") onClose();
+          }}
+          className="h-8 text-sm w-56"
+        />
+        <Button size="sm" onClick={() => val.trim() && onSubmit(val.trim())}>
+          Add
+        </Button>
+        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onClose}>
+          <XIcon className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Share Dialog ----------
+function ShareDialog({
+  open,
+  onOpenChange,
+  boardId,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  boardId: string;
+}) {
+  const { user } = useAuth();
+  type Collab = { id: string; user_id: string | null; team_id: string | null; role: "viewer" | "editor"; email?: string | null };
+  type Team = { id: string; name: string };
+  const [collabs, setCollabs] = useState<Collab[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [email, setEmail] = useState("");
+  const [teamId, setTeamId] = useState<string>("");
+  const [role, setRole] = useState<"viewer" | "editor">("viewer");
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const [cRes, tRes] = await Promise.all([
+      supabase.from("mindmap_collaborators").select("*").eq("board_id", boardId),
+      supabase.from("teams").select("id,name"),
+    ]);
+    const rows = (cRes.data ?? []) as Collab[];
+    const withEmail = await Promise.all(
+      rows.map(async (r) => {
+        if (!r.user_id) return r;
+        const { data } = await supabase.rpc("get_user_email", { _user_id: r.user_id });
+        return { ...r, email: (data as string | null) ?? null };
+      }),
+    );
+    setCollabs(withEmail);
+    setTeams((tRes.data ?? []) as Team[]);
+  }, [boardId]);
+
+  useEffect(() => {
+    if (open) load();
+  }, [open, load]);
+
+  async function addByEmail() {
+    if (!user || !email.trim()) return;
+    setBusy(true);
+    const { data: uid } = await supabase.rpc("find_user_by_email", { _email: email.trim() });
+    if (!uid) {
+      toast.error("No user found with that email.");
+      setBusy(false);
+      return;
+    }
+    const { error } = await supabase.from("mindmap_collaborators").insert({
+      board_id: boardId,
+      user_id: uid as string,
+      added_by: user.id,
+      role,
+    });
+    setBusy(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Collaborator added");
+      setEmail("");
+      load();
+    }
+  }
+
+  async function addByTeam() {
+    if (!user || !teamId) return;
+    setBusy(true);
+    const { error } = await supabase.from("mindmap_collaborators").insert({
+      board_id: boardId,
+      team_id: teamId,
+      added_by: user.id,
+      role,
+    });
+    setBusy(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Team added");
+      setTeamId("");
+      load();
+    }
+  }
+
+  async function removeCollab(id: string) {
+    await supabase.from("mindmap_collaborators").delete().eq("id", id);
+    load();
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Share this mind map</DialogTitle>
+          <DialogDescription>Invite a teammate or share with an entire team.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Invite by email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex-1"
+            />
+            <Select value={role} onValueChange={(v) => setRole(v as "viewer" | "editor")}>
+              <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="editor">Editor</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={addByEmail} disabled={busy || !email.trim()}>Invite</Button>
+          </div>
+          {teams.length > 0 && (
+            <div className="flex gap-2">
+              <Select value={teamId} onValueChange={setTeamId}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Share with a team…" /></SelectTrigger>
+                <SelectContent>
+                  {teams.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={addByTeam} disabled={busy || !teamId}>Add team</Button>
+            </div>
+          )}
+
+          <div className="border-t border-border pt-3">
+            <p className="text-xs font-semibold mb-2">People & teams with access</p>
+            {collabs.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Only you so far.</p>
+            ) : (
+              <div className="space-y-1.5 max-h-56 overflow-y-auto scrollbar-thin">
+                {collabs.map((c) => (
+                  <div key={c.id} className="flex items-center justify-between text-sm rounded-lg bg-accent/30 px-2.5 py-1.5">
+                    <span className="truncate">
+                      {c.user_id ? (c.email ?? c.user_id) : `Team: ${teams.find((t) => t.id === c.team_id)?.name ?? c.team_id}`}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase text-muted-foreground">{c.role}</span>
+                      <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => removeCollab(c.id)}>
+                        <XIcon className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
