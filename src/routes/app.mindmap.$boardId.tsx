@@ -37,8 +37,13 @@ import {
   Palette,
   UserPlus,
   Tag,
+  Share2,
+  X as XIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/app/mindmap/$boardId")({
   head: () => ({
@@ -89,6 +94,11 @@ function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId: string } | null>(null);
+  const [inputPopover, setInputPopover] = useState<
+    | { kind: "assignee" | "tag"; nodeId: string; x: number; y: number }
+    | null
+  >(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const rf = useReactFlow();
   const connectStartRef = useRef<{ nodeId: string | null; handleId: string | null } | null>(null);
@@ -116,6 +126,63 @@ function Canvas() {
       setNodes(flowNodes);
       setEdges(flowEdges);
     })();
+  }, [user, boardId, setNodes, setEdges]);
+
+  // Realtime collaboration sync
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`board-${boardId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "mindmap_nodes", filter: `board_id=eq.${boardId}` },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const id = (payload.old as { id: string }).id;
+            setNodes((nds) => nds.filter((n) => n.id !== id));
+          } else {
+            const n = payload.new as {
+              id: string; node_type: NodeKind; position_x: number; position_y: number;
+              data: Record<string, unknown>; color: string | null; tags: string[] | null;
+              user_id: string;
+            };
+            // ignore own writes (we already updated local state)
+            if (n.user_id === user.id) return;
+            setNodes((nds) => {
+              const exists = nds.find((x) => x.id === n.id);
+              const next: Node<NodeData> = {
+                id: n.id,
+                type: "alios",
+                position: { x: n.position_x, y: n.position_y },
+                data: { ...(n.data || {}), kind: n.node_type, color: n.color ?? undefined, tags: n.tags ?? [] } as NodeData,
+              };
+              return exists ? nds.map((x) => (x.id === n.id ? { ...x, ...next, data: { ...x.data, ...next.data } } : x)) : [...nds, next];
+            });
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "mindmap_edges", filter: `board_id=eq.${boardId}` },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const id = (payload.old as { id: string }).id;
+            setEdges((eds) => eds.filter((e) => e.id !== id));
+          } else {
+            const e = payload.new as { id: string; source_node_id: string; target_node_id: string; user_id: string };
+            if (e.user_id === user.id) return;
+            setEdges((eds) =>
+              eds.find((x) => x.id === e.id)
+                ? eds
+                : [...eds, { id: e.id, source: e.source_node_id, target: e.target_node_id, ...EDGE_OPTIONS }],
+            );
+          }
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
   }, [user, boardId, setNodes, setEdges]);
 
   const persistNode = useCallback(
@@ -392,10 +459,17 @@ function Canvas() {
             className="bg-transparent font-semibold text-base focus:outline-none focus:bg-white/5 rounded px-2 py-1 min-w-0 truncate"
           />
         </div>
-        <div className="hidden md:flex gap-1.5 text-xs text-muted-foreground">
-          Double-click empty area to add · Drag handles to connect · Del to remove
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex gap-1.5 text-xs text-muted-foreground">
+            Double-click empty area · Drag handles to connect · Del to remove
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setShareOpen(true)}>
+            <Share2 className="h-3.5 w-3.5 mr-1.5" /> Share
+          </Button>
         </div>
       </div>
+
+      <ShareDialog open={shareOpen} onOpenChange={setShareOpen} boardId={boardId} />
 
       <div ref={wrapRef} className="flex-1 relative" onDoubleClick={onWrapperDoubleClick}>
         <ReactFlow
@@ -459,8 +533,7 @@ function Canvas() {
             <MenuItem
               icon={UserPlus}
               onClick={() => {
-                const name = prompt("Assign to (email or name):");
-                if (name) updateNodeData(contextMenu.nodeId, { assignee: name });
+                setInputPopover({ kind: "assignee", nodeId: contextMenu.nodeId, x: contextMenu.x, y: contextMenu.y });
                 setContextMenu(null);
               }}
             >
@@ -469,12 +542,7 @@ function Canvas() {
             <MenuItem
               icon={Tag}
               onClick={() => {
-                const tag = prompt("Add a tag:");
-                if (tag) {
-                  const node = nodes.find((n) => n.id === contextMenu.nodeId);
-                  const existing = node?.data?.tags ?? [];
-                  updateNodeData(contextMenu.nodeId, { tags: [...existing, tag.trim()] });
-                }
+                setInputPopover({ kind: "tag", nodeId: contextMenu.nodeId, x: contextMenu.x, y: contextMenu.y });
                 setContextMenu(null);
               }}
             >
@@ -487,6 +555,25 @@ function Canvas() {
             <div className="my-1 h-px bg-white/10" />
             <MenuItem icon={Trash2} onClick={() => removeNode(contextMenu.nodeId)} destructive>Delete</MenuItem>
           </div>
+        )}
+
+        {inputPopover && (
+          <InlineInputPopover
+            kind={inputPopover.kind}
+            x={inputPopover.x}
+            y={inputPopover.y}
+            onClose={() => setInputPopover(null)}
+            onSubmit={(value) => {
+              if (inputPopover.kind === "assignee") {
+                updateNodeData(inputPopover.nodeId, { assignee: value });
+              } else {
+                const node = nodes.find((n) => n.id === inputPopover.nodeId);
+                const existing = node?.data?.tags ?? [];
+                updateNodeData(inputPopover.nodeId, { tags: [...existing, value] });
+              }
+              setInputPopover(null);
+            }}
+          />
         )}
 
         <button
@@ -677,5 +764,207 @@ function AliosNode(props: NodeProps<NodeData>) {
         )}
       </div>
     </div>
+  );
+}
+
+// ---------- Inline Popover for assignee / tag ----------
+function InlineInputPopover({
+  kind,
+  x,
+  y,
+  onClose,
+  onSubmit,
+}: {
+  kind: "assignee" | "tag";
+  x: number;
+  y: number;
+  onClose: () => void;
+  onSubmit: (value: string) => void;
+}) {
+  const [val, setVal] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+  return (
+    <div
+      className="fixed z-50 alios-controls glass rounded-xl p-2.5 shadow-2xl border border-white/10"
+      style={{ left: x, top: y }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center gap-2">
+        <Input
+          ref={inputRef}
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          placeholder={kind === "assignee" ? "Assign to (email or name)" : "Tag name"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && val.trim()) onSubmit(val.trim());
+            if (e.key === "Escape") onClose();
+          }}
+          className="h-8 text-sm w-56"
+        />
+        <Button size="sm" onClick={() => val.trim() && onSubmit(val.trim())}>
+          Add
+        </Button>
+        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onClose}>
+          <XIcon className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Share Dialog ----------
+function ShareDialog({
+  open,
+  onOpenChange,
+  boardId,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  boardId: string;
+}) {
+  const { user } = useAuth();
+  type Collab = { id: string; user_id: string | null; team_id: string | null; role: "viewer" | "editor"; email?: string | null };
+  type Team = { id: string; name: string };
+  const [collabs, setCollabs] = useState<Collab[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [email, setEmail] = useState("");
+  const [teamId, setTeamId] = useState<string>("");
+  const [role, setRole] = useState<"viewer" | "editor">("viewer");
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const [cRes, tRes] = await Promise.all([
+      supabase.from("mindmap_collaborators").select("*").eq("board_id", boardId),
+      supabase.from("teams").select("id,name"),
+    ]);
+    const rows = (cRes.data ?? []) as Collab[];
+    const withEmail = await Promise.all(
+      rows.map(async (r) => {
+        if (!r.user_id) return r;
+        const { data } = await supabase.rpc("get_user_email", { _user_id: r.user_id });
+        return { ...r, email: (data as string | null) ?? null };
+      }),
+    );
+    setCollabs(withEmail);
+    setTeams((tRes.data ?? []) as Team[]);
+  }, [boardId]);
+
+  useEffect(() => {
+    if (open) load();
+  }, [open, load]);
+
+  async function addByEmail() {
+    if (!user || !email.trim()) return;
+    setBusy(true);
+    const { data: uid } = await supabase.rpc("find_user_by_email", { _email: email.trim() });
+    if (!uid) {
+      toast.error("No user found with that email.");
+      setBusy(false);
+      return;
+    }
+    const { error } = await supabase.from("mindmap_collaborators").insert({
+      board_id: boardId,
+      user_id: uid as string,
+      added_by: user.id,
+      role,
+    });
+    setBusy(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Collaborator added");
+      setEmail("");
+      load();
+    }
+  }
+
+  async function addByTeam() {
+    if (!user || !teamId) return;
+    setBusy(true);
+    const { error } = await supabase.from("mindmap_collaborators").insert({
+      board_id: boardId,
+      team_id: teamId,
+      added_by: user.id,
+      role,
+    });
+    setBusy(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Team added");
+      setTeamId("");
+      load();
+    }
+  }
+
+  async function removeCollab(id: string) {
+    await supabase.from("mindmap_collaborators").delete().eq("id", id);
+    load();
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Share this mind map</DialogTitle>
+          <DialogDescription>Invite a teammate or share with an entire team.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Invite by email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex-1"
+            />
+            <Select value={role} onValueChange={(v) => setRole(v as "viewer" | "editor")}>
+              <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="editor">Editor</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={addByEmail} disabled={busy || !email.trim()}>Invite</Button>
+          </div>
+          {teams.length > 0 && (
+            <div className="flex gap-2">
+              <Select value={teamId} onValueChange={setTeamId}>
+                <SelectTrigger className="flex-1"><SelectValue placeholder="Share with a team…" /></SelectTrigger>
+                <SelectContent>
+                  {teams.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={addByTeam} disabled={busy || !teamId}>Add team</Button>
+            </div>
+          )}
+
+          <div className="border-t border-border pt-3">
+            <p className="text-xs font-semibold mb-2">People & teams with access</p>
+            {collabs.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Only you so far.</p>
+            ) : (
+              <div className="space-y-1.5 max-h-56 overflow-y-auto scrollbar-thin">
+                {collabs.map((c) => (
+                  <div key={c.id} className="flex items-center justify-between text-sm rounded-lg bg-accent/30 px-2.5 py-1.5">
+                    <span className="truncate">
+                      {c.user_id ? (c.email ?? c.user_id) : `Team: ${teams.find((t) => t.id === c.team_id)?.name ?? c.team_id}`}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase text-muted-foreground">{c.role}</span>
+                      <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => removeCollab(c.id)}>
+                        <XIcon className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
