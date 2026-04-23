@@ -17,6 +17,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
@@ -65,6 +66,11 @@ const AppSuperRoute = AppSuperRouteImport.update({
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlaylistsRoute = AppPlaylistsRouteImport.update({
+  id: '/playlists',
+  path: '/playlists',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotificationsRoute = AppNotificationsRouteImport.update({
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/app/analytics'
     | '/app/collaborate'
     | '/app/notifications'
+    | '/app/playlists'
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/app/analytics'
     | '/app/collaborate'
     | '/app/notifications'
+    | '/app/playlists'
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/app/analytics'
     | '/app/collaborate'
     | '/app/notifications'
+    | '/app/playlists'
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
@@ -297,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/playlists': {
+      id: '/app/playlists'
+      path: '/playlists'
+      fullPath: '/app/playlists'
+      preLoaderRoute: typeof AppPlaylistsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/notifications': {
       id: '/app/notifications'
       path: '/notifications'
@@ -368,6 +387,7 @@ interface AppRouteChildren {
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
+  AppPlaylistsRoute: typeof AppPlaylistsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSuperRoute: typeof AppSuperRoute
   AppTimelineRoute: typeof AppTimelineRoute
@@ -381,6 +401,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppCollaborateRoute: AppCollaborateRoute,
   AppNotificationsRoute: AppNotificationsRoute,
+  AppPlaylistsRoute: AppPlaylistsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSuperRoute: AppSuperRoute,
   AppTimelineRoute: AppTimelineRoute,
