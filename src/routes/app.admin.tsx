@@ -524,6 +524,7 @@ function AddTaskDialog({ open, onOpenChange, teamId, members, onAdded }: { open:
   const [description, setDescription] = useState("");
   const [assignTo, setAssignTo] = useState<string>("");
   const [due, setDue] = useState("");
+  const [taskType, setTaskType] = useState<"standard" | "youtube_checklist">("standard");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -536,6 +537,16 @@ function AddTaskDialog({ open, onOpenChange, teamId, members, onAdded }: { open:
           <div>
             <Label>Description</Label>
             <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+          </div>
+          <div>
+            <Label>Task type</Label>
+            <Select value={taskType} onValueChange={(v: "standard" | "youtube_checklist") => setTaskType(v)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard">Standard task</SelectItem>
+                <SelectItem value="youtube_checklist">YouTube playlist checklist</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -570,11 +581,12 @@ function AddTaskDialog({ open, onOpenChange, teamId, members, onAdded }: { open:
               assigned_by: user.id,
               title: title.trim(),
               description: description.trim() || null,
+              task_type: taskType,
               due_at: due ? new Date(due).toISOString() : null,
             });
             if (error) return toast.error(error.message);
             toast.success("Task assigned");
-            setTitle(""); setDescription(""); setAssignTo(""); setDue("");
+            setTitle(""); setDescription(""); setAssignTo(""); setDue(""); setTaskType("standard");
             onOpenChange(false);
             onAdded();
           }}>Assign</Button>

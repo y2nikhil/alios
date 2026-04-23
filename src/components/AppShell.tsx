@@ -10,6 +10,7 @@ import {
   Shield,
   Crown,
   MessageSquare,
+  Youtube,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -26,6 +27,7 @@ const BASE_NAV = [
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
   { to: "/app/collaborate", label: "Collaborate", icon: MessageSquare },
+  { to: "/app/playlists", label: "Playlists", icon: Youtube },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
