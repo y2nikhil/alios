@@ -469,8 +469,7 @@ function Canvas() {
             <MenuItem
               icon={UserPlus}
               onClick={() => {
-                const name = prompt("Assign to (email or name):");
-                if (name) updateNodeData(contextMenu.nodeId, { assignee: name });
+                setInputPopover({ kind: "assignee", nodeId: contextMenu.nodeId, x: contextMenu.x, y: contextMenu.y });
                 setContextMenu(null);
               }}
             >
@@ -479,12 +478,7 @@ function Canvas() {
             <MenuItem
               icon={Tag}
               onClick={() => {
-                const tag = prompt("Add a tag:");
-                if (tag) {
-                  const node = nodes.find((n) => n.id === contextMenu.nodeId);
-                  const existing = node?.data?.tags ?? [];
-                  updateNodeData(contextMenu.nodeId, { tags: [...existing, tag.trim()] });
-                }
+                setInputPopover({ kind: "tag", nodeId: contextMenu.nodeId, x: contextMenu.x, y: contextMenu.y });
                 setContextMenu(null);
               }}
             >
@@ -497,6 +491,25 @@ function Canvas() {
             <div className="my-1 h-px bg-white/10" />
             <MenuItem icon={Trash2} onClick={() => removeNode(contextMenu.nodeId)} destructive>Delete</MenuItem>
           </div>
+        )}
+
+        {inputPopover && (
+          <InlineInputPopover
+            kind={inputPopover.kind}
+            x={inputPopover.x}
+            y={inputPopover.y}
+            onClose={() => setInputPopover(null)}
+            onSubmit={(value) => {
+              if (inputPopover.kind === "assignee") {
+                updateNodeData(inputPopover.nodeId, { assignee: value });
+              } else {
+                const node = nodes.find((n) => n.id === inputPopover.nodeId);
+                const existing = node?.data?.tags ?? [];
+                updateNodeData(inputPopover.nodeId, { tags: [...existing, value] });
+              }
+              setInputPopover(null);
+            }}
+          />
         )}
 
         <button
