@@ -31,7 +31,7 @@ type Task = {
   due_at: string | null;
   status: TaskStatus;
   priority: number;
-  task_type: "standard" | "youtube";
+  task_type: "standard" | "youtube_checklist";
   assigned_by: string;
 };
 
@@ -130,7 +130,7 @@ export function MyTasks() {
                         t.status === "done" && "line-through text-muted-foreground",
                       )}
                     >
-                      {t.task_type === "youtube" && (
+                      {t.task_type === "youtube_checklist" && (
                         <YoutubeIcon className="h-3.5 w-3.5 text-rose-500 shrink-0" />
                       )}
                       <span className="truncate">{t.title}</span>
@@ -187,7 +187,7 @@ function TaskDetail({
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const opt = STATUS_OPTIONS.find((s) => s.value === task.status)!;
-  const canEditVideos = !!user && (user.id === task.assigned_by || user.id === task.assigned_by);
+  const canEditVideos = !!user && user.id === task.assigned_by;
 
   useEffect(() => {
     (async () => {
@@ -226,7 +226,7 @@ function TaskDetail({
     <>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
-          {task.task_type === "youtube" && <YoutubeIcon className="h-4 w-4 text-rose-500" />}
+          {task.task_type === "youtube_checklist" && <YoutubeIcon className="h-4 w-4 text-rose-500" />}
           {task.title}
         </DialogTitle>
       </DialogHeader>
