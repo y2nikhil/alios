@@ -2,11 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, Coffee, FileText, Zap, TrendingUp, Activity, Target } from "lucide-react";
+import { Brain, Coffee, FileText, Zap, TrendingUp, Activity, Target, MessageSquare, Youtube, Shield, Crown } from "lucide-react";
 import { useAux } from "@/lib/aux-store";
 import { formatDuration, formatShortDuration } from "@/lib/format";
 import { useAuth } from "@/lib/auth";
 import { useDailyStats } from "@/lib/use-daily-stats";
+import { useRole } from "@/lib/use-role";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ManagerNotes } from "@/components/ManagerNotes";
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/app/")({
 
 function CommandCenter() {
   const { user } = useAuth();
+  const { isAdmin, isSuperAdmin } = useRole();
   const { activeSession, activeStatus, statuses, todaySessions, switchTo } = useAux();
   const [now, setNow] = useState(() => Date.now());
 
@@ -52,6 +54,41 @@ function CommandCenter() {
     { label: "Take Break", icon: Coffee, find: "Break", color: "from-amber-500 to-orange-500" },
     { label: "Mind Map", icon: FileText, to: "/app/mindmap", color: "from-cyan-500 to-blue-500" },
   ];
+
+  const workspaceCards = [
+    {
+      label: "Collaborate",
+      description: "Separate team chat workspace with channels and mentions.",
+      to: "/app/collaborate",
+      icon: MessageSquare,
+      tone: "from-emerald-500 to-cyan-500",
+      enabled: true,
+    },
+    {
+      label: "Playlists",
+      description: "Dedicated YouTube training area with checklist progress.",
+      to: "/app/playlists",
+      icon: Youtube,
+      tone: "from-rose-500 to-orange-500",
+      enabled: true,
+    },
+    {
+      label: "Admin Panel",
+      description: "Teams, schedules, task assignment, and live monitoring.",
+      to: "/app/admin",
+      icon: Shield,
+      tone: "from-violet-500 to-indigo-500",
+      enabled: isAdmin,
+    },
+    {
+      label: "Super Admin",
+      description: "Account creation tracking, roles, audit log, and oversight.",
+      to: "/app/super",
+      icon: Crown,
+      tone: "from-amber-500 to-rose-500",
+      enabled: isSuperAdmin,
+    },
+  ].filter((card) => card.enabled);
 
   return (
     <div className="p-4 lg:p-6 space-y-6 max-w-7xl mx-auto">
@@ -193,6 +230,34 @@ function CommandCenter() {
           sub="status switches today"
         />
       </div>
+
+      <section className="glass rounded-2xl p-4 lg:p-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h3 className="text-sm font-semibold">Workspaces</h3>
+            <p className="text-xs text-muted-foreground">Your new chat, playlist, and control sections are available here.</p>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {workspaceCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <Link key={card.to} to={card.to} className="group rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:bg-accent/30">
+                <div className={cn("flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg", card.tone)}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="mt-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold">{card.label}</p>
+                    <span className="text-[11px] text-muted-foreground">Open</span>
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{card.description}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Manager Notes + Tasks + Goal/Adherence */}
       <div className="grid gap-4 lg:grid-cols-3">
