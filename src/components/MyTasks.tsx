@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { ListChecks, MessageSquare, Send, Youtube as YoutubeIcon } from "lucide-react";
+import { ListChecks, MessageSquare, Send, Youtube as YoutubeIcon, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -14,6 +16,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -23,6 +26,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type TaskStatus = "todo" | "in_progress" | "pending" | "overdue" | "done" | "cancelled";
+type TaskType = "standard" | "youtube_checklist";
 
 type Task = {
   id: string;
@@ -31,7 +35,7 @@ type Task = {
   due_at: string | null;
   status: TaskStatus;
   priority: number;
-  task_type: "standard" | "youtube_checklist";
+  task_type: TaskType;
   assigned_by: string;
 };
 
@@ -56,6 +60,7 @@ export function MyTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [openTask, setOpenTask] = useState<Task | null>(null);
+  const [creating, setCreating] = useState(false);
 
   async function load() {
     if (!user) return;
@@ -101,14 +106,19 @@ export function MyTasks() {
         <h3 className="text-sm font-semibold flex items-center gap-1.5">
           <ListChecks className="h-3.5 w-3.5" /> My Tasks
         </h3>
-        <span className="text-xs text-muted-foreground">
-          {tasks.filter((t) => t.status !== "done").length} open
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">
+            {tasks.filter((t) => t.status !== "done").length} open
+          </span>
+          <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCreating(true)}>
+            <Plus className="h-3 w-3 mr-1" /> New
+          </Button>
+        </div>
       </div>
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : tasks.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No tasks assigned to you.</p>
+        <p className="text-sm text-muted-foreground">No tasks yet — create one with the New button.</p>
       ) : (
         <div className="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1">
           {tasks.map((t) => {
@@ -171,7 +181,104 @@ export function MyTasks() {
           {openTask && <TaskDetail task={openTask} onStatusChange={(s) => setStatus(openTask, s)} />}
         </DialogContent>
       </Dialog>
+
+      <NewTaskDialog open={creating} onOpenChange={setCreating} onCreated={load} />
     </div>
+  );
+}
+
+export function NewTaskDialog({
+  open,
+  onOpenChange,
+  onCreated,
+  defaultType,
+  lockType,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onCreated?: () => void;
+  defaultType?: TaskType;
+  lockType?: boolean;
+}) {
+  const { user } = useAuth();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [taskType, setTaskType] = useState<TaskType>(defaultType ?? "standard");
+  const [due, setDue] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setTitle("");
+      setDescription("");
+      setTaskType(defaultType ?? "standard");
+      setDue("");
+    }
+  }, [open, defaultType]);
+
+  async function submit() {
+    if (!user || !title.trim()) return;
+    setBusy(true);
+    const { error } = await supabase.from("tasks").insert({
+      title: title.trim(),
+      description: description.trim() || null,
+      assigned_to: user.id,
+      assigned_by: user.id,
+      task_type: taskType,
+      due_at: due ? new Date(due).toISOString() : null,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(taskType === "youtube_checklist" ? "Playlist created" : "Task created");
+    onOpenChange(false);
+    onCreated?.();
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{lockType && taskType === "youtube_checklist" ? "New playlist" : "New task"}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="t-title">Title</Label>
+            <Input id="t-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="What needs doing?" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="t-desc">Description (optional)</Label>
+            <Textarea id="t-desc" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+          </div>
+          {!lockType && (
+            <div className="space-y-1.5">
+              <Label>Type</Label>
+              <Select value={taskType} onValueChange={(v) => setTaskType(v as TaskType)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Standard task</SelectItem>
+                  <SelectItem value="youtube_checklist">YouTube playlist</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div className="space-y-1.5">
+            <Label htmlFor="t-due">Due (optional)</Label>
+            <Input id="t-due" type="datetime-local" value={due} onChange={(e) => setDue(e.target.value)} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={busy}>Cancel</Button>
+          <Button onClick={submit} disabled={busy || !title.trim()}>
+            {busy ? "Creating…" : "Create"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

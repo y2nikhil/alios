@@ -1,12 +1,13 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Youtube, PlayCircle, CheckCircle2, ListVideo, ArrowRight } from "lucide-react";
+import { Youtube, PlayCircle, CheckCircle2, ListVideo, ArrowRight, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { YouTubeChecklist } from "@/components/YouTubeChecklist";
+import { NewTaskDialog } from "@/components/MyTasks";
 
 export const Route = createFileRoute("/app/playlists")({
   beforeLoad: async () => {
@@ -43,6 +44,8 @@ function PlaylistsPage() {
   const [completedCounts, setCompletedCounts] = useState<Record<string, number>>({});
   const [openTask, setOpenTask] = useState<PlaylistTask | null>(null);
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!user) return;
