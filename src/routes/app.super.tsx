@@ -310,6 +310,24 @@ function SuperAdminPanel() {
         <StatBox icon={Network} label="Total accounts" value={accounts.length} accent="from-blue-500 to-indigo-500" />
       </div>
 
+      <section className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border border-border bg-background/30 p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Account tracking</p>
+          <p className="mt-2 text-sm font-semibold">Live account creation visibility</p>
+          <p className="mt-1 text-xs text-muted-foreground">Every signup and account creation event is listed in the Accounts tab below.</p>
+        </div>
+        <Link to="/app/collaborate" className="rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:bg-accent/25">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Chat workspace</p>
+          <p className="mt-2 text-sm font-semibold">Open Collaborate</p>
+          <p className="mt-1 text-xs text-muted-foreground">Review the separate team chat section from the main app build.</p>
+        </Link>
+        <Link to="/app/playlists" className="rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:bg-accent/25">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Training workspace</p>
+          <p className="mt-2 text-sm font-semibold">Open Playlist Center</p>
+          <p className="mt-1 text-xs text-muted-foreground">Jump into the dedicated playlist and YouTube checklist section.</p>
+        </Link>
+      </section>
+
       <Tabs defaultValue="accounts">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="accounts"><Users className="h-3.5 w-3.5 mr-1" />Accounts</TabsTrigger>
