@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Brain } from "lucide-react";
 import { toast } from "sonner";
 
-type Board = { id: string; title: string; description: string | null; updated_at: string };
+type Board = { id: string; title: string; description: string | null; updated_at: string; user_id?: string; owner?: boolean };
 
 export const Route = createFileRoute("/app/mindmap/")({
   head: () => ({
@@ -22,11 +22,21 @@ function BoardsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [boards, setBoards] = useState<Board[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const load = async () => {
     if (!user) return;
-    const { data } = await supabase.from("mindmap_boards").select("id, title, description, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false });
-    setBoards((data as Board[]) ?? []);
+    setLoading(true);
+    const { data } = await supabase
+      .from("mindmap_boards")
+      .select("id, title, description, updated_at, user_id")
+      .order("updated_at", { ascending: false });
+    const next = ((data as Board[]) ?? []).map((board) => ({
+      ...board,
+      owner: board.user_id === user.id,
+    }));
+    setBoards(next);
+    setLoading(false);
   };
 
   useEffect(() => { load(); }, [user]); // eslint-disable-line
@@ -48,12 +58,16 @@ function BoardsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Mind Maps</h1>
-          <p className="text-sm text-muted-foreground">Capture ideas on an infinite canvas.</p>
+          <p className="text-sm text-muted-foreground">Capture ideas on an infinite canvas, including boards shared with your team.</p>
         </div>
         <Button onClick={create}><Plus className="h-3.5 w-3.5 mr-1" /> New board</Button>
       </div>
 
-      {boards.length === 0 ? (
+      {loading ? (
+        <div className="glass rounded-2xl p-12 text-center">
+          <p className="text-sm text-muted-foreground">Loading boards…</p>
+        </div>
+      ) : boards.length === 0 ? (
         <div className="glass rounded-2xl p-12 text-center">
           <div className="mx-auto h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
             <Brain className="h-6 w-6 text-white" />
@@ -70,15 +84,22 @@ function BoardsPage() {
                 <div className="h-24 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-400/20 flex items-center justify-center mb-3">
                   <Brain className="h-8 w-8 text-foreground/40" />
                 </div>
-                <h3 className="font-semibold truncate">{b.title}</h3>
-                <p className="text-xs text-muted-foreground mt-1">Updated {new Date(b.updated_at).toLocaleDateString()}</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold truncate">{b.title}</h3>
+                  {!b.owner && <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">Shared</span>}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {b.owner ? "Owned by you" : "Shared with you"} · Updated {new Date(b.updated_at).toLocaleDateString()}
+                </p>
               </Link>
-              <button
-                onClick={() => remove(b.id)}
-                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 bg-black/40 hover:bg-destructive/40"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
+              {b.owner && (
+                <button
+                  onClick={() => remove(b.id)}
+                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 bg-black/40 hover:bg-destructive/40"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
           ))}
         </div>

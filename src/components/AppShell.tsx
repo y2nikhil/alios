@@ -189,7 +189,7 @@ function ShellInner() {
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="lg:hidden flex border-t border-white/5 bg-background/80 backdrop-blur-xl overflow-x-auto">
+        <nav className="lg:hidden grid grid-cols-4 md:grid-cols-5 border-t border-white/5 bg-background/80 backdrop-blur-xl">
           {NAV.map((item) => {
             const active =
               item.to === "/app"
@@ -201,7 +201,7 @@ function ShellInner() {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex-1 min-w-[72px] flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors",
+                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors px-1 text-center",
                   active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
