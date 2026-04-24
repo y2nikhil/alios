@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Shield, Plus, Users, Calendar as CalendarIcon, ListChecks, Activity, Trash2 } from "lucide-react";
+import { Shield, Plus, Users, Calendar as CalendarIcon, ListChecks, Activity, Trash2, MessageSquare, Youtube } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -177,6 +177,27 @@ function AdminPanel() {
         </div>
         <Link to="/app"><Button variant="outline" size="sm">Dashboard</Button></Link>
       </header>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border border-border bg-background/30 p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Teams</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight">{teams.length}</p>
+          <p className="mt-1 text-xs text-muted-foreground">Managed teams in your admin workspace.</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-background/30 p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Members</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight">{members.length}</p>
+          <p className="mt-1 text-xs text-muted-foreground">People visible in the currently selected team.</p>
+        </div>
+        <Link to="/app/collaborate" className="rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:bg-accent/25">
+          <div className="flex items-center gap-2 text-sm font-medium"><MessageSquare className="h-4 w-4 text-emerald-500" /> Collaborate</div>
+          <p className="mt-2 text-xs text-muted-foreground">Open the separate team chat section with channels and mentions.</p>
+        </Link>
+        <Link to="/app/playlists" className="rounded-2xl border border-border bg-background/30 p-4 transition-colors hover:bg-accent/25">
+          <div className="flex items-center gap-2 text-sm font-medium"><Youtube className="h-4 w-4 text-rose-500" /> Playlist Center</div>
+          <p className="mt-2 text-xs text-muted-foreground">Open the dedicated YouTube training and checklist section.</p>
+        </Link>
+      </section>
 
       {/* Team selector */}
       <div className="flex flex-wrap items-center gap-2">
