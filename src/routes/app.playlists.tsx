@@ -1,12 +1,13 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Youtube, PlayCircle, CheckCircle2, ListVideo, ArrowRight } from "lucide-react";
+import { Youtube, PlayCircle, CheckCircle2, ListVideo, ArrowRight, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { YouTubeChecklist } from "@/components/YouTubeChecklist";
+import { NewTaskDialog } from "@/components/MyTasks";
 
 export const Route = createFileRoute("/app/playlists")({
   beforeLoad: async () => {
@@ -43,6 +44,8 @@ function PlaylistsPage() {
   const [completedCounts, setCompletedCounts] = useState<Record<string, number>>({});
   const [openTask, setOpenTask] = useState<PlaylistTask | null>(null);
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -116,7 +119,7 @@ function PlaylistsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, reloadKey]);
 
   const summary = useMemo(() => {
     const total = tasks.length;
@@ -138,12 +141,25 @@ function PlaylistsPage() {
             <p className="text-sm text-muted-foreground">Dedicated space for YouTube training tasks, progress tracking, and playback.</p>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3 min-w-[280px]">
-          <Stat label="Total" value={summary.total} />
-          <Stat label="Active" value={summary.active} />
-          <Stat label="Done" value={summary.completed} />
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="grid grid-cols-3 gap-3 min-w-[280px]">
+            <Stat label="Total" value={summary.total} />
+            <Stat label="Active" value={summary.active} />
+            <Stat label="Done" value={summary.completed} />
+          </div>
+          <Button onClick={() => setCreating(true)} className="shrink-0">
+            <Plus className="h-4 w-4 mr-1.5" /> New playlist
+          </Button>
         </div>
       </header>
+
+      <NewTaskDialog
+        open={creating}
+        onOpenChange={setCreating}
+        defaultType="youtube_checklist"
+        lockType
+        onCreated={() => setReloadKey((k) => k + 1)}
+      />
 
       <section className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr]">
         <div className="glass rounded-2xl p-4 lg:p-5 space-y-3">
