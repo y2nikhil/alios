@@ -101,6 +101,12 @@ function Canvas() {
     | null
   >(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [playlistOpen, setPlaylistOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(`mm-playlist-${boardId}`) === "1";
+  });
+  const [playlistTaskId, setPlaylistTaskId] = useState<string | null>(null);
+  const [playlistLoading, setPlaylistLoading] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const rf = useReactFlow();
   const connectStartRef = useRef<{ nodeId: string | null; handleId: string | null } | null>(null);
