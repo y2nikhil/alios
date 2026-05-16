@@ -66,14 +66,20 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
         return;
       }
       const startIdx = videos.length;
-      const rows = data.videos.map((v: { id: string; title?: string; thumbnail?: string }, i: number) => ({
-        task_id: taskId,
-        video_id: v.id,
-        title: v.title ?? null,
-        thumbnail: v.thumbnail ?? null,
-        order_index: startIdx + i,
-        added_by: user.id,
-      }));
+      const rows = data.videos
+        .map((v: { videoId?: string; id?: string; title?: string; thumbnail?: string }, i: number) => ({
+          task_id: taskId,
+          video_id: v.videoId ?? v.id ?? "",
+          title: v.title ?? null,
+          thumbnail: v.thumbnail ?? null,
+          order_index: startIdx + i,
+          added_by: user.id,
+        }))
+        .filter((r: { video_id: string }) => r.video_id.length > 0);
+      if (rows.length === 0) {
+        toast.error("No valid videos found in that URL");
+        return;
+      }
       const { error } = await supabase.from("task_videos").insert(rows);
       if (error) {
         toast.error(error.message);
