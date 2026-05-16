@@ -56,10 +56,8 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
         img.src = url;
       });
     (async () => {
-      const r =
-        (await probe(`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`)) ??
-        (await probe(`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`)) ??
-        16 / 9;
+      // Only maxresdefault reflects true aspect; hqdefault is always 4:3 with bars.
+      const r = (await probe(`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`)) ?? 16 / 9;
       ratioCache.current.set(vid, r);
       setPlayingRatio(r);
     })();
