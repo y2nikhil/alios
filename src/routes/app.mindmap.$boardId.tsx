@@ -531,7 +531,8 @@ function Canvas() {
 
       <ShareDialog open={shareOpen} onOpenChange={setShareOpen} boardId={boardId} />
 
-      <div ref={wrapRef} className="flex-1 relative" onDoubleClick={onWrapperDoubleClick}>
+      <div className="flex-1 flex min-h-0">
+      <div ref={wrapRef} className="flex-1 relative min-w-0" onDoubleClick={onWrapperDoubleClick}>
         <ReactFlow
           nodes={nodesWithCallbacks}
           edges={edges}
