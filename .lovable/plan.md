@@ -1,55 +1,33 @@
+## 1. Fix video player aspect ratio
 
+In `src/components/YouTubeChecklist.tsx`, the player is hard-coded to `aspect-video` (16:9), which letterboxes Shorts and crops portrait clips.
 
-# Quick additions: self-serve tasks, personal playlists, global chat, welcome message
+- Add a per-video aspect probe: when a video starts playing, load `https://i.ytimg.com/vi/{id}/maxresdefault.jpg` (fall back to `hqdefault.jpg`) in a hidden `Image()` and read `naturalWidth / naturalHeight`. Cache the result per `video_id` in a `useRef<Map>` so we only probe once.
+- Replace the fixed `aspect-video` class on the player container with an inline `style={{ aspectRatio: <probed ratio or 16/9> }}`.
+- Cap the player so it never exceeds the viewport: `max-w-[min(96vw,1100px)]` and `max-h-[85vh]` on the outer wrapper, and let the inner container shrink to fit while preserving the natural ratio. Portrait videos (9:16) get a tall, narrow player; landscape stays wide; square stays square.
+- No DB changes.
 
-Four small changes layered on top of the existing Wave 3 build. No new sections, just unlocking what's already there for non-admin users plus one new global channel.
+## 2. YouTube playlists inside a mind map board
 
----
+Goal: on any mind map board, the user can paste YouTube links, build a playlist, watch each video inline, and tick them off — exactly like the task playlist flow.
 
-## 1. "New task" button on the dashboard (self-assign)
+Approach: reuse the existing `YouTubeChecklist` component and the existing `task_videos` + `task_video_progress` tables. Each board gets one hidden backing task that owns its videos. No new tables, no new RLS work.
 
-In `src/components/MyTasks.tsx`, add a `+ New task` button in the header that opens a small dialog with:
-- Title (required)
-- Optional description
-- Task type selector: **Standard** or **YouTube playlist**
-- Optional due date
+### UI
 
-On submit, insert into `tasks` with `assigned_by = assigned_to = user.id`. The existing RLS policy "User creates self task" already permits this — no migration needed for tasks.
+In `src/routes/app.mindmap.$boardId.tsx`:
+- Add a right-side collapsible "Playlist" panel (toggle button in the board toolbar, next to the existing actions). Default: closed. State persisted to `localStorage` per board.
+- When opened for the first time on a board, look up a backing task with `task_type='youtube_checklist'` where `assigned_by = assigned_to = user.id` and `description = 'mindmap:<boardId>'`. If none exists, insert one (title = board title, description = `mindmap:<boardId>`). The existing "User creates self task" RLS policy already permits this.
+- Render `<YouTubeChecklist taskId={backingTaskId} canEdit={true} />` inside the panel. All add/remove/play/mark-complete behavior comes for free, including the aspect-ratio fix from section 1.
+- When the board title is renamed, also update the backing task's title (best-effort, non-blocking).
 
-If the user picks "YouTube playlist", the created task immediately shows up in `/app/playlists` and the task detail dialog already renders the `YouTubeChecklist` (where `canEdit = user.id === assigned_by`, which is true for self-created tasks). So users can paste YouTube URLs and build their own playlists with zero admin involvement.
+### Optional node link
 
-## 2. "New playlist" shortcut on the Playlists page
-
-In `src/routes/app.playlists.tsx`, add a `+ New playlist` button in the header. Same dialog as above but task type is locked to `youtube_checklist`. This makes the personal-playlist flow obvious from the dedicated page.
-
-## 3. Global chat room "chat-room"
-
-Currently `chat_channels.team_id` is `NOT NULL` and RLS only lets team members see channels. New migration:
-
-- Allow `chat_channels.team_id` to be nullable.
-- Insert one row: `name = 'chat-room'`, `team_id = NULL` (the single global channel).
-- Add RLS policies so any authenticated user can SELECT global channels (`team_id IS NULL`) and any authenticated user can INSERT messages into them. Existing team policies are kept untouched.
-- Update `chat_messages` SELECT/INSERT policies to also allow channels where `team_id IS NULL` for any authenticated user.
-
-In `src/routes/app.collaborate.tsx`, fetch the global channel alongside team channels and show it in a "General" group at the top of the sidebar. Auto-select it if no team channel exists, so the empty state ("not part of any team") is replaced by an immediately usable chat.
-
-## 4. Welcome notification + welcome chat message on signup
-
-Update the existing `handle_new_user()` trigger function (migration) to:
-
-- Insert a notification for the new user: type `system`, title "Welcome to ALIOS 👋", body "Thanks for joining — say hi in #chat-room.", link `/app/collaborate`.
-- Insert a chat message into the global `chat-room` channel: `"👋 Welcome {display_name} to ALIOS!"` posted as the new user.
-
-This runs automatically whenever an account is created via `/signup` — no client-side code changes needed.
-
----
+To make a playlist discoverable from the canvas itself, also add a small "Playlist" button to the board toolbar that simply opens the panel — no new node type, no schema change. (Skipping a dedicated `youtube` node type keeps this change small; we can add one later if you want videos pinned to specific nodes.)
 
 ## Files touched
 
-- `src/components/MyTasks.tsx` — header "+ New task" button + dialog
-- `src/routes/app.playlists.tsx` — header "+ New playlist" button + dialog
-- `src/routes/app.collaborate.tsx` — show global `chat-room` in sidebar, auto-select
-- New migration: `chat_channels.team_id` nullable, global channel row, RLS for global channels/messages, updated `handle_new_user()` trigger
+- `src/components/YouTubeChecklist.tsx` — aspect probe + dynamic ratio on the player
+- `src/routes/app.mindmap.$boardId.tsx` — Playlist panel toggle, backing-task lookup/create, mount `YouTubeChecklist`
 
-No changes to AppShell, no new routes, no new components — keeps credit usage minimal.
-
+No migrations. No new routes. No changes to AppShell or other pages.

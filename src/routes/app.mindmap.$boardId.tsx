@@ -38,8 +38,10 @@ import {
   UserPlus,
   Tag,
   Share2,
+  Youtube,
   X as XIcon,
 } from "lucide-react";
+import { YouTubeChecklist } from "@/components/YouTubeChecklist";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -99,6 +101,12 @@ function Canvas() {
     | null
   >(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [playlistOpen, setPlaylistOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(`mm-playlist-${boardId}`) === "1";
+  });
+  const [playlistTaskId, setPlaylistTaskId] = useState<string | null>(null);
+  const [playlistLoading, setPlaylistLoading] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const rf = useReactFlow();
   const connectStartRef = useRef<{ nodeId: string | null; handleId: string | null } | null>(null);
@@ -432,6 +440,51 @@ function Canvas() {
   const saveTitle = async (t: string) => {
     setTitle(t);
     await supabase.from("mindmap_boards").update({ title: t }).eq("id", boardId);
+    if (playlistTaskId) {
+      supabase.from("tasks").update({ title: t }).eq("id", playlistTaskId);
+    }
+  };
+
+  // Lazy-load or create the backing task that holds this board's playlist.
+  useEffect(() => {
+    if (!user || !playlistOpen || playlistTaskId || playlistLoading) return;
+    const marker = `mindmap:${boardId}`;
+    setPlaylistLoading(true);
+    (async () => {
+      const existing = await supabase
+        .from("tasks")
+        .select("id")
+        .eq("assigned_by", user.id)
+        .eq("assigned_to", user.id)
+        .eq("description", marker)
+        .maybeSingle();
+      if (existing.data?.id) {
+        setPlaylistTaskId(existing.data.id);
+      } else {
+        const created = await supabase
+          .from("tasks")
+          .insert({
+            title: title || "Mind map playlist",
+            description: marker,
+            assigned_by: user.id,
+            assigned_to: user.id,
+            task_type: "youtube_checklist",
+          })
+          .select("id")
+          .single();
+        if (created.data?.id) setPlaylistTaskId(created.data.id);
+        else if (created.error) toast.error(created.error.message);
+      }
+      setPlaylistLoading(false);
+    })();
+  }, [user, playlistOpen, playlistTaskId, playlistLoading, boardId, title]);
+
+  const togglePlaylist = () => {
+    const next = !playlistOpen;
+    setPlaylistOpen(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(`mm-playlist-${boardId}`, next ? "1" : "0");
+    }
   };
 
   const onNodeDragStop = useCallback(
@@ -463,6 +516,13 @@ function Canvas() {
           <div className="hidden md:flex gap-1.5 text-xs text-muted-foreground">
             Double-click empty area · Drag handles to connect · Del to remove
           </div>
+          <Button
+            size="sm"
+            variant={playlistOpen ? "default" : "outline"}
+            onClick={togglePlaylist}
+          >
+            <Youtube className="h-3.5 w-3.5 mr-1.5" /> Playlist
+          </Button>
           <Button size="sm" variant="outline" onClick={() => setShareOpen(true)}>
             <Share2 className="h-3.5 w-3.5 mr-1.5" /> Share
           </Button>
@@ -471,7 +531,8 @@ function Canvas() {
 
       <ShareDialog open={shareOpen} onOpenChange={setShareOpen} boardId={boardId} />
 
-      <div ref={wrapRef} className="flex-1 relative" onDoubleClick={onWrapperDoubleClick}>
+      <div className="flex-1 flex min-h-0">
+      <div ref={wrapRef} className="flex-1 relative min-w-0" onDoubleClick={onWrapperDoubleClick}>
         <ReactFlow
           nodes={nodesWithCallbacks}
           edges={edges}
@@ -583,6 +644,30 @@ function Canvas() {
         >
           <Plus className="h-5 w-5" />
         </button>
+      </div>
+
+      {playlistOpen && (
+        <aside className="hidden md:flex w-[360px] shrink-0 flex-col border-l border-white/5 bg-background/60 backdrop-blur-xl">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
+            <div className="flex items-center gap-2">
+              <Youtube className="h-4 w-4 text-rose-500" />
+              <p className="text-sm font-semibold">Board playlist</p>
+            </div>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={togglePlaylist}>
+              <XIcon className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3">
+            {!user ? (
+              <p className="text-xs text-muted-foreground">Sign in to use the playlist.</p>
+            ) : playlistLoading || !playlistTaskId ? (
+              <p className="text-xs text-muted-foreground">Loading playlist…</p>
+            ) : (
+              <YouTubeChecklist taskId={playlistTaskId} canEdit={true} />
+            )}
+          </div>
+        </aside>
+      )}
       </div>
     </div>
   );

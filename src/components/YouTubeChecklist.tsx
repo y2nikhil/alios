@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play, Trash2, Plus, CheckCircle2, Circle, Youtube, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -32,6 +32,36 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
   const [url, setUrl] = useState("");
   const [adding, setAdding] = useState(false);
   const [playing, setPlaying] = useState<Video | null>(null);
+  const [playingRatio, setPlayingRatio] = useState<number>(16 / 9);
+  const ratioCache = useRef<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    if (!playing) return;
+    const vid = playing.video_id;
+    const cached = ratioCache.current.get(vid);
+    if (cached) {
+      setPlayingRatio(cached);
+      return;
+    }
+    setPlayingRatio(16 / 9);
+    const probe = (url: string) =>
+      new Promise<number | null>((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          // YouTube returns a 120x90 grey placeholder when the requested size doesn't exist.
+          if (img.naturalWidth <= 130 || img.naturalHeight <= 0) resolve(null);
+          else resolve(img.naturalWidth / img.naturalHeight);
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    (async () => {
+      // Only maxresdefault reflects true aspect; hqdefault is always 4:3 with bars.
+      const r = (await probe(`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`)) ?? 16 / 9;
+      ratioCache.current.set(vid, r);
+      setPlayingRatio(r);
+    })();
+  }, [playing]);
 
   const load = async () => {
     const [vRes, pRes] = await Promise.all([
@@ -204,14 +234,27 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
 
       {playing && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPlaying(null)}>
-          <div className="w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex flex-col items-stretch"
+            style={{ maxWidth: "min(96vw, 1100px)", maxHeight: "92vh" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-2 text-white">
               <p className="font-semibold truncate">{playing.title ?? "Video"}</p>
               <button onClick={() => setPlaying(null)} className="rounded-full hover:bg-white/10 p-1.5">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+            <div
+              className="relative rounded-xl overflow-hidden bg-black mx-auto"
+              style={{
+                aspectRatio: String(playingRatio),
+                width: playingRatio >= 1 ? "min(96vw, 1100px)" : "auto",
+                height: playingRatio < 1 ? "min(78vh, 900px)" : "auto",
+                maxWidth: "min(96vw, 1100px)",
+                maxHeight: "78vh",
+              }}
+            >
               <iframe
                 key={playing.id}
                 src={`https://www.youtube-nocookie.com/embed/${playing.video_id}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1`}
