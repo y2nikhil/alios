@@ -645,6 +645,30 @@ function Canvas() {
           <Plus className="h-5 w-5" />
         </button>
       </div>
+
+      {playlistOpen && (
+        <aside className="hidden md:flex w-[360px] shrink-0 flex-col border-l border-white/5 bg-background/60 backdrop-blur-xl">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
+            <div className="flex items-center gap-2">
+              <Youtube className="h-4 w-4 text-rose-500" />
+              <p className="text-sm font-semibold">Board playlist</p>
+            </div>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={togglePlaylist}>
+              <XIcon className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3">
+            {!user ? (
+              <p className="text-xs text-muted-foreground">Sign in to use the playlist.</p>
+            ) : playlistLoading || !playlistTaskId ? (
+              <p className="text-xs text-muted-foreground">Loading playlist…</p>
+            ) : (
+              <YouTubeChecklist taskId={playlistTaskId} canEdit={true} />
+            )}
+          </div>
+        </aside>
+      )}
+      </div>
     </div>
   );
 }
