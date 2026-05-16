@@ -32,6 +32,38 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
   const [url, setUrl] = useState("");
   const [adding, setAdding] = useState(false);
   const [playing, setPlaying] = useState<Video | null>(null);
+  const [playingRatio, setPlayingRatio] = useState<number>(16 / 9);
+  const ratioCache = useRef<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    if (!playing) return;
+    const vid = playing.video_id;
+    const cached = ratioCache.current.get(vid);
+    if (cached) {
+      setPlayingRatio(cached);
+      return;
+    }
+    setPlayingRatio(16 / 9);
+    const probe = (url: string) =>
+      new Promise<number | null>((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          // YouTube returns a 120x90 grey placeholder when the requested size doesn't exist.
+          if (img.naturalWidth <= 130 || img.naturalHeight <= 0) resolve(null);
+          else resolve(img.naturalWidth / img.naturalHeight);
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    (async () => {
+      const r =
+        (await probe(`https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`)) ??
+        (await probe(`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`)) ??
+        16 / 9;
+      ratioCache.current.set(vid, r);
+      setPlayingRatio(r);
+    })();
+  }, [playing]);
 
   const load = async () => {
     const [vRes, pRes] = await Promise.all([
