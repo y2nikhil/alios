@@ -38,8 +38,10 @@ import {
   UserPlus,
   Tag,
   Share2,
+  Youtube,
   X as XIcon,
 } from "lucide-react";
+import { YouTubeChecklist } from "@/components/YouTubeChecklist";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
