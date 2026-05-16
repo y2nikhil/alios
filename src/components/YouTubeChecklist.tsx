@@ -234,14 +234,27 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
 
       {playing && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPlaying(null)}>
-          <div className="w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex flex-col items-stretch"
+            style={{ maxWidth: "min(96vw, 1100px)", maxHeight: "92vh" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-2 text-white">
               <p className="font-semibold truncate">{playing.title ?? "Video"}</p>
               <button onClick={() => setPlaying(null)} className="rounded-full hover:bg-white/10 p-1.5">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+            <div
+              className="relative rounded-xl overflow-hidden bg-black mx-auto"
+              style={{
+                aspectRatio: String(playingRatio),
+                width: playingRatio >= 1 ? "min(96vw, 1100px)" : "auto",
+                height: playingRatio < 1 ? "min(78vh, 900px)" : "auto",
+                maxWidth: "min(96vw, 1100px)",
+                maxHeight: "78vh",
+              }}
+            >
               <iframe
                 key={playing.id}
                 src={`https://www.youtube-nocookie.com/embed/${playing.video_id}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1`}
