@@ -516,6 +516,13 @@ function Canvas() {
           <div className="hidden md:flex gap-1.5 text-xs text-muted-foreground">
             Double-click empty area · Drag handles to connect · Del to remove
           </div>
+          <Button
+            size="sm"
+            variant={playlistOpen ? "default" : "outline"}
+            onClick={togglePlaylist}
+          >
+            <Youtube className="h-3.5 w-3.5 mr-1.5" /> Playlist
+          </Button>
           <Button size="sm" variant="outline" onClick={() => setShareOpen(true)}>
             <Share2 className="h-3.5 w-3.5 mr-1.5" /> Share
           </Button>
