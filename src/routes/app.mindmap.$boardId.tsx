@@ -440,6 +440,51 @@ function Canvas() {
   const saveTitle = async (t: string) => {
     setTitle(t);
     await supabase.from("mindmap_boards").update({ title: t }).eq("id", boardId);
+    if (playlistTaskId) {
+      supabase.from("tasks").update({ title: t }).eq("id", playlistTaskId);
+    }
+  };
+
+  // Lazy-load or create the backing task that holds this board's playlist.
+  useEffect(() => {
+    if (!user || !playlistOpen || playlistTaskId || playlistLoading) return;
+    const marker = `mindmap:${boardId}`;
+    setPlaylistLoading(true);
+    (async () => {
+      const existing = await supabase
+        .from("tasks")
+        .select("id")
+        .eq("assigned_by", user.id)
+        .eq("assigned_to", user.id)
+        .eq("description", marker)
+        .maybeSingle();
+      if (existing.data?.id) {
+        setPlaylistTaskId(existing.data.id);
+      } else {
+        const created = await supabase
+          .from("tasks")
+          .insert({
+            title: title || "Mind map playlist",
+            description: marker,
+            assigned_by: user.id,
+            assigned_to: user.id,
+            task_type: "youtube_checklist",
+          })
+          .select("id")
+          .single();
+        if (created.data?.id) setPlaylistTaskId(created.data.id);
+        else if (created.error) toast.error(created.error.message);
+      }
+      setPlaylistLoading(false);
+    })();
+  }, [user, playlistOpen, playlistTaskId, playlistLoading, boardId, title]);
+
+  const togglePlaylist = () => {
+    const next = !playlistOpen;
+    setPlaylistOpen(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(`mm-playlist-${boardId}`, next ? "1" : "0");
+    }
   };
 
   const onNodeDragStop = useCallback(
