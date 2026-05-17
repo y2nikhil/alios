@@ -263,7 +263,7 @@ function FloatingPlayer({
 }) {
   const initW = Math.min(720, typeof window !== "undefined" ? window.innerWidth - 40 : 720);
   const initH = Math.round(initW / Math.max(0.4, aspect)) + 84;
-  const [pos, setPos] = useState(() => {
+  const [pos, setPos] = useState<{ x: number; y: number; w: number; h: number }>(() => {
     if (typeof window === "undefined") return { x: 40, y: 40, w: initW, h: initH };
     try {
       const raw = localStorage.getItem("alios-floating-player");
