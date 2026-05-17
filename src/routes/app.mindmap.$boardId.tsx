@@ -551,6 +551,7 @@ function Canvas() {
           nodeTypes={NODE_TYPES}
           connectionMode={ConnectionMode.Loose}
           fitView
+          zoomOnDoubleClick={false}
           proOptions={{ hideAttribution: true }}
           defaultEdgeOptions={EDGE_OPTIONS}
           deleteKeyCode={null}
@@ -589,7 +590,7 @@ function Canvas() {
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
                 <Palette className="h-3 w-3" /> Color
               </div>
-              <ColorPicker onPick={(c) => { updateNodeData(contextMenu.nodeId, { color: c ?? undefined }); setContextMenu(null); }} />
+              <ColorPicker onPick={(c) => { updateNodeData(contextMenu.nodeId, { color: c ?? undefined }); }} />
             </div>
             <MenuItem
               icon={UserPlus}
@@ -639,7 +640,7 @@ function Canvas() {
 
         <button
           onClick={() => addNode(rf.screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 }), "text", {}, { autoEdit: true })}
-          className="alios-controls absolute bottom-6 left-1/2 -translate-x-1/2 h-12 w-12 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/40 flex items-center justify-center text-white hover:scale-105 transition-transform"
+          className="alios-controls absolute top-4 right-4 z-30 h-11 w-11 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/40 flex items-center justify-center text-white hover:scale-105 transition-transform"
           title="Add node"
         >
           <Plus className="h-5 w-5" />
