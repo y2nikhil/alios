@@ -648,8 +648,8 @@ function Canvas() {
       </div>
 
       {playlistOpen && (
-        <aside className="hidden md:flex w-[360px] shrink-0 flex-col border-l border-white/5 bg-background/60 backdrop-blur-xl">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
+        <aside className="fixed md:relative inset-x-0 bottom-0 md:inset-auto z-40 md:z-auto md:w-[360px] shrink-0 flex flex-col border-t md:border-t-0 md:border-l border-border bg-background/95 md:bg-background/60 backdrop-blur-xl max-h-[70vh] md:max-h-none">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
             <div className="flex items-center gap-2">
               <Youtube className="h-4 w-4 text-rose-500" />
               <p className="text-sm font-semibold">Board playlist</p>
