@@ -233,60 +233,132 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
       </div>
 
       {playing && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPlaying(null)}>
-          <div
-            className="flex flex-col items-stretch"
-            style={{ maxWidth: "min(96vw, 1100px)", maxHeight: "92vh" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-2 text-white">
-              <p className="font-semibold truncate">{playing.title ?? "Video"}</p>
-              <button onClick={() => setPlaying(null)} className="rounded-full hover:bg-white/10 p-1.5">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div
-              className="relative rounded-xl overflow-hidden bg-black mx-auto"
-              style={{
-                aspectRatio: String(playingRatio),
-                width: playingRatio >= 1 ? "min(96vw, 1100px)" : "auto",
-                height: playingRatio < 1 ? "min(78vh, 900px)" : "auto",
-                maxWidth: "min(96vw, 1100px)",
-                maxHeight: "78vh",
-              }}
-            >
-              <iframe
-                key={playing.id}
-                src={`https://www.youtube-nocookie.com/embed/${playing.video_id}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1`}
-                title={playing.title ?? ""}
-                className="absolute inset-0 w-full h-full"
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
-              />
-            </div>
-            <div className="flex items-center justify-between mt-3 text-white">
-              <button
-                onClick={() => toggleComplete(playing)}
-                className="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1.5 transition-colors"
-              >
-                {progress.get(playing.id)?.completed ? (
-                  <><CheckCircle2 className="h-4 w-4" /> Completed</>
-                ) : (
-                  <><Circle className="h-4 w-4" /> Mark complete</>
-                )}
-              </button>
-              {next && (
-                <button
-                  onClick={() => setPlaying(next)}
-                  className="text-sm bg-primary hover:opacity-90 rounded-lg px-3 py-1.5"
-                >
-                  Next: {next.title ?? "video"} →
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        <FloatingPlayer
+          videoId={playing.video_id}
+          title={playing.title ?? "Video"}
+          aspect={playingRatio}
+          completed={!!progress.get(playing.id)?.completed}
+          onToggleComplete={() => toggleComplete(playing)}
+          onClose={() => setPlaying(null)}
+          nextLabel={next ? `Next: ${next.title ?? "video"} →` : null}
+          onNext={next ? () => setPlaying(next) : undefined}
+        />
       )}
+    </div>
+  );
+}
+
+/* Draggable + resizable floating video window */
+function FloatingPlayer({
+  videoId, title, aspect, completed, onToggleComplete, onClose, nextLabel, onNext,
+}: {
+  videoId: string;
+  title: string;
+  aspect: number;
+  completed: boolean;
+  onToggleComplete: () => void;
+  onClose: () => void;
+  nextLabel: string | null;
+  onNext?: () => void;
+}) {
+  const initW = Math.min(720, typeof window !== "undefined" ? window.innerWidth - 40 : 720);
+  const initH = Math.round(initW / Math.max(0.4, aspect)) + 84;
+  const [pos, setPos] = useState<{ x: number; y: number; w: number; h: number }>(() => {
+    if (typeof window === "undefined") return { x: 40, y: 40, w: initW, h: initH };
+    try {
+      const raw = localStorage.getItem("alios-floating-player");
+      if (raw) return { ...JSON.parse(raw), w: initW, h: initH };
+    } catch {}
+    return {
+      x: Math.max(20, Math.round((window.innerWidth - initW) / 2)),
+      y: Math.max(20, Math.round((window.innerHeight - initH) / 3)),
+      w: initW,
+      h: initH,
+    };
+  });
+  const dragRef = useRef<{ ox: number; oy: number; sx: number; sy: number } | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    try { localStorage.setItem("alios-floating-player", JSON.stringify({ x: pos.x, y: pos.y })); } catch {}
+  }, [pos.x, pos.y]);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = { ox: pos.x, oy: pos.y, sx: e.clientX, sy: e.clientY };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    const d = dragRef.current;
+    setPos((p) => ({
+      ...p,
+      x: Math.max(0, Math.min(window.innerWidth - 200, d.ox + (e.clientX - d.sx))),
+      y: Math.max(0, Math.min(window.innerHeight - 80, d.oy + (e.clientY - d.sy))),
+    }));
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    dragRef.current = null;
+    try { (e.target as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="fixed z-[60] glass rounded-xl overflow-hidden shadow-2xl flex flex-col"
+      style={{
+        left: pos.x,
+        top: pos.y,
+        width: pos.w,
+        height: pos.h,
+        minWidth: 280,
+        minHeight: 220,
+        maxWidth: "98vw",
+        maxHeight: "92vh",
+        resize: "both",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card/80 cursor-move select-none"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <Youtube className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+        <p className="text-xs font-semibold truncate flex-1">{title}</p>
+        <button
+          onClick={onClose}
+          className="rounded p-1 hover:bg-accent/60"
+          title="Close"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <div className="flex-1 bg-black relative min-h-0">
+        <iframe
+          key={videoId}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1`}
+          title={title}
+          className="absolute inset-0 w-full h-full"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
+      </div>
+      <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-border bg-card/80">
+        <button
+          onClick={onToggleComplete}
+          className="flex items-center gap-1.5 text-xs bg-accent/60 hover:bg-accent rounded-md px-2.5 py-1 transition-colors"
+        >
+          {completed ? <><CheckCircle2 className="h-3.5 w-3.5" /> Completed</> : <><Circle className="h-3.5 w-3.5" /> Mark complete</>}
+        </button>
+        {nextLabel && onNext && (
+          <button onClick={onNext} className="text-xs bg-primary text-primary-foreground hover:opacity-90 rounded-md px-2.5 py-1 truncate max-w-[50%]">
+            {nextLabel}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -551,6 +551,7 @@ function Canvas() {
           nodeTypes={NODE_TYPES}
           connectionMode={ConnectionMode.Loose}
           fitView
+          zoomOnDoubleClick={false}
           proOptions={{ hideAttribution: true }}
           defaultEdgeOptions={EDGE_OPTIONS}
           deleteKeyCode={null}
@@ -589,7 +590,7 @@ function Canvas() {
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
                 <Palette className="h-3 w-3" /> Color
               </div>
-              <ColorPicker onPick={(c) => { updateNodeData(contextMenu.nodeId, { color: c ?? undefined }); setContextMenu(null); }} />
+              <ColorPicker onPick={(c) => { updateNodeData(contextMenu.nodeId, { color: c ?? undefined }); }} />
             </div>
             <MenuItem
               icon={UserPlus}
@@ -639,7 +640,7 @@ function Canvas() {
 
         <button
           onClick={() => addNode(rf.screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 }), "text", {}, { autoEdit: true })}
-          className="alios-controls absolute bottom-6 left-1/2 -translate-x-1/2 h-12 w-12 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/40 flex items-center justify-center text-white hover:scale-105 transition-transform"
+          className="alios-controls absolute top-4 right-4 z-30 h-11 w-11 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/40 flex items-center justify-center text-white hover:scale-105 transition-transform"
           title="Add node"
         >
           <Plus className="h-5 w-5" />
@@ -647,8 +648,8 @@ function Canvas() {
       </div>
 
       {playlistOpen && (
-        <aside className="hidden md:flex w-[360px] shrink-0 flex-col border-l border-white/5 bg-background/60 backdrop-blur-xl">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5">
+        <aside className="fixed md:relative inset-x-0 bottom-0 md:inset-auto z-40 md:z-auto md:w-[360px] shrink-0 flex flex-col border-t md:border-t-0 md:border-l border-border bg-background/95 md:bg-background/60 backdrop-blur-xl max-h-[70vh] md:max-h-none">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
             <div className="flex items-center gap-2">
               <Youtube className="h-4 w-4 text-rose-500" />
               <p className="text-sm font-semibold">Board playlist</p>
