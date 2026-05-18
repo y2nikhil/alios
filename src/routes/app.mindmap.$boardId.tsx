@@ -743,10 +743,10 @@ function AliosNode(props: NodeProps<NodeData>) {
       onDoubleClick={onCardDoubleClick}
       className="group relative rounded-2xl border bg-[oklch(0.21_0.025_265_/_0.92)] backdrop-blur-md min-w-[176px] max-w-sm shadow-xl transition-all"
       style={{
-        borderColor: selected ? accent : "oklch(1 0 0 / 0.08)",
+        borderColor: accent,
         boxShadow: selected
-          ? `0 0 0 1px ${accent}, 0 0 40px -8px ${accent}`
-          : "0 12px 30px -12px oklch(0 0 0 / 0.45), inset 0 1px 0 0 oklch(1 0 0 / 0.04)",
+          ? `0 0 0 2px ${accent}, 0 0 60px -6px ${accent}, 0 0 24px -8px ${accent}`
+          : `0 0 0 1px color-mix(in oklch, ${accent} 55%, transparent), 0 0 28px -10px ${accent}, 0 12px 30px -12px oklch(0 0 0 / 0.45)`,
       }}
     >
       <Handle type="source" position={Position.Top} id="t" className="!h-2.5 !w-2.5 !bg-violet-400 !border-2 !border-background opacity-0 group-hover:opacity-100 transition-opacity" />
