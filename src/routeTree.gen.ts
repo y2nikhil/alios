@@ -27,6 +27,7 @@ import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
 import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
+import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -118,6 +119,11 @@ const AppMindmapBoardIdRoute = AppMindmapBoardIdRouteImport.update({
   path: '/mindmap/$boardId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHangoutPartyIdRoute = AppHangoutPartyIdRouteImport.update({
+  id: '/hangout/$partyId',
+  path: '/hangout/$partyId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
+  '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
 }
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app': typeof AppIndexRoute
+  '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
 }
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
+  '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
 }
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app/'
+    | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/mindmap/'
   fileRoutesByTo: FileRoutesByTo
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app'
+    | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/mindmap'
   id:
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app/'
+    | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/mindmap/'
   fileRoutesById: FileRoutesById
@@ -379,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMindmapBoardIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/hangout/$partyId': {
+      id: '/app/hangout/$partyId'
+      path: '/hangout/$partyId'
+      fullPath: '/app/hangout/$partyId'
+      preLoaderRoute: typeof AppHangoutPartyIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -392,6 +411,7 @@ interface AppRouteChildren {
   AppSuperRoute: typeof AppSuperRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
   AppMindmapIndexRoute: typeof AppMindmapIndexRoute
 }
@@ -406,6 +426,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSuperRoute: AppSuperRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
+  AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
   AppMindmapIndexRoute: AppMindmapIndexRoute,
 }
