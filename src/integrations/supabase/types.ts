@@ -229,23 +229,33 @@ export type Database = {
       chat_channels: {
         Row: {
           created_at: string
+          group_id: string | null
           id: string
           name: string
           team_id: string | null
         }
         Insert: {
           created_at?: string
+          group_id?: string | null
           id?: string
           name?: string
           team_id?: string | null
         }
         Update: {
           created_at?: string
+          group_id?: string | null
           id?: string
           name?: string
           team_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "chat_channels_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chat_channels_team_id_fkey"
             columns: ["team_id"]
@@ -330,6 +340,71 @@ export type Database = {
           score?: number
           user_id?: string
           worked_minutes?: number
+        }
+        Relationships: []
+      }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          emoji: string
+          id: string
+          is_public: boolean
+          name: string
+          slug: string
+          topic: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          emoji?: string
+          id?: string
+          is_public?: boolean
+          name: string
+          slug: string
+          topic?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          emoji?: string
+          id?: string
+          is_public?: boolean
+          name?: string
+          slug?: string
+          topic?: string | null
         }
         Relationships: []
       }
@@ -999,6 +1074,115 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      watch_parties: {
+        Row: {
+          current_time_sec: number
+          ended_at: string | null
+          host_id: string
+          id: string
+          is_playing: boolean
+          media_id: string | null
+          media_kind: string
+          media_url: string
+          poster_url: string | null
+          started_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          current_time_sec?: number
+          ended_at?: string | null
+          host_id: string
+          id?: string
+          is_playing?: boolean
+          media_id?: string | null
+          media_kind?: string
+          media_url: string
+          poster_url?: string | null
+          started_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          current_time_sec?: number
+          ended_at?: string | null
+          host_id?: string
+          id?: string
+          is_playing?: boolean
+          media_id?: string | null
+          media_kind?: string
+          media_url?: string
+          poster_url?: string | null
+          started_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      watch_party_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          party_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          party_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          party_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_party_messages_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "watch_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watch_party_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          left_at: string | null
+          party_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          party_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          party_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_party_participants_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "watch_parties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
