@@ -14,11 +14,19 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppTutorRouteImport } from './routes/app.tutor'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
+import { Route as AppTasksRouteImport } from './routes/app.tasks'
 import { Route as AppSuperRouteImport } from './routes/app.super'
+import { Route as AppStreaksRouteImport } from './routes/app.streaks'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppScheduleRouteImport } from './routes/app.schedule'
+import { Route as AppRoomsRouteImport } from './routes/app.rooms'
+import { Route as AppResourcesRouteImport } from './routes/app.resources'
 import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppLeaderboardRouteImport } from './routes/app.leaderboard'
+import { Route as AppFocusRouteImport } from './routes/app.focus'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
@@ -54,9 +62,19 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTutorRoute = AppTutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTimelineRoute = AppTimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksRoute = AppTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSuperRoute = AppSuperRouteImport.update({
@@ -64,9 +82,29 @@ const AppSuperRoute = AppSuperRouteImport.update({
   path: '/super',
   getParentRoute: () => AppRoute,
 } as any)
+const AppStreaksRoute = AppStreaksRouteImport.update({
+  id: '/streaks',
+  path: '/streaks',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppScheduleRoute = AppScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRoomsRoute = AppRoomsRouteImport.update({
+  id: '/rooms',
+  path: '/rooms',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppResourcesRoute = AppResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPlaylistsRoute = AppPlaylistsRouteImport.update({
@@ -77,6 +115,16 @@ const AppPlaylistsRoute = AppPlaylistsRouteImport.update({
 const AppNotificationsRoute = AppNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFocusRoute = AppFocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
@@ -136,11 +184,19 @@ export interface FileRoutesByFullPath {
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/focus': typeof AppFocusRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/playlists': typeof AppPlaylistsRoute
+  '/app/resources': typeof AppResourcesRoute
+  '/app/rooms': typeof AppRoomsRoute
+  '/app/schedule': typeof AppScheduleRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/streaks': typeof AppStreaksRoute
   '/app/super': typeof AppSuperRoute
+  '/app/tasks': typeof AppTasksRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/app/tutor': typeof AppTutorRoute
   '/app/': typeof AppIndexRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -156,11 +212,19 @@ export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/focus': typeof AppFocusRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/playlists': typeof AppPlaylistsRoute
+  '/app/resources': typeof AppResourcesRoute
+  '/app/rooms': typeof AppRoomsRoute
+  '/app/schedule': typeof AppScheduleRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/streaks': typeof AppStreaksRoute
   '/app/super': typeof AppSuperRoute
+  '/app/tasks': typeof AppTasksRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/app/tutor': typeof AppTutorRoute
   '/app': typeof AppIndexRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -178,11 +242,19 @@ export interface FileRoutesById {
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/focus': typeof AppFocusRoute
+  '/app/leaderboard': typeof AppLeaderboardRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/playlists': typeof AppPlaylistsRoute
+  '/app/resources': typeof AppResourcesRoute
+  '/app/rooms': typeof AppRoomsRoute
+  '/app/schedule': typeof AppScheduleRoute
   '/app/settings': typeof AppSettingsRoute
+  '/app/streaks': typeof AppStreaksRoute
   '/app/super': typeof AppSuperRoute
+  '/app/tasks': typeof AppTasksRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/app/tutor': typeof AppTutorRoute
   '/app/': typeof AppIndexRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -201,11 +273,19 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/focus'
+    | '/app/leaderboard'
     | '/app/notifications'
     | '/app/playlists'
+    | '/app/resources'
+    | '/app/rooms'
+    | '/app/schedule'
     | '/app/settings'
+    | '/app/streaks'
     | '/app/super'
+    | '/app/tasks'
     | '/app/timeline'
+    | '/app/tutor'
     | '/app/'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -221,11 +301,19 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/focus'
+    | '/app/leaderboard'
     | '/app/notifications'
     | '/app/playlists'
+    | '/app/resources'
+    | '/app/rooms'
+    | '/app/schedule'
     | '/app/settings'
+    | '/app/streaks'
     | '/app/super'
+    | '/app/tasks'
     | '/app/timeline'
+    | '/app/tutor'
     | '/app'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -242,11 +330,19 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/focus'
+    | '/app/leaderboard'
     | '/app/notifications'
     | '/app/playlists'
+    | '/app/resources'
+    | '/app/rooms'
+    | '/app/schedule'
     | '/app/settings'
+    | '/app/streaks'
     | '/app/super'
+    | '/app/tasks'
     | '/app/timeline'
+    | '/app/tutor'
     | '/app/'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -300,11 +396,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/tutor': {
+      id: '/app/tutor'
+      path: '/tutor'
+      fullPath: '/app/tutor'
+      preLoaderRoute: typeof AppTutorRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/timeline': {
       id: '/app/timeline'
       path: '/timeline'
       fullPath: '/app/timeline'
       preLoaderRoute: typeof AppTimelineRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/tasks': {
+      id: '/app/tasks'
+      path: '/tasks'
+      fullPath: '/app/tasks'
+      preLoaderRoute: typeof AppTasksRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/super': {
@@ -314,11 +424,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSuperRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/streaks': {
+      id: '/app/streaks'
+      path: '/streaks'
+      fullPath: '/app/streaks'
+      preLoaderRoute: typeof AppStreaksRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/settings': {
       id: '/app/settings'
       path: '/settings'
       fullPath: '/app/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/schedule': {
+      id: '/app/schedule'
+      path: '/schedule'
+      fullPath: '/app/schedule'
+      preLoaderRoute: typeof AppScheduleRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/rooms': {
+      id: '/app/rooms'
+      path: '/rooms'
+      fullPath: '/app/rooms'
+      preLoaderRoute: typeof AppRoomsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/resources': {
+      id: '/app/resources'
+      path: '/resources'
+      fullPath: '/app/resources'
+      preLoaderRoute: typeof AppResourcesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/playlists': {
@@ -333,6 +471,20 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/app/notifications'
       preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/leaderboard': {
+      id: '/app/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/app/leaderboard'
+      preLoaderRoute: typeof AppLeaderboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/focus': {
+      id: '/app/focus'
+      path: '/focus'
+      fullPath: '/app/focus'
+      preLoaderRoute: typeof AppFocusRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/collaborate': {
@@ -405,11 +557,19 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppFocusRoute: typeof AppFocusRoute
+  AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPlaylistsRoute: typeof AppPlaylistsRoute
+  AppResourcesRoute: typeof AppResourcesRoute
+  AppRoomsRoute: typeof AppRoomsRoute
+  AppScheduleRoute: typeof AppScheduleRoute
   AppSettingsRoute: typeof AppSettingsRoute
+  AppStreaksRoute: typeof AppStreaksRoute
   AppSuperRoute: typeof AppSuperRoute
+  AppTasksRoute: typeof AppTasksRoute
   AppTimelineRoute: typeof AppTimelineRoute
+  AppTutorRoute: typeof AppTutorRoute
   AppIndexRoute: typeof AppIndexRoute
   AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
@@ -420,11 +580,19 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppFocusRoute: AppFocusRoute,
+  AppLeaderboardRoute: AppLeaderboardRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPlaylistsRoute: AppPlaylistsRoute,
+  AppResourcesRoute: AppResourcesRoute,
+  AppRoomsRoute: AppRoomsRoute,
+  AppScheduleRoute: AppScheduleRoute,
   AppSettingsRoute: AppSettingsRoute,
+  AppStreaksRoute: AppStreaksRoute,
   AppSuperRoute: AppSuperRoute,
+  AppTasksRoute: AppTasksRoute,
   AppTimelineRoute: AppTimelineRoute,
+  AppTutorRoute: AppTutorRoute,
   AppIndexRoute: AppIndexRoute,
   AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
