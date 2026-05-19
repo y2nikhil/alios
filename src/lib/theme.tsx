@@ -5,17 +5,19 @@ import { useAuth } from "@/lib/auth";
 type Theme = "dark" | "light";
 type Ctx = { theme: Theme; setTheme: (t: Theme) => void; toggle: () => void };
 
-const ThemeCtx = createContext<Ctx>({ theme: "light", setTheme: () => {}, toggle: () => {} });
+const ThemeCtx = createContext<Ctx>({ theme: "dark", setTheme: () => {}, toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("dark");
 
+  // hydrate from storage first
   useEffect(() => {
     const stored = (typeof window !== "undefined" && (localStorage.getItem("alios-theme") as Theme | null)) || null;
     if (stored === "light" || stored === "dark") setThemeState(stored);
   }, []);
 
+  // hydrate from profile when user signs in (server takes precedence over local)
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -24,6 +26,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     })();
   }, [user]);
 
+  // apply class
   useEffect(() => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
