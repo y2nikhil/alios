@@ -10,7 +10,7 @@ import {
   Flame,
   MessageCircle,
   Trophy,
-  Sitemap,
+  Network,
   Bell,
   Menu,
   X,
@@ -56,7 +56,7 @@ const SIDE_NAV = {
   ],
   Tools: [
     { to: "/app/tutor", label: "AI Tutor", icon: Brain },
-    { to: "/app/mindmap", label: "Mind Map", icon: Sitemap },
+    { to: "/app/mindmap", label: "Mind Map", icon: Network },
     { to: "/app/resources", label: "Resources", icon: Library },
     { to: "/app/schedule", label: "Schedule", icon: CalendarDays },
   ],
