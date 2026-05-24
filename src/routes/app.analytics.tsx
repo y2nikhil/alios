@@ -45,6 +45,32 @@ function AnalyticsPage() {
       .then(({ data }) => setSessions((data as AuxSession[]) ?? []));
   }, [user, range]);
 
+  useEffect(() => {
+    if (!user) return;
+    const days = parseInt(range);
+    const start = new Date();
+    start.setDate(start.getDate() - days);
+    (async () => {
+      const [{ data: hosted }, { data: joined }] = await Promise.all([
+        supabase.from("watch_parties").select("id,title,started_at,ended_at").eq("host_id", user.id).gte("started_at", start.toISOString()).order("started_at", { ascending: false }),
+        supabase.from("watch_party_participants").select("party_id,joined_at,left_at").eq("user_id", user.id).gte("joined_at", start.toISOString()),
+      ]);
+      let totalMin = 0;
+      (joined ?? []).forEach((p: any) => {
+        const s = new Date(p.joined_at).getTime();
+        const e = p.left_at ? new Date(p.left_at).getTime() : Date.now();
+        totalMin += Math.max(0, Math.round((e - s) / 60000));
+      });
+      setPartyStats({
+        hosted: (hosted ?? []).length,
+        joined: (joined ?? []).length,
+        totalMin,
+        recent: ((hosted ?? []) as any[]).slice(0, 5),
+      });
+    })();
+  }, [user, range]);
+
+
   const statusMap = useMemo(() => new Map(statuses.map((s) => [s.id, s])), [statuses]);
 
   const aggregate = useMemo(() => {
