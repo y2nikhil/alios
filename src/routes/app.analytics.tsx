@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useAux, type AuxSession } from "@/lib/aux-store";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, Brain, Clock, Coffee } from "lucide-react";
+import { Download, TrendingUp, Brain, Clock, Coffee, Tv, Users, PlayCircle } from "lucide-react";
 import { formatShortDuration } from "@/lib/format";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,8 @@ function AnalyticsPage() {
   const { statuses } = useAux();
   const [range, setRange] = useState<Range>("7");
   const [sessions, setSessions] = useState<AuxSession[]>([]);
+  const [partyStats, setPartyStats] = useState<{ hosted: number; joined: number; totalMin: number; recent: { id: string; title: string; ended_at: string | null; started_at: string }[] }>({ hosted: 0, joined: 0, totalMin: 0, recent: [] });
+
 
   useEffect(() => {
     if (!user) return;
@@ -42,6 +44,32 @@ function AnalyticsPage() {
       .order("started_at")
       .then(({ data }) => setSessions((data as AuxSession[]) ?? []));
   }, [user, range]);
+
+  useEffect(() => {
+    if (!user) return;
+    const days = parseInt(range);
+    const start = new Date();
+    start.setDate(start.getDate() - days);
+    (async () => {
+      const [{ data: hosted }, { data: joined }] = await Promise.all([
+        supabase.from("watch_parties").select("id,title,started_at,ended_at").eq("host_id", user.id).gte("started_at", start.toISOString()).order("started_at", { ascending: false }),
+        supabase.from("watch_party_participants").select("party_id,joined_at,left_at").eq("user_id", user.id).gte("joined_at", start.toISOString()),
+      ]);
+      let totalMin = 0;
+      (joined ?? []).forEach((p: any) => {
+        const s = new Date(p.joined_at).getTime();
+        const e = p.left_at ? new Date(p.left_at).getTime() : Date.now();
+        totalMin += Math.max(0, Math.round((e - s) / 60000));
+      });
+      setPartyStats({
+        hosted: (hosted ?? []).length,
+        joined: (joined ?? []).length,
+        totalMin,
+        recent: ((hosted ?? []) as any[]).slice(0, 5),
+      });
+    })();
+  }, [user, range]);
+
 
   const statusMap = useMemo(() => new Map(statuses.map((s) => [s.id, s])), [statuses]);
 
@@ -222,11 +250,39 @@ function AnalyticsPage() {
           <li>• {aggregate.breakCount} breaks taken, totaling <span className="font-semibold">{formatShortDuration(aggregate.breakSum)}</span>.</li>
         </ul>
       </div>
+      {/* Watch parties */}
+      <div className="glass rounded-2xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Tv className="h-4 w-4 text-pink-400" />
+          <h3 className="text-sm font-semibold">Hangouts & watch parties</h3>
+          <span className="text-[10px] text-muted-foreground ml-auto">last {range} days</span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3 mb-4">
+          <Stat icon={PlayCircle} label="Parties hosted" value={String(partyStats.hosted)} />
+          <Stat icon={Users} label="Parties joined" value={String(partyStats.joined)} />
+          <Stat icon={Clock} label="Time hanging out" value={formatShortDuration(partyStats.totalMin * 60)} />
+        </div>
+        {partyStats.recent.length > 0 ? (
+          <div className="space-y-1.5">
+            {partyStats.recent.map((p) => (
+              <div key={p.id} className="flex items-center justify-between text-xs rounded-lg px-3 py-2 bg-white/5 border border-white/5">
+                <span className="truncate font-medium">{p.title}</span>
+                <span className="text-muted-foreground shrink-0 ml-2">
+                  {p.ended_at ? "ended" : <span className="text-pink-400">● live</span>} · {new Date(p.started_at).toLocaleDateString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground italic">No parties yet — start one from Collaborate.</p>
+        )}
+      </div>
     </div>
   );
 }
 
 function Stat({ icon: Icon, label, value }: { icon: typeof Clock; label: string; value: string }) {
+
   return (
     <div className="glass rounded-2xl p-5">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
