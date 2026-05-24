@@ -250,11 +250,39 @@ function AnalyticsPage() {
           <li>• {aggregate.breakCount} breaks taken, totaling <span className="font-semibold">{formatShortDuration(aggregate.breakSum)}</span>.</li>
         </ul>
       </div>
+      {/* Watch parties */}
+      <div className="glass rounded-2xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Tv className="h-4 w-4 text-pink-400" />
+          <h3 className="text-sm font-semibold">Hangouts & watch parties</h3>
+          <span className="text-[10px] text-muted-foreground ml-auto">last {range} days</span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3 mb-4">
+          <Stat icon={PlayCircle} label="Parties hosted" value={String(partyStats.hosted)} />
+          <Stat icon={Users} label="Parties joined" value={String(partyStats.joined)} />
+          <Stat icon={Clock} label="Time hanging out" value={formatShortDuration(partyStats.totalMin * 60)} />
+        </div>
+        {partyStats.recent.length > 0 ? (
+          <div className="space-y-1.5">
+            {partyStats.recent.map((p) => (
+              <div key={p.id} className="flex items-center justify-between text-xs rounded-lg px-3 py-2 bg-white/5 border border-white/5">
+                <span className="truncate font-medium">{p.title}</span>
+                <span className="text-muted-foreground shrink-0 ml-2">
+                  {p.ended_at ? "ended" : <span className="text-pink-400">● live</span>} · {new Date(p.started_at).toLocaleDateString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground italic">No parties yet — start one from Collaborate.</p>
+        )}
+      </div>
     </div>
   );
 }
 
 function Stat({ icon: Icon, label, value }: { icon: typeof Clock; label: string; value: string }) {
+
   return (
     <div className="glass rounded-2xl p-5">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
