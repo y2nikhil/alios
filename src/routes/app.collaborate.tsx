@@ -248,15 +248,22 @@ function CollaboratePage() {
       <main className="flex-1 flex flex-col min-w-0">
         {active ? (
           <>
-            <header className="h-14 border-b border-border flex items-center px-4 gap-2">
+            <header className="h-14 border-b border-border flex items-center px-4 gap-2 shrink-0">
               <Hash className="h-4 w-4 text-muted-foreground" />
               <p className="font-semibold truncate">
                 {activeGroup ? `${activeGroup.emoji} ${activeGroup.name}` : active.name}
               </p>
-              <span className="text-xs text-muted-foreground truncate">
+              <span className="text-xs text-muted-foreground truncate hidden sm:inline">
                 · {activeGroup ? activeGroup.topic ?? "Group" : activeTeam ? activeTeam.name : "Open to everyone"}
               </span>
+              <div className="ml-auto">
+                <Button size="sm" onClick={() => setNewPartyOpen(true)}
+                  className="gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 text-white shadow-lg shadow-pink-500/20">
+                  <Tv className="h-3.5 w-3.5" /> Watch party
+                </Button>
+              </div>
             </header>
+
             <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center">
