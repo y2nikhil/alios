@@ -502,7 +502,7 @@ function Canvas() {
   );
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] lg:h-screen flex flex-col">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col overflow-hidden">
       <div className="flex items-center justify-between gap-3 border-b border-white/5 px-4 py-2.5 bg-background/40 backdrop-blur-xl">
         <div className="flex items-center gap-2 min-w-0">
           <Link to="/app/mindmap"><Button size="icon" variant="ghost"><ChevronLeft className="h-4 w-4" /></Button></Link>
