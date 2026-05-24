@@ -27,6 +27,8 @@ function AnalyticsPage() {
   const { statuses } = useAux();
   const [range, setRange] = useState<Range>("7");
   const [sessions, setSessions] = useState<AuxSession[]>([]);
+  const [partyStats, setPartyStats] = useState<{ hosted: number; joined: number; totalMin: number; recent: { id: string; title: string; ended_at: string | null; started_at: string }[] }>({ hosted: 0, joined: 0, totalMin: 0, recent: [] });
+
 
   useEffect(() => {
     if (!user) return;
