@@ -274,7 +274,7 @@ function HangoutRoom() {
   const active = participants.filter((p) => !p.left_at);
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] lg:h-screen flex flex-col lg:flex-row bg-background">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col lg:flex-row bg-background overflow-hidden">
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <header className="h-14 shrink-0 border-b border-border flex items-center px-4 gap-3">
           <Link to="/app/collaborate" className="text-muted-foreground hover:text-foreground">
