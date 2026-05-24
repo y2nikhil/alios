@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useAux, type AuxSession } from "@/lib/aux-store";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, Brain, Clock, Coffee } from "lucide-react";
+import { Download, TrendingUp, Brain, Clock, Coffee, Tv, Users, PlayCircle } from "lucide-react";
 import { formatShortDuration } from "@/lib/format";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { cn } from "@/lib/utils";
