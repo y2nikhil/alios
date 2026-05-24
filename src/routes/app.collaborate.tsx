@@ -409,6 +409,27 @@ function NewPartyDialog({ open, onOpenChange, userId }:
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const PRESETS: { label: string; emoji: string; hint: string; sample: string; titleHint: string }[] = [
+    { label: "YouTube",   emoji: "▶️", hint: "Paste any YouTube link",        sample: "https://youtu.be/",                titleHint: "Watch on YouTube" },
+    { label: "Movie / .mp4", emoji: "🎬", hint: "Direct .mp4 / .m3u8 stream",  sample: "https://example.com/movie.mp4",    titleHint: "Movie Night 🍿" },
+    { label: "Twitch",    emoji: "🎮", hint: "Embed a live Twitch stream",    sample: "https://player.twitch.tv/?channel=",titleHint: "Twitch Watch-along" },
+    { label: "Vimeo",     emoji: "🎞️", hint: "Paste a Vimeo URL",              sample: "https://vimeo.com/",                titleHint: "Vimeo Screening" },
+    { label: "Any site",  emoji: "🌐", hint: "Iframe any embeddable page",    sample: "https://",                          titleHint: "Watch together" },
+    { label: "Just chat", emoji: "💬", hint: "No media — pure hangout room",  sample: "about:blank",                       titleHint: "Hangout Room" },
+  ];
+
+  const usePreset = (p: typeof PRESETS[number]) => {
+    setUrl(p.sample);
+    if (!title.trim()) setTitle(p.titleHint);
+  };
+
+  const pasteFromClipboard = async () => {
+    try {
+      const t = await navigator.clipboard.readText();
+      if (t) { setUrl(t); toast.success("Pasted"); }
+    } catch { toast.error("Clipboard blocked — paste manually"); }
+  };
+
   const submit = async () => {
     if (!userId || !url.trim()) return;
     setBusy(true);
@@ -418,6 +439,7 @@ function NewPartyDialog({ open, onOpenChange, userId }:
     let media_id: string | null = null;
     if (yt && yt.kind === "video") { media_kind = "youtube"; media_id = yt.id; }
     else if (/\.(mp4|webm|m3u8|mov|mkv)(\?|$)/i.test(link)) media_kind = "video";
+    else if (link === "about:blank") media_kind = "chat";
 
     const { data, error } = await supabase.from("watch_parties").insert({
       host_id: userId, title: title.trim() || "Untitled hangout",
@@ -426,26 +448,51 @@ function NewPartyDialog({ open, onOpenChange, userId }:
     setBusy(false);
     if (error || !data) { toast.error(error?.message ?? "Failed to start"); return; }
     onOpenChange(false);
-    // Navigate (full reload-safe)
     window.location.href = `/app/hangout/${data.id}`;
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Start a watch party</DialogTitle></DialogHeader>
-        <div className="space-y-3">
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title (e.g. Friday Movie Night)" />
-          <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste any video / movie / stream link" />
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-pink-400" /> Start a watch party
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">Pick a source</p>
+            <div className="grid grid-cols-3 gap-2">
+              {PRESETS.map((p) => (
+                <button key={p.label} onClick={() => usePreset(p)}
+                  className="rounded-xl border border-border bg-accent/30 hover:bg-accent hover:border-pink-500/40 transition p-2.5 text-left">
+                  <div className="text-lg leading-none mb-1">{p.emoji}</div>
+                  <div className="text-xs font-semibold">{p.label}</div>
+                  <div className="text-[10px] text-muted-foreground line-clamp-2">{p.hint}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Party title (e.g. Friday Movie Night)" />
+
+          <div className="flex gap-2">
+            <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste any video / movie / stream link" />
+            <Button type="button" variant="outline" size="sm" onClick={pasteFromClipboard}>Paste</Button>
+          </div>
+
           <p className="text-[11px] text-muted-foreground">
-            YouTube and direct video links (.mp4, .m3u8) play in sync. Other links embed as a shared frame.
+            YouTube & direct video (.mp4 / .m3u8) sync playback for everyone. Other links embed as a shared frame. Anyone with the link can join.
           </p>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={busy || !url.trim()}>{busy ? "Starting…" : "Go live"}</Button>
+          <Button onClick={submit} disabled={busy || !url.trim()} className="bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90">
+            {busy ? "Starting…" : "🎉 Go live"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
