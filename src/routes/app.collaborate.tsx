@@ -166,7 +166,7 @@ function CollaboratePage() {
   const joinedGroups = groups.filter((g) => joinedGroupIds.has(g.id));
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] lg:h-screen flex">
+    <div className="h-[calc(100vh-3.5rem)] flex overflow-hidden">
       <aside className="w-64 shrink-0 border-r border-border bg-background/40 backdrop-blur-xl flex flex-col">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
