@@ -711,6 +711,7 @@ export type Database = {
           display_name: string | null
           id: string
           theme: string
+          timeline_public: boolean
           updated_at: string
         }
         Insert: {
@@ -720,6 +721,7 @@ export type Database = {
           display_name?: string | null
           id: string
           theme?: string
+          timeline_public?: boolean
           updated_at?: string
         }
         Update: {
@@ -729,6 +731,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           theme?: string
+          timeline_public?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -1089,6 +1092,7 @@ export type Database = {
           started_at: string
           title: string
           updated_at: string
+          visibility: Database["public"]["Enums"]["party_visibility"]
         }
         Insert: {
           current_time_sec?: number
@@ -1103,6 +1107,7 @@ export type Database = {
           started_at?: string
           title: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["party_visibility"]
         }
         Update: {
           current_time_sec?: number
@@ -1117,6 +1122,7 @@ export type Database = {
           started_at?: string
           title?: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["party_visibility"]
         }
         Relationships: []
       }
@@ -1197,6 +1203,7 @@ export type Database = {
         Args: { _board: string; _user: string }
         Returns: boolean
       }
+      end_watch_party: { Args: { _party_id: string }; Returns: undefined }
       find_user_by_email: { Args: { _email: string }; Returns: string }
       get_user_email: { Args: { _user_id: string }; Returns: string }
       has_role: {
@@ -1252,6 +1259,7 @@ export type Database = {
         | "role_granted"
         | "role_revoked"
         | "account_revoked"
+      party_visibility: "public" | "unlisted" | "private"
       request_status: "pending" | "approved" | "rejected"
       task_status:
         | "todo"
@@ -1406,6 +1414,7 @@ export const Constants = {
         "role_revoked",
         "account_revoked",
       ],
+      party_visibility: ["public", "unlisted", "private"],
       request_status: ["pending", "approved", "rejected"],
       task_status: [
         "todo",
