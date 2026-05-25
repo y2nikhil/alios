@@ -1,105 +1,79 @@
-# Big upgrade pass — theming, mindmap fixes, watch-together, groups, analytics
+## Big-picture changes
 
-You asked for a lot in one go. Grouped into 6 waves so nothing gets dropped. All on top of existing pages — no route renames.
+This is a large, multi-system request. Shipping it as one "all-in-one render" without a shared shape will create conflicts (auth, sidebar, analytics, search all touch the same files). Here is the plan I'll execute in one pass.
 
----
+### 1. Public / private watch parties + share link
+- Add `visibility` column to `watch_parties`: `public` | `unlisted` | `private`.
+- RLS: anyone can SELECT public; unlisted needs link (id known); private = host + invited participants only.
+- In `NewPartyDialog`: radio toggle (Public / Link only / Private).
+- In `app.collaborate.tsx` "Live Now" sidebar: only list `public` parties; show count.
+- In `app.hangout.$partyId.tsx`: "Copy invite link" button in header.
 
-## Wave 1 — Theming, responsiveness, performance
+### 2. Anonymous / guest mode
+- New `src/lib/guest.tsx` provider: generates a local `guest_id` + display name, persists in `localStorage`.
+- `AuthGuard` becomes `AuthOrGuestGuard`: only redirects to `/login` when the user tries to use a feature that requires auth (sending chat, creating party, joining party). Otherwise renders children.
+- Add a `RequireAuthDialog` shown inline when a guest clicks "Send", "Create party", "Join party". Stores draft locally so it's not lost.
+- Home `/app` (and most pages) viewable as guest with local-only state.
 
-**Dark theme background (keep current black, add interest)**
-- Keep `--background` near-black, layer in subtle radial gradients + a faint animated grain/noise via CSS only (no JS) so it feels alive but stays cheap.
-- Apply same treatment to mind map canvas background (with lower opacity so nodes stay readable).
+### 3. Watch Party in sidebar + on home
+- Add "Watch Party" sidebar entry in `AppShell` pointing to a new `app.party.tsx` lobby (browse public parties + quick-create).
+- On `app.index.tsx`: new "Live watch parties" panel with the top 4 public parties (poster + viewer count) and a "Start a party" button.
 
-**Light theme redesign**
-- Rebuild light tokens in `src/styles.css`: warm off-white base (`oklch(0.98 0.01 95)`), deeper ink text, accent stays brand purple/indigo, soft shadows + 1px borders instead of heavy panels.
-- Update cards, sidebar, inputs, buttons to read cleanly in both modes.
-- Verified by switching theme toggle on every main route.
+### 4. Admin / super-admin Live Feed
+- New route `app.live.tsx` (gated by `useRole().isAdmin`).
+- Real-time tiles: total users, active (aux session open), active watch parties (with participant lists), recent signups.
+- Subscribes to `aux_sessions`, `watch_party_participants`, `watch_parties` via Supabase Realtime.
+- Action buttons: end party (`update watch_parties set ended_at = now()`), force-leave participant, revoke user (super admin only, uses existing `revoke_account` function).
+- Sidebar entry "Live Feed" only visible when `isAdmin`.
 
-**Mobile friendliness**
-- AppShell sidebar → drawer on `<md`, top bar with hamburger.
-- Mind map toolbar collapses into a floating action button on mobile, playlist panel becomes bottom sheet.
-- MyTasks / Playlists / Collaborate / Analytics grids → single column under `sm`.
+### 5. Better analytics + shareable timeline
+- Add metrics to `app.analytics.tsx`: streak (consecutive days), top status by minutes, productive-vs-neutral split, weekly trend sparkline, group activity, chat messages sent, mind-map nodes created.
+- Add a "Share my timeline" toggle on profile (new `profiles.timeline_public` boolean).
+- Add public route `app.u.$userId.tsx` that shows another user's analytics if they've toggled it on.
+- "Copy share link" button on analytics page.
 
-**Perceived speed (3–4s tab switch lag)**
-- Add `defaultPreload: "intent"` + `defaultPreloadStaleTime: 0` to router so hovering a link warms the route.
-- Wrap big route components (mindmap board, analytics, collaborate) in `React.lazy` already-done check; add `Suspense` skeletons instead of blank screen.
-- Convert heavy useEffect data fetches in MyTasks / Playlists / Collaborate to react-query with `staleTime: 30s` so tab returns are instant from cache.
+### 6. Central command bar (search + AI ask)
+- New `CommandBar` component mounted in `AppShell` header (centered, max-w-xl).
+- Cmd/Ctrl+K opens it.
+- Tabs: People · Groups · Parties · Pages · Ask AI.
+- "Ask AI" calls a new `createServerFn` `askAi` that uses Lovable AI Gateway (`google/gemini-2.5-flash`) with user's recent stats as context.
 
-## Wave 2 — Mind map fixes
+### 7. Immersive home (more emoji, more panels)
+- Reorganise `app.index.tsx` into a richer dashboard:
+  - 👋 Greeting + streak + today's focus minutes
+  - 🎬 Live watch parties panel
+  - 🧠 Quick mind-map shortcuts
+  - 💬 Recent group chatter
+  - 🎯 My tasks (existing)
+  - 🔥 Adherence ring (existing)
+  - 📈 Mini sparkline of last 7 days
+- Heavy use of emoji headers, gradient cards, subtle motion.
 
-- **Double-click empty area not creating node** — fix the event handler on the React Flow `<Pane>`. Currently the listener is on the wrapper, swap to React Flow's `onPaneClick` + a `doubleClickZoom={false}` + `onDoubleClick` on the pane wrapper using `screenToFlowPosition`.
-- **"+" icon half hidden** — the floating add button's `right`/`bottom` are clipped by the minimap container. Move it outside the minimap stacking context and add `z-50` + safe-area padding.
-- **Color picker closes & color reverts when clicking outside the node** — currently the node deselect handler resets local state before save. Persist color to DB on every change inside the popover (debounced 300ms) instead of on close, and stop the outside-click from un-mounting before save.
-- **Video play box** — make it a draggable + resizable floating panel on the mindmap canvas only (use `react-rnd`, already a small lib). Persist size/position to localStorage per board.
-- **Playlist → tasks under board** — when a playlist is added inside a mindmap, create one parent `task` row (title = playlist name) and one child `task` per video (`parent_task_id` FK), each markable complete. Backing task already exists; we add `parent_task_id uuid` column + per-video child rows generated on insert.
+### 8. Mobile + perf cleanup (carry-over)
+- Make sidebar collapse to bottom-nav on `< sm`.
+- Lazy-load heavy routes (hangout, mindmap, live feed) via dynamic imports in router.
 
-## Wave 3 — Mind map index page polish
+## Technical notes
 
-- Replace plain card grid with a colorful hero (gradient mesh background), recent boards as tilted cards with cover gradients, "New board" as a big CTA tile.
-- Replace emoji usage app-wide with `lucide-react` icons (already installed). Quick sweep of AppShell, MyTasks, Playlists, Mindmap, Collaborate, Analytics.
+- DB migration adds: `watch_parties.visibility`, `profiles.timeline_public`, RLS adjustments, and a `watch_party_invites(party_id, user_id)` table for private invites.
+- Guest mode never writes to Supabase. Any write attempt opens the sign-in dialog with redirect-back.
+- Real-time live feed uses one channel per table; cleaned up on unmount.
+- All admin actions go through existing security-definer functions where possible; new function `end_watch_party(_id uuid)` added with role check.
+- Command bar AI uses `LOVABLE_API_KEY` already in secrets.
 
-## Wave 4 — Analytics expansion
+## Order of operations
+1. DB migration (visibility, invites, timeline_public, end_watch_party fn).
+2. Guest provider + sign-in dialog.
+3. Sidebar refresh (Watch Party, Live Feed entries, mobile bottom nav).
+4. Command bar.
+5. Public-party plumbing + share link.
+6. Home redesign with live parties panel.
+7. Live Feed admin page.
+8. Analytics expansion + shareable public profile route.
+9. Lazy-load routes for perf.
 
-In `app.analytics.tsx`, add:
-- Tasks completed vs pending (weekly bar)
-- Videos watched / completed (count + total minutes from `task_videos.completed_at`)
-- Mind maps created / shared
-- Aux time breakdown by category (productive / neutral / unproductive) — already partly there, surface as donut
-- Watch-party sessions joined + hours (from new `watch_parties` table)
-- Per-day activity heatmap (last 90 days)
+## What I won't do without confirmation
+- I won't disable email confirmation or enable signups-as-anonymous in Supabase auth (guest mode is purely client-side; first real write requires real signup, per platform policy).
+- I won't change the existing brand colors / black background you locked in earlier.
 
-All using `recharts` (already installed).
-
-## Wave 5 — Collaborate: user-created groups (Discord-like)
-
-- New table `groups` (id, name, slug, description, topic, created_by, is_public). Anyone can create. RLS: public groups readable by all authenticated, private only by members.
-- New table `group_members` (group_id, user_id, role: owner/admin/member).
-- Each group auto-gets a default `chat_channels` row (`group_id` FK added, channel scoping updated; team_id stays for legacy).
-- Collaborate page left rail: "Browse groups" + "My groups" + "Create group" modal. Pick a group → see its channels → chat.
-- Seed examples: "CAT Prep", "SSC Prep", "Bank Prep", "College Exams" as public groups owned by system.
-
-## Wave 6 — Watch-together rooms (Kosmi-style)
-
-New section under Collaborate → "Hangouts".
-
-**Schema**
-- `watch_parties` (id, host_id, group_id null, title, media_url, media_kind: youtube/vimeo/direct/iframe, current_time, is_playing, started_at, ended_at)
-- `watch_party_participants` (party_id, user_id, joined_at, left_at)
-- `watch_party_messages` (party_id, user_id, body, created_at) — separate from chat_messages
-
-**Player**
-- Paste any link → detect kind:
-  - YouTube/Vimeo → embed via their iframe APIs (sync play/pause/seek via Supabase Realtime broadcast on the party channel).
-  - Direct `.mp4/.m3u8` → `<video>` tag with HLS.js for streams.
-  - Generic iframe-able URL → embed as iframe (no sync, just shared screen). Many free movie sites block iframing — we surface a "site can't be embedded" message rather than silently failing.
-- Host controls play/pause/seek; viewers' player follows via Realtime.
-- Side panel: participant avatars (live), chat, invite link (copy).
-- On `ended_at`, write a summary row visible in Collaborate ("Last hangout: 2h 14m, 5 people") and analytics ("Watch-party hours" metric).
-
-**Note on "any video from any free movie site":** technically limited by each site's `X-Frame-Options` / CSP. We'll do our best for embeddable URLs; for blocked sites users can use screen-share (browser-native `getDisplayMedia` + WebRTC) — that's a bigger lift, so v1 ships embed + sync; screen-share via WebRTC goes in a follow-up if you want.
-
----
-
-## Files touched (high-level)
-
-- `src/styles.css` — theme tokens, light mode rebuild, dark background layers
-- `src/router.tsx` — preload settings
-- `src/components/AppShell.tsx` — mobile drawer, icon sweep
-- `src/routes/app.mindmap.index.tsx` — colorful landing
-- `src/routes/app.mindmap.$boardId.tsx` — pane dblclick fix, FAB, color picker fix, rnd video panel, playlist→tasks
-- `src/components/YouTubeChecklist.tsx` — rnd wrapper when in mindmap context
-- `src/routes/app.collaborate.tsx` — groups UI, hangouts section
-- `src/routes/app.analytics.tsx` — new metrics
-- New: `src/routes/app.hangout.$partyId.tsx` — watch-party room
-- New migration: groups, group_members, watch_parties, watch_party_participants, watch_party_messages, task.parent_task_id, RLS for all
-- New dep: `react-rnd`, `hls.js`
-
----
-
-## What I need from you before starting
-
-1. **Wave 6 scope** — embed-only sync first (ships in this pass), or do you also want WebRTC screen-share now (adds ~1 more wave of work)?
-2. **Seed groups** — OK to seed CAT/SSC/Bank/College as public, or you want a different starter set?
-3. **Order** — ship all 6 waves in one big commit (long-running), or wave-by-wave so you can test as we go?
-
-Once you answer those I'll execute.
+Reply "go" to ship the whole thing. If you want to drop or reorder any wave, tell me which.

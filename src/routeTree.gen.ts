@@ -18,14 +18,18 @@ import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
+import { Route as AppPartyRouteImport } from './routes/app.party'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiYoutubeParseRouteImport } from './routes/api.youtube-parse'
 import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
 import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
+import { Route as ApiAiAskRouteImport } from './routes/api.ai-ask'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
+import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 
@@ -74,9 +78,19 @@ const AppPlaylistsRoute = AppPlaylistsRouteImport.update({
   path: '/playlists',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPartyRoute = AppPartyRouteImport.update({
+  id: '/party',
+  path: '/party',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppNotificationsRoute = AppNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLiveRoute = AppLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
@@ -109,9 +123,19 @@ const ApiAiInsightsRoute = ApiAiInsightsRouteImport.update({
   path: '/api/ai-insights',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAiAskRoute = ApiAiAskRouteImport.update({
+  id: '/api/ai-ask',
+  path: '/api/ai-ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppMindmapIndexRoute = AppMindmapIndexRouteImport.update({
   id: '/mindmap/',
   path: '/mindmap/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUUserIdRoute = AppUUserIdRouteImport.update({
+  id: '/u/$userId',
+  path: '/u/$userId',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMindmapBoardIdRoute = AppMindmapBoardIdRouteImport.update({
@@ -130,13 +154,16 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/live': typeof AppLiveRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
@@ -144,19 +171,23 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/live': typeof AppLiveRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
@@ -164,6 +195,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
 }
 export interface FileRoutesById {
@@ -172,13 +204,16 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/live': typeof AppLiveRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
@@ -186,6 +221,7 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
 }
 export interface FileRouteTypes {
@@ -195,13 +231,16 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/signup'
+    | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/live'
     | '/app/notifications'
+    | '/app/party'
     | '/app/playlists'
     | '/app/settings'
     | '/app/super'
@@ -209,19 +248,23 @@ export interface FileRouteTypes {
     | '/app/'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
+    | '/app/u/$userId'
     | '/app/mindmap/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/signup'
+    | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/live'
     | '/app/notifications'
+    | '/app/party'
     | '/app/playlists'
     | '/app/settings'
     | '/app/super'
@@ -229,6 +272,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
+    | '/app/u/$userId'
     | '/app/mindmap'
   id:
     | '__root__'
@@ -236,13 +280,16 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/signup'
+    | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/live'
     | '/app/notifications'
+    | '/app/party'
     | '/app/playlists'
     | '/app/settings'
     | '/app/super'
@@ -250,6 +297,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
+    | '/app/u/$userId'
     | '/app/mindmap/'
   fileRoutesById: FileRoutesById
 }
@@ -258,6 +306,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ApiAiAskRoute: typeof ApiAiAskRoute
   ApiAiInsightsRoute: typeof ApiAiInsightsRoute
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
@@ -328,11 +377,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPlaylistsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/party': {
+      id: '/app/party'
+      path: '/party'
+      fullPath: '/app/party'
+      preLoaderRoute: typeof AppPartyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/notifications': {
       id: '/app/notifications'
       path: '/notifications'
       fullPath: '/app/notifications'
       preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/live': {
+      id: '/app/live'
+      path: '/live'
+      fullPath: '/app/live'
+      preLoaderRoute: typeof AppLiveRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/collaborate': {
@@ -377,11 +440,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiInsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ai-ask': {
+      id: '/api/ai-ask'
+      path: '/api/ai-ask'
+      fullPath: '/api/ai-ask'
+      preLoaderRoute: typeof ApiAiAskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/mindmap/': {
       id: '/app/mindmap/'
       path: '/mindmap'
       fullPath: '/app/mindmap/'
       preLoaderRoute: typeof AppMindmapIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/u/$userId': {
+      id: '/app/u/$userId'
+      path: '/u/$userId'
+      fullPath: '/app/u/$userId'
+      preLoaderRoute: typeof AppUUserIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/mindmap/$boardId': {
@@ -405,7 +482,9 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppLiveRoute: typeof AppLiveRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
+  AppPartyRoute: typeof AppPartyRoute
   AppPlaylistsRoute: typeof AppPlaylistsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSuperRoute: typeof AppSuperRoute
@@ -413,6 +492,7 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
+  AppUUserIdRoute: typeof AppUUserIdRoute
   AppMindmapIndexRoute: typeof AppMindmapIndexRoute
 }
 
@@ -420,7 +500,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppLiveRoute: AppLiveRoute,
   AppNotificationsRoute: AppNotificationsRoute,
+  AppPartyRoute: AppPartyRoute,
   AppPlaylistsRoute: AppPlaylistsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSuperRoute: AppSuperRoute,
@@ -428,6 +510,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
+  AppUUserIdRoute: AppUUserIdRoute,
   AppMindmapIndexRoute: AppMindmapIndexRoute,
 }
 
@@ -438,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ApiAiAskRoute: ApiAiAskRoute,
   ApiAiInsightsRoute: ApiAiInsightsRoute,
   ApiAiMindmapRoute: ApiAiMindmapRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
@@ -445,12 +529,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

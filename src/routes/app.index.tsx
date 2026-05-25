@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ManagerNotes } from "@/components/ManagerNotes";
 import { AdherenceRing } from "@/components/AdherenceRing";
 import { MyTasks } from "@/components/MyTasks";
+import { LivePartiesPanel } from "@/components/LivePartiesPanel";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -198,6 +199,9 @@ function CommandCenter() {
         </div>
         <MiniTimeline />
       </div>
+
+      {/* Live watch parties */}
+      <LivePartiesPanel />
 
       {/* Stats grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
