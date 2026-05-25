@@ -1,16 +1,8 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  Activity,
-  BarChart3,
-  Brain,
-  Settings,
-  Sparkles,
-  Shield,
-  Crown,
-  MessageSquare,
-  Youtube,
+  LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
+  Shield, Crown, MessageSquare, Youtube, Tv, Radio,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -20,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useRole } from "@/lib/use-role";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationBell } from "@/components/NotificationBell";
+import { CommandBar } from "@/components/CommandBar";
 
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
@@ -27,6 +20,7 @@ const BASE_NAV = [
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
   { to: "/app/collaborate", label: "Collaborate", icon: MessageSquare },
+  { to: "/app/party", label: "Watch Party", icon: Tv },
   { to: "/app/playlists", label: "Playlists", icon: Youtube },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
@@ -104,7 +98,10 @@ function ShellInner() {
 
   const NAV = [
     ...BASE_NAV,
-    ...(isAdmin ? [{ to: "/app/admin" as const, label: "Admin", icon: Shield }] : []),
+    ...(isAdmin ? [
+      { to: "/app/live" as const, label: "Live Feed", icon: Radio },
+      { to: "/app/admin" as const, label: "Admin", icon: Shield },
+    ] : []),
     ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
   ];
 
@@ -159,19 +156,17 @@ function ShellInner() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-14 flex items-center justify-between gap-4 border-b border-white/5 px-4 lg:px-6 bg-background/40 backdrop-blur-xl">
-          <div className="lg:hidden flex items-center gap-2">
+        <header className="h-14 flex items-center gap-3 border-b border-white/5 px-3 lg:px-6 bg-background/40 backdrop-blur-xl">
+          <div className="lg:hidden flex items-center shrink-0">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400">
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="font-bold">ALIOS</span>
           </div>
-          <LiveTimer />
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
-              <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono">1-9</kbd>
-              <span>switch</span>
-            </div>
+          <div className="flex-1 flex justify-center">
+            <CommandBar />
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden xl:block"><LiveTimer /></div>
             <NotificationBell />
             <ProfileMenu />
           </div>
