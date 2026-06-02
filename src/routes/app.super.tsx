@@ -382,11 +382,15 @@ function SuperAdminPanel() {
                       {(a.email?.[0] ?? "?").toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{a.email ?? a.user_id.slice(0, 8)}</p>
-                      <p className="text-[11px] text-muted-foreground">
-                        Joined {new Date(a.created_at).toLocaleString()}
+                      <p className="text-sm font-medium truncate">
+                        {a.display_name ?? a.email ?? a.user_id.slice(0, 8)}
+                        {a.username && <span className="ml-2 text-xs font-normal text-violet-300">@{a.username}</span>}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground truncate">
+                        {a.email} · Joined {new Date(a.created_at).toLocaleString()}
                       </p>
                     </div>
+
                     {role && <Badge variant={role.role === "super_admin" ? "default" : "secondary"}>{role.role.replace("_", " ")}</Badge>}
                     {isRevoked && <Badge variant="destructive">revoked</Badge>}
                     {isRevoked ? (
