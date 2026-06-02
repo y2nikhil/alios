@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAux, type AuxStatus } from "@/lib/aux-store";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil, AtSign, Check, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({
@@ -22,11 +25,14 @@ function SettingsPage() {
   const [creating, setCreating] = useState(false);
 
   return (
-    <div className="p-4 lg:p-6 space-y-6 max-w-4xl mx-auto">
+    <div className="p-4 lg:p-6 space-y-6 max-w-4xl mx-auto glide-in">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">Tune your statuses and shortcuts.</p>
+        <p className="text-sm text-muted-foreground">Tune your profile, statuses, and shortcuts.</p>
       </div>
+
+      <ProfileBlock />
+
 
       <div className="glass rounded-2xl">
         <div className="flex items-center justify-between p-4 border-b border-white/5">
@@ -132,3 +138,72 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
     </div>
   );
 }
+
+const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+
+function ProfileBlock() {
+  const { user } = useAuth();
+  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("username, display_name").eq("id", user.id).maybeSingle().then(({ data }) => {
+      const d = data as { username?: string; display_name?: string } | null;
+      setUsername(d?.username ?? "");
+      setDisplayName(d?.display_name ?? "");
+      setLoading(false);
+    });
+  }, [user]);
+
+  const save = async () => {
+    if (!user) return;
+    const u = username.trim().toLowerCase();
+    if (u && !USERNAME_RE.test(u)) return toast.error("Username must be 3-20 chars: a-z, 0-9, _");
+    setSaving(true);
+    if (u) {
+      const { data: ok } = await supabase.rpc("username_available", { _username: u });
+      // allow keeping own username
+      const { data: current } = await supabase.from("profiles").select("username").eq("id", user.id).maybeSingle();
+      const isMine = (current as { username?: string } | null)?.username === u;
+      if (!ok && !isMine) { setSaving(false); return toast.error("That username is taken."); }
+    }
+    const { error } = await supabase.from("profiles").update({
+      username: u || null,
+      display_name: displayName.trim() || null,
+    }).eq("id", user.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Profile updated");
+  };
+
+  if (loading) return null;
+
+  return (
+    <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="flex items-center gap-2">
+        <AtSign className="h-4 w-4 text-violet-400" />
+        <h3 className="font-semibold">Your profile</h3>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label>Display name</Label>
+          <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Alex" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Username</Label>
+          <Input value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase())} placeholder="alex_codes" />
+          <p className="text-[11px] text-muted-foreground">Used to sign in. {user?.email}</p>
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <Button onClick={save} disabled={saving} size="sm" className="bg-gradient-to-r from-violet-500 to-cyan-400">
+          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Check className="h-3.5 w-3.5 mr-1.5" /> Save</>}
+        </Button>
+      </div>
+    </div>
+  );
+}
+

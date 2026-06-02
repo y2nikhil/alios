@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, CalendarOff, UserCircle2, Crown, Sun, Moon, Bell } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -38,8 +38,19 @@ export function ProfileMenu() {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
-  const initial = (user?.email?.[0] ?? "?").toUpperCase();
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("username").eq("id", user.id).maybeSingle().then(({ data }) => {
+      setUsername((data as { username?: string } | null)?.username ?? null);
+    });
+  }, [user]);
+
+
+  const initial = (username?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();
+  const handle = username ? `@${username}` : user?.email;
+
 
   async function applyForAdmin() {
     if (!user) return;
@@ -87,17 +98,19 @@ export function ProfileMenu() {
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-xs font-bold text-white">
               {initial}
             </div>
-            <span className="hidden md:inline text-xs font-medium max-w-[140px] truncate">{user?.email}</span>
+            <span className="hidden md:inline text-xs font-medium max-w-[140px] truncate">{handle}</span>
             {isSuperAdmin && <Crown className="h-3.5 w-3.5 text-amber-400" />}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuLabel className="flex flex-col gap-0.5">
-            <span className="text-xs font-medium truncate">{user?.email}</span>
+            {username && <span className="text-xs font-semibold truncate">@{username}</span>}
+            <span className="text-[11px] text-muted-foreground truncate">{user?.email}</span>
             <span className="text-[10px] text-muted-foreground">
               {isSuperAdmin ? "Super Admin" : isAdmin ? "Admin (Client)" : "Member"}
             </span>
           </DropdownMenuLabel>
+
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate({ to: "/app/settings" })}>
             <UserCircle2 className="h-4 w-4 mr-2" /> Account settings

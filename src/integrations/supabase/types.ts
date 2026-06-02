@@ -713,6 +713,7 @@ export type Database = {
           theme: string
           timeline_public: boolean
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -723,6 +724,7 @@ export type Database = {
           theme?: string
           timeline_public?: boolean
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -733,6 +735,7 @@ export type Database = {
           theme?: string
           timeline_public?: boolean
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -1203,6 +1206,7 @@ export type Database = {
         Args: { _board: string; _user: string }
         Returns: boolean
       }
+      email_for_username: { Args: { _username: string }; Returns: string }
       end_watch_party: { Args: { _party_id: string }; Returns: undefined }
       find_user_by_email: { Args: { _email: string }; Returns: string }
       get_user_email: { Args: { _user_id: string }; Returns: string }
@@ -1230,6 +1234,7 @@ export type Database = {
       }
       restore_account: { Args: { _user_id: string }; Returns: undefined }
       revoke_account: { Args: { _user_id: string }; Returns: undefined }
+      username_available: { Args: { _username: string }; Returns: boolean }
       write_audit: {
         Args: {
           _action: string
