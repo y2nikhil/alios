@@ -245,3 +245,25 @@
   50% { box-shadow: 0 0 0 8px transparent; opacity: 0.85; }
 }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* Buttery-smooth interaction layer */
+@layer base {
+  html { scroll-behavior: smooth; }
+  a, button, [role="button"], input, textarea, select, summary,
+  [data-state], .glass, .group {
+    transition-property: color, background-color, border-color, box-shadow, transform, opacity, filter, backdrop-filter;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  button:not(:disabled):active, [role="button"]:active { transform: translateY(0.5px) scale(0.985); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@keyframes glide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.glide-in { animation: glide-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+

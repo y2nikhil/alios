@@ -38,8 +38,18 @@ export function ProfileMenu() {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
-  const initial = (user?.email?.[0] ?? "?").toUpperCase();
+  useState(() => {
+    if (!user) return;
+    supabase.from("profiles").select("username").eq("id", user.id).maybeSingle().then(({ data }) => {
+      setUsername((data as { username?: string } | null)?.username ?? null);
+    });
+  });
+
+  const initial = (username?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();
+  const handle = username ? `@${username}` : user?.email;
+
 
   async function applyForAdmin() {
     if (!user) return;
