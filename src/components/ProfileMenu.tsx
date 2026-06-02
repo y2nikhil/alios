@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, CalendarOff, UserCircle2, Crown, Sun, Moon, Bell } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -40,12 +40,13 @@ export function ProfileMenu() {
   const [submitting, setSubmitting] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
 
-  useState(() => {
+  useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("username").eq("id", user.id).maybeSingle().then(({ data }) => {
       setUsername((data as { username?: string } | null)?.username ?? null);
     });
-  });
+  }, [user]);
+
 
   const initial = (username?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();
   const handle = username ? `@${username}` : user?.email;
