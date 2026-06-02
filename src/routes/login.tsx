@@ -19,19 +19,25 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    let email = identifier.trim();
+    if (!email.includes("@")) {
+      const { data, error } = await supabase.rpc("email_for_username", { _username: email });
+      if (error || !data) {
+        setLoading(false);
+        return toast.error("No account with that username.");
+      }
+      email = data as string;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
+    if (error) return toast.error(error.message);
     toast.success("Welcome back");
     navigate({ to: "/app" });
   };
@@ -49,12 +55,12 @@ function LoginPage() {
 
         <div className="glass rounded-2xl p-6 sm:p-8">
           <h2 className="text-xl font-semibold">Sign in</h2>
-          <p className="text-sm text-muted-foreground mt-1">Welcome back. Punch in to your day.</p>
+          <p className="text-sm text-muted-foreground mt-1">Use your username or email.</p>
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <Label htmlFor="identifier">Username or email</Label>
+              <Input id="identifier" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="alex_codes or you@example.com" autoCapitalize="none" autoCorrect="off" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>

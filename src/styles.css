@@ -50,40 +50,40 @@
   --color-unproductive: var(--unproductive);
 }
 
-/* DARK — keep deep black, add living gradient + faint grid */
+/* DARK — deep near-black with subtle violet aurora */
 :root {
   --radius: 0.875rem;
-  --background: oklch(0.13 0.02 265);
+  --background: oklch(0.08 0.012 265);
   --foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.18 0.025 265 / 0.6);
+  --card: oklch(0.13 0.018 265 / 0.7);
   --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.18 0.025 265);
+  --popover: oklch(0.11 0.015 265);
   --popover-foreground: oklch(0.97 0.005 250);
   --primary: oklch(0.72 0.18 280);
   --primary-foreground: oklch(0.99 0.005 280);
-  --secondary: oklch(0.22 0.03 265);
+  --secondary: oklch(0.16 0.02 265);
   --secondary-foreground: oklch(0.97 0.005 250);
-  --muted: oklch(0.22 0.025 265);
-  --muted-foreground: oklch(0.65 0.03 260);
-  --accent: oklch(0.27 0.06 280);
+  --muted: oklch(0.16 0.02 265);
+  --muted-foreground: oklch(0.62 0.025 260);
+  --accent: oklch(0.2 0.04 280);
   --accent-foreground: oklch(0.97 0.005 250);
   --destructive: oklch(0.65 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 280);
-  --border: oklch(1 0 0 / 0.08);
-  --input: oklch(1 0 0 / 0.1);
+  --border: oklch(1 0 0 / 0.06);
+  --input: oklch(1 0 0 / 0.08);
   --ring: oklch(0.72 0.18 280);
   --chart-1: oklch(0.72 0.18 280);
   --chart-2: oklch(0.74 0.15 160);
   --chart-3: oklch(0.78 0.16 80);
   --chart-4: oklch(0.7 0.18 25);
   --chart-5: oklch(0.7 0.16 220);
-  --sidebar: oklch(0.13 0.02 265);
+  --sidebar: oklch(0.07 0.012 265);
   --sidebar-foreground: oklch(0.97 0.005 250);
   --sidebar-primary: oklch(0.72 0.18 280);
   --sidebar-primary-foreground: oklch(0.99 0.005 280);
-  --sidebar-accent: oklch(0.22 0.03 265);
+  --sidebar-accent: oklch(0.16 0.02 265);
   --sidebar-accent-foreground: oklch(0.97 0.005 250);
-  --sidebar-border: oklch(1 0 0 / 0.06);
+  --sidebar-border: oklch(1 0 0 / 0.05);
   --sidebar-ring: oklch(0.72 0.18 280);
 
   --productive: oklch(0.74 0.15 160);
@@ -91,16 +91,17 @@
   --unproductive: oklch(0.7 0.18 25);
 
   --gradient-bg:
-    radial-gradient(ellipse 70% 50% at 15% 0%, oklch(0.32 0.16 285 / 0.45), transparent 60%),
-    radial-gradient(ellipse 60% 45% at 100% 10%, oklch(0.3 0.16 200 / 0.32), transparent 60%),
-    radial-gradient(ellipse 80% 55% at 50% 100%, oklch(0.28 0.14 320 / 0.28), transparent 65%),
-    oklch(0.1 0.02 265);
-  --glass-bg: oklch(0.2 0.025 265 / 0.5);
-  --glass-border: oklch(1 0 0 / 0.08);
+    radial-gradient(ellipse 60% 45% at 15% 0%, oklch(0.22 0.14 285 / 0.35), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 100% 10%, oklch(0.2 0.14 200 / 0.22), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.18 0.12 320 / 0.2), transparent 65%),
+    oklch(0.055 0.01 265);
+  --glass-bg: oklch(0.12 0.018 265 / 0.6);
+  --glass-border: oklch(1 0 0 / 0.06);
   --glow-primary: 0 0 40px oklch(0.72 0.18 280 / 0.35);
-  --shadow-card: 0 10px 40px -12px oklch(0 0 0 / 0.5),
-    inset 0 1px 0 0 oklch(1 0 0 / 0.05);
+  --shadow-card: 0 10px 40px -12px oklch(0 0 0 / 0.6),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.04);
 }
+
 
 /* LIGHT — modern, warm, soft tinted gradient */
 .light {
@@ -180,12 +181,12 @@
     pointer-events: none;
     z-index: 0;
     background-image:
-      linear-gradient(to right, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
-    background-size: 48px 48px;
+      linear-gradient(to right, color-mix(in oklab, var(--foreground) 2.5%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 2.5%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 80%);
     -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 80%);
-    opacity: 0.5;
+    opacity: 0.35;
   }
   body::after {
     content: "";
