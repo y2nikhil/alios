@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAux, type AuxStatus } from "@/lib/aux-store";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil, AtSign, Check, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({
@@ -22,11 +25,14 @@ function SettingsPage() {
   const [creating, setCreating] = useState(false);
 
   return (
-    <div className="p-4 lg:p-6 space-y-6 max-w-4xl mx-auto">
+    <div className="p-4 lg:p-6 space-y-6 max-w-4xl mx-auto glide-in">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">Tune your statuses and shortcuts.</p>
+        <p className="text-sm text-muted-foreground">Tune your profile, statuses, and shortcuts.</p>
       </div>
+
+      <ProfileBlock />
+
 
       <div className="glass rounded-2xl">
         <div className="flex items-center justify-between p-4 border-b border-white/5">
