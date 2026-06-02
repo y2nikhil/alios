@@ -60,7 +60,7 @@ type TimeOff = {
   email?: string;
 };
 
-type AccountEvent = { id: string; user_id: string; email: string | null; event_type: string; created_at: string };
+type AccountEvent = { id: string; user_id: string; email: string | null; event_type: string; created_at: string; username?: string | null; display_name?: string | null };
 type AuditRow = { id: string; actor_id: string | null; action: string; target_user_id: string | null; created_at: string; metadata: Record<string, unknown>; actor_email?: string; target_email?: string };
 
 function SuperAdminPanel() {
@@ -102,10 +102,26 @@ function SuperAdminPanel() {
       }),
     );
 
+    // Pull profile metadata (username/display_name) for everyone we know about
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("id, username, display_name")
+      .in("id", Array.from(allUserIds.size ? allUserIds : new Set([""])));
+    const profMap = new Map<string, { username: string | null; display_name: string | null }>();
+    (profs ?? []).forEach((p) => {
+      const row = p as { id: string; username: string | null; display_name: string | null };
+      profMap.set(row.id, { username: row.username, display_name: row.display_name });
+    });
+
     setRequests((reqRes.data ?? []).map((r) => ({ ...r, email: emails.get(r.user_id) })));
     setRoles((roleRes.data ?? []).map((r) => ({ ...r, email: emails.get(r.user_id) })));
     setTimeOff((toRes.data ?? []).map((r) => ({ ...r, email: emails.get(r.user_id) })));
-    setAccounts((acctRes.data ?? []) as AccountEvent[]);
+    setAccounts(((acctRes.data ?? []) as AccountEvent[]).map((a) => ({
+      ...a,
+      username: profMap.get(a.user_id)?.username ?? null,
+      display_name: profMap.get(a.user_id)?.display_name ?? null,
+    })));
+
     setAudit(((auditRes.data ?? []) as AuditRow[]).map((r) => ({
       ...r,
       actor_email: r.actor_id ? emails.get(r.actor_id) : undefined,
@@ -275,8 +291,14 @@ function SuperAdminPanel() {
   const pendingTimeOff = timeOff.filter((r) => r.status === "pending");
 
   const filteredAccounts = accountFilter
-    ? accounts.filter((a) => (a.email ?? "").toLowerCase().includes(accountFilter.toLowerCase()))
+    ? accounts.filter((a) => {
+        const q = accountFilter.toLowerCase();
+        return (a.email ?? "").toLowerCase().includes(q)
+          || (a.username ?? "").toLowerCase().includes(q)
+          || (a.display_name ?? "").toLowerCase().includes(q);
+      })
     : accounts;
+
   const filteredAudit = auditFilter
     ? audit.filter((a) =>
         a.action.toLowerCase().includes(auditFilter.toLowerCase()) ||
