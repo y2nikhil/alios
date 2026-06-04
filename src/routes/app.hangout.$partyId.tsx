@@ -293,68 +293,111 @@ function HangoutRoom() {
   const active = participants.filter((p) => !p.left_at);
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col lg:flex-row bg-background overflow-hidden">
-      <main className="flex-1 flex flex-col min-w-0 min-h-0">
-        <header className="h-14 shrink-0 border-b border-border flex items-center px-4 gap-3">
-          <Link to="/app/collaborate" className="text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-violet-500 shadow-lg shadow-pink-500/30">
-            <Tv className="h-4 w-4 text-white" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold truncate">{party.title}</p>
-            <p className="text-[10px] text-muted-foreground -mt-0.5">
-              {active.length} watching · {party.media_kind.toUpperCase()}
-            </p>
-          </div>
-          {isHost ? (
-            <Button onClick={endParty} variant="destructive" size="sm">End party</Button>
-          ) : (
-            <Button onClick={leaveParty} variant="outline" size="sm"><LogOut className="h-3.5 w-3.5 mr-1" />Leave</Button>
-          )}
-        </header>
-
-        <div className="flex-1 min-h-0 flex items-center justify-center bg-black/60 p-3">
-          <div className="w-full h-full max-w-5xl rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black grid place-items-center">
-            {party.media_kind === "video" ? (
-              <video
-                ref={videoRef}
-                src={party.media_url}
-                controls={isHost}
-                playsInline
-                onPlay={() => pushState({ is_playing: true, current_time_sec: videoRef.current?.currentTime ?? 0 })}
-                onPause={() => pushState({ is_playing: false, current_time_sec: videoRef.current?.currentTime ?? 0 })}
-                onSeeked={() => pushState({ current_time_sec: videoRef.current?.currentTime ?? 0 })}
-                className="w-full h-full object-contain"
-              />
-            ) : party.media_kind === "youtube" ? (
-              <div id={`yt-${partyId}`} className="w-full h-full" />
+    <div
+      ref={rootRef}
+      className={cn(
+        "flex flex-col lg:flex-row bg-background overflow-hidden",
+        isFull ? "h-screen" : "h-[calc(100vh-3.5rem)]",
+      )}
+    >
+      {!chatOnly && (
+        <main className="flex-1 flex flex-col min-w-0 min-h-0">
+          <header className="h-14 shrink-0 border-b border-border flex items-center px-4 gap-3">
+            <Link to="/app/collaborate" className="text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-violet-500 shadow-lg shadow-pink-500/30">
+              <Tv className="h-4 w-4 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold truncate">{party.title}</p>
+              <p className="text-[10px] text-muted-foreground -mt-0.5">
+                {active.length} watching · {party.media_kind.toUpperCase()}
+              </p>
+            </div>
+            <Button
+              onClick={toggleFullscreen}
+              variant="ghost"
+              size="sm"
+              title={isFull ? "Exit fullscreen" : "Fullscreen"}
+            >
+              {isFull ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+            </Button>
+            <Button
+              onClick={() => setShowChat((v) => !v)}
+              variant="ghost"
+              size="sm"
+              className="hidden lg:inline-flex"
+              title={showChat ? "Hide chat" : "Show chat"}
+            >
+              {showChat ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
+            </Button>
+            <Button
+              onClick={() => setChatOnly(true)}
+              variant="ghost"
+              size="sm"
+              title="Chat-only mode"
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+            </Button>
+            {isHost ? (
+              <Button onClick={endParty} variant="destructive" size="sm">End party</Button>
             ) : (
-              <iframe
-                src={party.media_url}
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-                className="w-full h-full border-0"
-                title={party.title}
-              />
+              <Button onClick={leaveParty} variant="outline" size="sm"><LogOut className="h-3.5 w-3.5 mr-1" />Leave</Button>
             )}
-          </div>
-        </div>
+          </header>
 
-        {!isHost && party.media_kind !== "iframe" && (
-          <div className="px-4 py-2 text-[11px] text-muted-foreground text-center border-t border-border">
-            Synced with host · drift auto-corrects every few seconds
+          <div className="flex-1 min-h-0 flex items-center justify-center bg-black/80 p-2 sm:p-3">
+            <div className={cn(
+              "w-full h-full overflow-hidden border border-white/10 shadow-2xl bg-black grid place-items-center",
+              isFull ? "max-w-none rounded-none" : "max-w-6xl rounded-xl",
+            )}>
+              {party.media_kind === "video" ? (
+                <video
+                  ref={videoRef}
+                  src={party.media_url}
+                  controls={isHost}
+                  playsInline
+                  onPlay={() => pushState({ is_playing: true, current_time_sec: videoRef.current?.currentTime ?? 0 })}
+                  onPause={() => pushState({ is_playing: false, current_time_sec: videoRef.current?.currentTime ?? 0 })}
+                  onSeeked={() => pushState({ current_time_sec: videoRef.current?.currentTime ?? 0 })}
+                  className="w-full h-full object-contain"
+                />
+              ) : party.media_kind === "youtube" ? (
+                <div id={`yt-${partyId}`} className="w-full h-full" />
+              ) : (
+                <iframe
+                  src={party.media_url}
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                  title={party.title}
+                />
+              )}
+            </div>
           </div>
-        )}
-      </main>
+        </main>
+      )}
 
-      <aside className="lg:w-80 shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-background/60 backdrop-blur-xl flex flex-col max-h-[45vh] lg:max-h-none">
-        <div className="p-3 border-b border-border">
-          <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5">
-            <Users className="h-3 w-3" /> Watching now · {active.length}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
+      {(showChat || chatOnly) && (
+        <aside className={cn(
+          "shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-background/70 backdrop-blur-xl flex flex-col",
+          chatOnly ? "flex-1 w-full max-h-none" : "lg:w-80 max-h-[45vh] lg:max-h-none",
+        )}>
+          <div className="p-3 border-b border-border flex items-center gap-2">
+            <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 flex-1">
+              <Users className="h-3 w-3" /> Watching now · {active.length}
+            </p>
+            {chatOnly && (
+              <Button onClick={() => setChatOnly(false)} variant="ghost" size="sm" title="Show video">
+                <MessageSquareOff className="h-3.5 w-3.5 mr-1" /> Exit chat-only
+              </Button>
+            )}
+            <Button onClick={toggleFullscreen} variant="ghost" size="sm">
+              {isFull ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+            </Button>
+          </div>
+          <div className="p-2 border-b border-border flex flex-wrap gap-1.5">
             {active.map((p) => (
               <div key={p.id} className={cn(
                 "flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px]",
@@ -365,34 +408,45 @@ function HangoutRoom() {
               </div>
             ))}
           </div>
-        </div>
-        <div ref={chatRef} className="flex-1 overflow-y-auto scrollbar-thin p-3 space-y-2 text-sm">
-          {messages.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-6">Say something while you watch 🎬</p>
-          ) : messages.map((m) => {
-            const mine = m.user_id === user?.id;
-            return (
-              <div key={m.id} className={cn("flex flex-col", mine && "items-end")}>
-                <span className="text-[10px] text-muted-foreground">{m.email?.split("@")[0]}</span>
-                <span className={cn(
-                  "inline-block max-w-[85%] rounded-xl px-2.5 py-1.5 break-words",
-                  mine ? "bg-primary text-primary-foreground" : "bg-accent/60",
-                )}>{m.body}</span>
-              </div>
-            );
-          })}
-        </div>
-        <div className="border-t border-border p-2 flex gap-2">
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") sendMsg(); }}
-            placeholder="Type a message…"
-            className="flex-1 rounded-lg bg-accent/40 border border-border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <Button onClick={sendMsg} size="icon" className="shrink-0 h-8 w-8"><Send className="h-3.5 w-3.5" /></Button>
-        </div>
-      </aside>
+          <div ref={chatRef} className="flex-1 overflow-y-auto scrollbar-thin p-3 space-y-2 text-sm">
+            {messages.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-6">Say something while you watch 🎬</p>
+            ) : messages.map((m) => {
+              const mine = m.user_id === user?.id;
+              return (
+                <div key={m.id} className={cn("flex flex-col glide-in", mine && "items-end")}>
+                  <span className="text-[10px] text-muted-foreground">{m.email?.split("@")[0]}</span>
+                  <span className={cn(
+                    "inline-block max-w-[85%] rounded-xl px-2.5 py-1.5 break-words",
+                    mine ? "bg-primary text-primary-foreground" : "bg-accent/60",
+                  )}>{m.body}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="border-t border-border p-2 flex gap-2">
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") sendMsg(); }}
+              placeholder="Type a message…"
+              className="flex-1 rounded-lg bg-accent/40 border border-border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <Button onClick={sendMsg} size="icon" className="shrink-0 h-8 w-8"><Send className="h-3.5 w-3.5" /></Button>
+          </div>
+        </aside>
+      )}
+
+      {!chatOnly && !showChat && (
+        <button
+          onClick={() => setShowChat(true)}
+          className="hidden lg:flex fixed bottom-6 right-6 z-30 h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/30 hover:scale-105 transition"
+          aria-label="Open chat"
+        >
+          <MessageSquare className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
+}
 }
