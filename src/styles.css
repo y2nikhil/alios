@@ -50,14 +50,14 @@
   --color-unproductive: var(--unproductive);
 }
 
-/* DARK — deep near-black with subtle violet aurora */
+/* DARK — pitch near-black, deep violet aurora */
 :root {
   --radius: 0.875rem;
-  --background: oklch(0.08 0.012 265);
-  --foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.13 0.018 265 / 0.7);
-  --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.11 0.015 265);
+  --background: oklch(0.035 0.008 265);
+  --foreground: oklch(0.98 0.004 250);
+  --card: oklch(0.085 0.014 265 / 0.78);
+  --card-foreground: oklch(0.98 0.004 250);
+  --popover: oklch(0.07 0.012 265);
   --popover-foreground: oklch(0.97 0.005 250);
   --primary: oklch(0.72 0.18 280);
   --primary-foreground: oklch(0.99 0.005 280);
