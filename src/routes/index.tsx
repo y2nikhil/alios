@@ -38,9 +38,18 @@ function LandingPage() {
     <div className="min-h-screen relative overflow-hidden">
       {/* Cosmic background glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-violet-500/20 blur-[120px]" />
-        <div className="absolute top-40 -right-40 h-[600px] w-[600px] rounded-full bg-cyan-400/15 blur-[140px]" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[400px] w-[800px] rounded-full bg-fuchsia-500/10 blur-[120px]" />
+        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-violet-500/25 blur-[120px] animate-blob" />
+        <div className="absolute top-40 -right-40 h-[600px] w-[600px] rounded-full bg-cyan-400/15 blur-[140px] animate-blob" style={{ animationDelay: "-6s" }} />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[400px] w-[800px] rounded-full bg-fuchsia-500/12 blur-[120px] animate-blob" style={{ animationDelay: "-12s" }} />
+        {/* Floating illustration dots */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dotgrid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="1" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dotgrid)" />
+        </svg>
       </div>
 
       {/* Top nav */}
@@ -135,15 +144,15 @@ function LandingPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-            className="relative"
+            className="relative animate-float"
           >
-            <div className="absolute -inset-8 bg-gradient-to-br from-violet-500/20 to-cyan-400/20 blur-3xl rounded-full" />
+            <div className="absolute -inset-8 bg-gradient-to-br from-violet-500/30 to-cyan-400/20 blur-3xl rounded-full" />
             <img
               src={landingHero}
               alt="ALIOS dashboard preview with mind map, analytics, and focus tracking"
               width={1024}
               height={1024}
-              className="relative rounded-3xl border border-white/10 shadow-2xl shadow-violet-500/20"
+              className="relative rounded-3xl border border-white/10 shadow-2xl shadow-violet-500/20 hover-lift"
             />
           </motion.div>
         </div>
@@ -206,7 +215,7 @@ function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5 }}
-                  className="glass rounded-2xl p-6 hover:bg-white/[0.05] transition-colors"
+                  className="glass rounded-2xl p-6 hover:bg-white/[0.05] hover-lift"
                 >
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${f.grad} shadow-lg`}>
                     <Icon className="h-5 w-5 text-white" />
