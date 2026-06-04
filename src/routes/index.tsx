@@ -144,15 +144,15 @@ function LandingPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-            className="relative"
+            className="relative animate-float"
           >
-            <div className="absolute -inset-8 bg-gradient-to-br from-violet-500/20 to-cyan-400/20 blur-3xl rounded-full" />
+            <div className="absolute -inset-8 bg-gradient-to-br from-violet-500/30 to-cyan-400/20 blur-3xl rounded-full" />
             <img
               src={landingHero}
               alt="ALIOS dashboard preview with mind map, analytics, and focus tracking"
               width={1024}
               height={1024}
-              className="relative rounded-3xl border border-white/10 shadow-2xl shadow-violet-500/20"
+              className="relative rounded-3xl border border-white/10 shadow-2xl shadow-violet-500/20 hover-lift"
             />
           </motion.div>
         </div>
