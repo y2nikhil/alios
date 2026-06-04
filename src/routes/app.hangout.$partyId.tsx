@@ -56,10 +56,28 @@ function HangoutRoom() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [draft, setDraft] = useState("");
+  const [showChat, setShowChat] = useState(true);
+  const [chatOnly, setChatOnly] = useState(false);
+  const [isFull, setIsFull] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const ytPlayerRef = useRef<any>(null);
   const lastRemoteUpdate = useRef<number>(0);
+
+  const toggleFullscreen = async () => {
+    const el = rootRef.current;
+    if (!el) return;
+    try {
+      if (!document.fullscreenElement) { await el.requestFullscreen(); setIsFull(true); }
+      else { await document.exitFullscreen(); setIsFull(false); }
+    } catch {}
+  };
+  useEffect(() => {
+    const h = () => setIsFull(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", h);
+    return () => document.removeEventListener("fullscreenchange", h);
+  }, []);
 
   const isHost = !!user && !!party && user.id === party.host_id;
 
