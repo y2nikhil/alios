@@ -215,7 +215,7 @@ function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5 }}
-                  className="glass rounded-2xl p-6 hover:bg-white/[0.05] transition-colors"
+                  className="glass rounded-2xl p-6 hover:bg-white/[0.05] hover-lift"
                 >
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${f.grad} shadow-lg`}>
                     <Icon className="h-5 w-5 text-white" />
