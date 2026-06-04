@@ -91,15 +91,15 @@
   --unproductive: oklch(0.7 0.18 25);
 
   --gradient-bg:
-    radial-gradient(ellipse 60% 45% at 15% 0%, oklch(0.22 0.14 285 / 0.35), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 100% 10%, oklch(0.2 0.14 200 / 0.22), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.18 0.12 320 / 0.2), transparent 65%),
-    oklch(0.055 0.01 265);
-  --glass-bg: oklch(0.12 0.018 265 / 0.6);
-  --glass-border: oklch(1 0 0 / 0.06);
+    radial-gradient(ellipse 55% 40% at 12% 0%, oklch(0.18 0.13 285 / 0.32), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 100% 5%, oklch(0.16 0.13 200 / 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 50% 100%, oklch(0.14 0.11 320 / 0.18), transparent 65%),
+    oklch(0.028 0.008 265);
+  --glass-bg: oklch(0.075 0.014 265 / 0.66);
+  --glass-border: oklch(1 0 0 / 0.05);
   --glow-primary: 0 0 40px oklch(0.72 0.18 280 / 0.35);
-  --shadow-card: 0 10px 40px -12px oklch(0 0 0 / 0.6),
-    inset 0 1px 0 0 oklch(1 0 0 / 0.04);
+  --shadow-card: 0 10px 40px -12px oklch(0 0 0 / 0.75),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.035);
 }
 
 
