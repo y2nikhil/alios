@@ -1,8 +1,8 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
-  Shield, Crown, MessageSquare, Youtube, Tv, Radio,
+  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -55,7 +55,7 @@ function LiveTimer() {
   );
 }
 
-function SidebarAuxList() {
+function SidebarAuxList({ onItem }: { onItem?: () => void }) {
   const { statuses, activeSession, switchTo } = useAux();
   return (
     <div className="flex-1 overflow-y-auto scrollbar-thin px-2 py-2 space-y-1">
@@ -67,7 +67,7 @@ function SidebarAuxList() {
         return (
           <button
             key={s.id}
-            onClick={() => switchTo(s.id)}
+            onClick={() => { switchTo(s.id); onItem?.(); }}
             className={cn(
               "group w-full flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm transition-all",
               "hover:bg-accent/40",
@@ -91,10 +91,86 @@ function SidebarAuxList() {
   );
 }
 
-function ShellInner() {
+function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose: () => void }) {
   const location = useLocation();
   const { user } = useAuth();
+  return (
+    <div className="flex h-full w-64 flex-col border-r border-white/5 bg-[oklch(0.05_0.012_265)]/95 backdrop-blur-xl">
+      <div className="flex h-14 items-center justify-between gap-2 px-4 border-b border-white/5">
+        <Link to="/" className="flex items-center gap-2" onClick={onClose}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
+            <Sparkles className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <p className="text-sm font-bold tracking-tight">ALIOS</p>
+            <p className="text-[10px] text-muted-foreground -mt-0.5">AI Life OS</p>
+          </div>
+        </Link>
+        <button
+          onClick={onClose}
+          className="lg:hidden h-8 w-8 grid place-items-center rounded-md hover:bg-white/5"
+          aria-label="Close sidebar"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      <nav className="px-2 py-3 space-y-0.5">
+        {NAV.map((item) => {
+          const active =
+            item.to === "/app"
+              ? location.pathname === "/app" || location.pathname === "/app/"
+              : location.pathname.startsWith(item.to);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={onClose}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                active
+                  ? "bg-accent/70 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/30",
+              )}
+            >
+              <Icon className={cn("h-4 w-4", item.label === "Super" && "text-amber-400")} />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="h-px bg-white/5 mx-2" />
+      <SidebarAuxList onItem={onClose} />
+
+      <div className="border-t border-white/5 p-3">
+        <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+      </div>
+    </div>
+  );
+}
+
+function ShellInner() {
+  const location = useLocation();
   const { isAdmin, isSuperAdmin } = useRole();
+  const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false); // hover-open behavior
+
+  // close drawer on route change
+  useEffect(() => { setOpen(false); }, [location.pathname]);
+
+  // Keyboard shortcut: \ toggles sidebar
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "\\" && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        setOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const NAV = [
     ...BASE_NAV,
@@ -105,63 +181,60 @@ function ShellInner() {
     ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
   ];
 
+  const showSidebar = open || pinned;
+
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Sidebar */}
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-white/5 bg-[oklch(0.13_0.02_265)]/80 backdrop-blur-xl">
-        <div className="flex h-14 items-center gap-2 px-4 border-b border-white/5">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-bold tracking-tight">ALIOS</p>
-              <p className="text-[10px] text-muted-foreground -mt-0.5">AI Life OS</p>
-            </div>
-          </Link>
-        </div>
+      {/* Hover hot-zone for desktop quick-peek */}
+      <div
+        className="hidden lg:block fixed top-0 left-0 h-full w-2 z-30"
+        onMouseEnter={() => setPinned(true)}
+      />
 
-        <nav className="px-2 py-3 space-y-0.5">
-          {NAV.map((item) => {
-            const active =
-              item.to === "/app"
-                ? location.pathname === "/app" || location.pathname === "/app/"
-                : location.pathname.startsWith(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-accent/70 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/30",
-                )}
-              >
-                <Icon className={cn("h-4 w-4", item.label === "Super" && "text-amber-400")} />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="h-px bg-white/5 mx-2" />
-        <SidebarAuxList />
-
-        <div className="border-t border-white/5 p-3">
-          <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
-        </div>
-      </aside>
+      {/* Drawer sidebar */}
+      <AnimatePresence>
+        {showSidebar && (
+          <>
+            <motion.div
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => { setOpen(false); setPinned(false); }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:bg-black/40"
+            />
+            <motion.aside
+              key="drawer"
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 28, stiffness: 260 }}
+              onMouseLeave={() => { if (!open) setPinned(false); }}
+              className="fixed top-0 left-0 z-50 h-full"
+            >
+              <SidebarPanel NAV={NAV} onClose={() => { setOpen(false); setPinned(false); }} />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-14 flex items-center gap-3 border-b border-white/5 px-3 lg:px-6 bg-background/40 backdrop-blur-xl">
-          <div className="lg:hidden flex items-center shrink-0">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400">
+        <header className="h-14 flex items-center gap-3 border-b border-white/5 px-3 lg:px-6 bg-background/60 backdrop-blur-xl">
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="h-9 w-9 grid place-items-center rounded-lg hover:bg-white/5 active:scale-95 transition shrink-0"
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+          <Link to="/" className="hidden sm:flex items-center gap-2 shrink-0">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
-          </div>
+            <span className="text-sm font-bold tracking-tight">ALIOS</span>
+          </Link>
           <div className="flex-1 flex justify-center">
             <CommandBar />
           </div>
@@ -182,30 +255,6 @@ function ShellInner() {
             <Outlet />
           </motion.div>
         </main>
-
-        {/* Mobile bottom nav */}
-        <nav className="lg:hidden grid grid-cols-4 md:grid-cols-5 border-t border-white/5 bg-background/80 backdrop-blur-xl">
-          {NAV.map((item) => {
-            const active =
-              item.to === "/app"
-                ? location.pathname === "/app" || location.pathname === "/app/"
-                : location.pathname.startsWith(item.to);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors px-1 text-center",
-                  active ? "text-foreground" : "text-muted-foreground",
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
       </div>
     </div>
   );
