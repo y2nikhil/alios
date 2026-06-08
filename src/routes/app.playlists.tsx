@@ -161,26 +161,29 @@ function PlaylistsPage() {
         onCreated={() => setReloadKey((k) => k + 1)}
       />
 
-      <section className="grid gap-4 lg:grid-cols-[1.4fr_0.9fr]">
+      <section>
         <div className="glass rounded-2xl p-4 lg:p-5 space-y-3">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <h2 className="text-sm font-semibold">Assigned playlist tasks</h2>
-              <p className="text-xs text-muted-foreground">Open any task to play videos and update checklist progress.</p>
+              <h2 className="text-sm font-semibold">Your playlists</h2>
+              <p className="text-xs text-muted-foreground">Open any playlist to play videos and update your checklist progress.</p>
             </div>
-            <Badge variant="outline" className="text-[11px]">Separate section enabled</Badge>
+            <Badge variant="outline" className="text-[11px]">{tasks.length} total</Badge>
           </div>
 
           {loading ? (
-            <div className="py-8 text-sm text-muted-foreground">Loading playlist tasks…</div>
+            <div className="py-8 text-sm text-muted-foreground">Loading playlists…</div>
           ) : tasks.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border bg-accent/20 p-8 text-center">
+            <div className="rounded-2xl border border-dashed border-border bg-accent/20 p-10 text-center">
               <ListVideo className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-3 text-sm font-medium">No playlist tasks yet</p>
-              <p className="mt-1 text-xs text-muted-foreground">Admins can create a YouTube playlist checklist task from the Admin panel.</p>
+              <p className="mt-3 text-sm font-medium">No playlists yet</p>
+              <p className="mt-1 text-xs text-muted-foreground">Hit "New playlist" above to create your first YouTube learning track.</p>
+              <Button onClick={() => setCreating(true)} className="mt-4" size="sm">
+                <Plus className="h-4 w-4 mr-1.5" /> Create playlist
+              </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {tasks.map((task) => {
                 const totalVideos = videoCounts[task.id] ?? 0;
                 const doneVideos = completedCounts[task.id] ?? 0;
@@ -190,30 +193,25 @@ function PlaylistsPage() {
                   <button
                     key={task.id}
                     onClick={() => setOpenTask(task)}
-                    className="w-full text-left rounded-xl border border-border bg-background/30 hover:bg-accent/25 transition-colors p-4"
+                    className="group relative overflow-hidden text-left rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] hover:border-white/20 hover:from-white/[0.07] transition-all p-5"
                   >
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <PlayCircle className="h-4 w-4 text-rose-500 shrink-0" />
-                          <p className="text-sm font-semibold truncate">{task.title}</p>
-                          <Badge variant="secondary" className="capitalize">{task.status.replace("_", " ")}</Badge>
-                        </div>
-                        {task.description && (
-                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{task.description}</p>
-                        )}
-                        <div className="mt-3 flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
-                          <span>{doneVideos}/{totalVideos} videos complete</span>
-                          {task.due_at && <span>Due {new Date(task.due_at).toLocaleDateString()}</span>}
-                        </div>
+                    <div aria-hidden className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-rose-500/10 blur-3xl group-hover:bg-rose-500/20 transition" />
+                    <div className="relative">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <PlayCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                        <p className="text-sm font-semibold truncate flex-1">{task.title}</p>
+                        <Badge variant="secondary" className="capitalize text-[10px]">{task.status.replace("_", " ")}</Badge>
                       </div>
-                      <div className="min-w-[132px] space-y-2">
-                        <div className="h-2 rounded-full bg-accent overflow-hidden">
-                          <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                      {task.description && (
+                        <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{task.description}</p>
+                      )}
+                      <div className="mt-4 space-y-2">
+                        <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-rose-500 to-orange-400 transition-all" style={{ width: `${pct}%` }} />
                         </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">Progress</span>
-                          <span className="font-medium">{pct}%</span>
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                          <span>{doneVideos}/{totalVideos} videos · {task.due_at ? `due ${new Date(task.due_at).toLocaleDateString()}` : "no due date"}</span>
+                          <span className="font-medium text-foreground">{pct}%</span>
                         </div>
                       </div>
                     </div>
@@ -223,32 +221,8 @@ function PlaylistsPage() {
             </div>
           )}
         </div>
-
-        <aside className="glass rounded-2xl p-4 lg:p-5 space-y-4">
-          <h2 className="text-sm font-semibold">How it works</h2>
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-semibold text-foreground">1</div>
-              <p>Admin creates a task and marks it as a YouTube playlist checklist.</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-semibold text-foreground">2</div>
-              <p>Open the task here, paste video or playlist links, and play them in the built-in viewer.</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-semibold text-foreground">3</div>
-              <p>Mark items complete to track progress for each assigned person.</p>
-            </div>
-          </div>
-          <div className="rounded-xl bg-accent/25 p-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              Dedicated navigation added
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">You can now access Playlists directly from the main app sidebar and mobile nav.</p>
-          </div>
-        </aside>
       </section>
+
 
       <Dialog open={!!openTask} onOpenChange={(open) => !open && setOpenTask(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin">
