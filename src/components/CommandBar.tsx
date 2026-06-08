@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from "react";
-import { Search, Sparkles, Loader2, Tv, Users, MessageSquare, Brain, BarChart3 } from "lucide-react";
+import { Search, Sparkles, Loader2, Tv, MessageSquare, Brain, BarChart3, User as UserIcon, Mail, X } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+
+type Person = {
+  id: string;
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  email: string | null;
+  status: { name: string; color: string; since: string } | null;
+};
 
 type Result =
   | { kind: "page"; label: string; to: string; icon: any }
   | { kind: "group"; label: string; emoji: string; id: string }
   | { kind: "party"; label: string; id: string }
-  | { kind: "person"; label: string; id: string };
+  | { kind: "person"; person: Person };
 
 const PAGES: Result[] = [
   { kind: "page", label: "Command center", to: "/app", icon: Sparkles },
@@ -29,6 +38,7 @@ export function CommandBar() {
   const [asking, setAsking] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -46,17 +56,35 @@ export function CommandBar() {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
+  // Click outside
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
   useEffect(() => {
     let cancelled = false;
     const term = q.trim().toLowerCase();
     if (!term) { setResults(PAGES); return; }
     (async () => {
-      const [{ data: groups }, { data: parties }] = await Promise.all([
-        supabase.from("groups").select("id, name, emoji").ilike("name", `%${term}%`).limit(5),
-        (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${term}%`).limit(5),
+      const { data: { session } } = await supabase.auth.getSession();
+      const [{ data: groups }, { data: parties }, peopleRes] = await Promise.all([
+        supabase.from("groups").select("id, name, emoji").ilike("name", `%${term}%`).limit(4),
+        (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${term}%`).limit(4),
+        fetch("/api/search-people", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
+          body: JSON.stringify({ q: term }),
+        }).then((r) => r.json()).catch(() => ({ results: [] })),
       ]);
       if (cancelled) return;
+      const people: Person[] = peopleRes?.results ?? [];
       const next: Result[] = [
+        ...people.map((p) => ({ kind: "person" as const, person: p })),
         ...PAGES.filter((p) => p.kind === "page" && p.label.toLowerCase().includes(term)),
         ...((groups ?? []) as any[]).map((g) => ({ kind: "group" as const, label: g.name, emoji: g.emoji ?? "💬", id: g.id })),
         ...((parties ?? []) as any[]).filter((p) => p.visibility !== "private").map((p) => ({ kind: "party" as const, label: p.title, id: p.id })),
@@ -92,6 +120,7 @@ export function CommandBar() {
     if (r.kind === "page") navigate({ to: r.to });
     else if (r.kind === "group") navigate({ to: "/app/collaborate" });
     else if (r.kind === "party") navigate({ to: "/app/hangout/$partyId", params: { partyId: r.id } });
+    else if (r.kind === "person") navigate({ to: "/app/u/$userId", params: { userId: r.person.id } });
   };
 
   return (
@@ -106,8 +135,11 @@ export function CommandBar() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm grid place-items-start pt-[10vh] px-4" onClick={() => setOpen(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-xl rounded-2xl border border-white/10 bg-[oklch(0.14_0.02_265)] shadow-2xl overflow-hidden">
+        <div className="fixed inset-x-0 top-[64px] z-50 flex justify-center px-4 pointer-events-none">
+          <div
+            ref={panelRef}
+            className="pointer-events-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-[oklch(0.09_0.015_265)/0.96] backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-white/5"
+          >
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               {askMode ? <Sparkles className="h-4 w-4 text-pink-400" /> : <Search className="h-4 w-4 text-muted-foreground" />}
               <input
@@ -120,7 +152,7 @@ export function CommandBar() {
                     else if (results[0]) pick(results[0]);
                   }
                 }}
-                placeholder={askMode ? "Ask anything…" : "Search…"}
+                placeholder={askMode ? "Ask anything…" : "Search users (@username, name, email), pages, parties…"}
                 className="flex-1 bg-transparent outline-none text-sm"
               />
               <button
@@ -132,15 +164,18 @@ export function CommandBar() {
               >
                 {askMode ? "Search" : "Ask AI"}
               </button>
+              <button onClick={() => setOpen(false)} className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-white/5">
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
-            <div className="max-h-[55vh] overflow-y-auto scrollbar-thin">
+            <div className="max-h-[60vh] overflow-y-auto scrollbar-thin">
               {askMode ? (
                 <div className="p-4 space-y-3">
                   {asking ? (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Thinking…</div>
                   ) : answer ? (
-                    <div className="rounded-xl bg-white/5 p-4 text-sm leading-relaxed">{answer}</div>
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-4 text-sm leading-relaxed whitespace-pre-wrap">{answer}</div>
                   ) : (
                     <div className="text-xs text-muted-foreground">Ask about your productivity, "how do I focus better", or anything else. Enter to send.</div>
                   )}
@@ -153,14 +188,36 @@ export function CommandBar() {
                     <li key={`${r.kind}-${i}`}>
                       <button
                         onClick={() => pick(r)}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-white/5 text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-left"
                       >
-                        {r.kind === "page" && <r.icon className="h-4 w-4 text-muted-foreground" />}
+                        {r.kind === "page" && <r.icon className="h-4 w-4 text-muted-foreground shrink-0" />}
                         {r.kind === "group" && <span className="text-base">{r.emoji}</span>}
-                        {r.kind === "party" && <Tv className="h-4 w-4 text-pink-400" />}
-                        {r.kind === "person" && <Users className="h-4 w-4 text-cyan-400" />}
-                        <span className="flex-1 truncate">{r.label}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase">{r.kind}</span>
+                        {r.kind === "party" && <Tv className="h-4 w-4 text-pink-400 shrink-0" />}
+                        {r.kind === "person" && (
+                          <div className="h-7 w-7 shrink-0 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-[11px] font-semibold text-white">
+                            {(r.person.display_name?.[0] ?? r.person.username?.[0] ?? "?").toUpperCase()}
+                          </div>
+                        )}
+                        {r.kind === "person" ? (
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium truncate">{r.person.display_name ?? r.person.username ?? "User"}</span>
+                              {r.person.username && <span className="text-xs text-muted-foreground truncate">@{r.person.username}</span>}
+                            </div>
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-muted-foreground">
+                              {r.person.email && (<span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" />{r.person.email}</span>)}
+                              {r.person.status && (
+                                <span className="inline-flex items-center gap-1">
+                                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: r.person.status.color }} />
+                                  {r.person.status.name}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="flex-1 truncate">{(r as any).label}</span>
+                        )}
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{r.kind === "person" ? "user" : r.kind}</span>
                       </button>
                     </li>
                   ))}
