@@ -25,6 +25,7 @@ import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiYoutubeParseRouteImport } from './routes/api.youtube-parse'
+import { Route as ApiSearchPeopleRouteImport } from './routes/api.search-people'
 import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
 import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
 import { Route as ApiAiAskRouteImport } from './routes/api.ai-ask'
@@ -113,6 +114,11 @@ const ApiYoutubeParseRoute = ApiYoutubeParseRouteImport.update({
   path: '/api/youtube-parse',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSearchPeopleRoute = ApiSearchPeopleRouteImport.update({
+  id: '/api/search-people',
+  path: '/api/search-people',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiMindmapRoute = ApiAiMindmapRouteImport.update({
   id: '/api/ai-mindmap',
   path: '/api/ai-mindmap',
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
+  '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/api/search-people'
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/api/search-people'
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
@@ -283,6 +294,7 @@ export interface FileRouteTypes {
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
+    | '/api/search-people'
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   ApiAiAskRoute: typeof ApiAiAskRoute
   ApiAiInsightsRoute: typeof ApiAiInsightsRoute
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
+  ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
 }
 
@@ -426,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiYoutubeParseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/search-people': {
+      id: '/api/search-people'
+      path: '/api/search-people'
+      fullPath: '/api/search-people'
+      preLoaderRoute: typeof ApiSearchPeopleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai-mindmap': {
       id: '/api/ai-mindmap'
       path: '/api/ai-mindmap'
@@ -524,8 +544,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiAskRoute: ApiAiAskRoute,
   ApiAiInsightsRoute: ApiAiInsightsRoute,
   ApiAiMindmapRoute: ApiAiMindmapRoute,
+  ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
