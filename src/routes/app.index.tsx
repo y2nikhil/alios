@@ -14,6 +14,7 @@ import { ManagerNotes } from "@/components/ManagerNotes";
 import { AdherenceRing } from "@/components/AdherenceRing";
 import { MyTasks } from "@/components/MyTasks";
 import { LivePartiesPanel } from "@/components/LivePartiesPanel";
+import { ContinuePlaylistsPanel } from "@/components/ContinuePlaylistsPanel";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -199,6 +200,9 @@ function CommandCenter() {
         </div>
         <MiniTimeline />
       </div>
+
+      {/* Continue watching playlists */}
+      <ContinuePlaylistsPanel />
 
       {/* Live watch parties */}
       <LivePartiesPanel />
