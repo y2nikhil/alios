@@ -229,6 +229,7 @@ export function CommandBar() {
             </div>
           </div>
         </div>
+        </>
       )}
     </>
   );
