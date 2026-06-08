@@ -201,6 +201,9 @@ function CommandCenter() {
         <MiniTimeline />
       </div>
 
+      {/* Continue watching playlists */}
+      <ContinuePlaylistsPanel />
+
       {/* Live watch parties */}
       <LivePartiesPanel />
 
