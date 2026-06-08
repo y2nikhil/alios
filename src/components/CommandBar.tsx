@@ -138,7 +138,8 @@ export function CommandBar() {
         <div className="fixed inset-x-0 top-[64px] z-50 flex justify-center px-4 pointer-events-none">
           <div
             ref={panelRef}
-            className="pointer-events-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-[oklch(0.09_0.015_265)/0.96] backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-white/5"
+            className="pointer-events-auto w-full max-w-2xl rounded-2xl border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden ring-1 ring-white/5"
+            style={{ backgroundColor: "oklch(0.09 0.015 265 / 0.96)" }}
           >
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
               {askMode ? <Sparkles className="h-4 w-4 text-pink-400" /> : <Search className="h-4 w-4 text-muted-foreground" />}
