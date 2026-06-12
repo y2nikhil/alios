@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
-  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X,
+  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -20,6 +20,7 @@ const BASE_NAV = [
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
   { to: "/app/collaborate", label: "Collaborate", icon: MessageSquare },
+  { to: "/app/friends", label: "Friends", icon: Users },
   { to: "/app/party", label: "Watch Party", icon: Tv },
   { to: "/app/playlists", label: "Playlists", icon: Youtube },
   { to: "/app/settings", label: "Settings", icon: Settings },
