@@ -15,6 +15,7 @@ import { AdherenceRing } from "@/components/AdherenceRing";
 import { MyTasks } from "@/components/MyTasks";
 import { LivePartiesPanel } from "@/components/LivePartiesPanel";
 import { ContinuePlaylistsPanel } from "@/components/ContinuePlaylistsPanel";
+import { CountdownCalendar } from "@/components/CountdownCalendar";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -266,6 +267,9 @@ function CommandCenter() {
           })}
         </div>
       </section>
+
+      <CountdownCalendar />
+
 
       {/* Manager Notes + Tasks + Goal/Adherence */}
       <div className="grid gap-4 lg:grid-cols-3">
