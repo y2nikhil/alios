@@ -268,6 +268,9 @@ function CommandCenter() {
         </div>
       </section>
 
+      <CountdownCalendar />
+
+
       {/* Manager Notes + Tasks + Goal/Adherence */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="glass rounded-2xl p-6">
