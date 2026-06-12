@@ -21,6 +21,7 @@ import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
 import { Route as AppPartyRouteImport } from './routes/app.party'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppLiveRouteImport } from './routes/app.live'
+import { Route as AppFriendsRouteImport } from './routes/app.friends'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
@@ -92,6 +93,11 @@ const AppNotificationsRoute = AppNotificationsRouteImport.update({
 const AppLiveRoute = AppLiveRouteImport.update({
   id: '/live',
   path: '/live',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFriendsRoute = AppFriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/party': typeof AppPartyRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/party': typeof AppPartyRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/party': typeof AppPartyRoute
@@ -248,6 +257,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/friends'
     | '/app/live'
     | '/app/notifications'
     | '/app/party'
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/friends'
     | '/app/live'
     | '/app/notifications'
     | '/app/party'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/analytics'
     | '/app/collaborate'
+    | '/app/friends'
     | '/app/live'
     | '/app/notifications'
     | '/app/party'
@@ -411,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLiveRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/friends': {
+      id: '/app/friends'
+      path: '/friends'
+      fullPath: '/app/friends'
+      preLoaderRoute: typeof AppFriendsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/collaborate': {
       id: '/app/collaborate'
       path: '/collaborate'
@@ -502,6 +521,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppFriendsRoute: typeof AppFriendsRoute
   AppLiveRoute: typeof AppLiveRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPartyRoute: typeof AppPartyRoute
@@ -520,6 +540,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppFriendsRoute: AppFriendsRoute,
   AppLiveRoute: AppLiveRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPartyRoute: AppPartyRoute,
