@@ -343,6 +343,33 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          accepted_at: string | null
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       group_members: {
         Row: {
           group_id: string
@@ -712,6 +739,7 @@ export type Database = {
           id: string
           theme: string
           timeline_public: boolean
+          timeline_visibility: string
           updated_at: string
           username: string | null
         }
@@ -723,6 +751,7 @@ export type Database = {
           id: string
           theme?: string
           timeline_public?: boolean
+          timeline_visibility?: string
           updated_at?: string
           username?: string | null
         }
@@ -734,6 +763,7 @@ export type Database = {
           id?: string
           theme?: string
           timeline_public?: boolean
+          timeline_visibility?: string
           updated_at?: string
           username?: string | null
         }
@@ -1198,6 +1228,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      are_friends: { Args: { _a: string; _b: string }; Returns: boolean }
       can_edit_board: {
         Args: { _board: string; _user: string }
         Returns: boolean
