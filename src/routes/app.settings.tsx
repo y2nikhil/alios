@@ -32,6 +32,9 @@ function SettingsPage() {
       </div>
 
       <ProfileBlock />
+      <PrivacyBlock />
+
+
 
 
       <div className="glass rounded-2xl">
