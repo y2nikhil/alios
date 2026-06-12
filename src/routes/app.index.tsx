@@ -15,6 +15,7 @@ import { AdherenceRing } from "@/components/AdherenceRing";
 import { MyTasks } from "@/components/MyTasks";
 import { LivePartiesPanel } from "@/components/LivePartiesPanel";
 import { ContinuePlaylistsPanel } from "@/components/ContinuePlaylistsPanel";
+import { CountdownCalendar } from "@/components/CountdownCalendar";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
