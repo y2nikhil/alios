@@ -210,3 +210,66 @@ function ProfileBlock() {
   );
 }
 
+type Visibility = "public" | "friends" | "private";
+function PrivacyBlock() {
+  const { user } = useAuth();
+  const [vis, setVis] = useState<Visibility>("public");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    (supabase.from("profiles") as any)
+      .select("timeline_visibility")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }: any) => {
+        setVis((data?.timeline_visibility as Visibility) ?? "public");
+        setLoading(false);
+      });
+  }, [user]);
+
+  const save = async (v: Visibility) => {
+    if (!user) return;
+    setVis(v);
+    setSaving(true);
+    const { error } = await (supabase.from("profiles") as any)
+      .update({ timeline_visibility: v, timeline_public: v !== "private" })
+      .eq("id", user.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Privacy updated");
+  };
+
+  if (loading) return null;
+  const opts: { v: Visibility; title: string; desc: string }[] = [
+    { v: "public", title: "Public 🌍", desc: "Anyone with the link can see your timeline." },
+    { v: "friends", title: "Friends only 👥", desc: "Only people you've accepted as friends." },
+    { v: "private", title: "Private 🔒", desc: "Only you can view your timeline." },
+  ];
+  return (
+    <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold">Timeline privacy</h3>
+          <p className="text-xs text-muted-foreground">Who can see your activity & profile</p>
+        </div>
+        {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+      </div>
+      <div className="grid sm:grid-cols-3 gap-2">
+        {opts.map((o) => (
+          <button
+            key={o.v}
+            onClick={() => save(o.v)}
+            className={`text-left rounded-xl p-3 border transition ${vis === o.v ? "border-violet-400 bg-violet-500/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}
+          >
+            <p className="text-sm font-semibold">{o.title}</p>
+            <p className="text-xs text-muted-foreground mt-1">{o.desc}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
