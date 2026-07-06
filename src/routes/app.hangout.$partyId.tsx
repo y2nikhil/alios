@@ -66,6 +66,11 @@ function HangoutRoom() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const ytPlayerRef = useRef<any>(null);
   const lastRemoteUpdate = useRef<number>(0);
+  const [volume, setVolume] = useState(80);
+  const [muted, setMuted] = useState(false);
+  const [curTime, setCurTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [scrubbing, setScrubbing] = useState(false);
 
   const toggleFullscreen = async () => {
     const el = rootRef.current;
