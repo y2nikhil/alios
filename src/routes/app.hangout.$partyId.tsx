@@ -3,10 +3,12 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Send, Users, Tv, LogOut, Crown, Loader2, ArrowLeft,
   Maximize2, Minimize2, MessageSquare, MessageSquareOff, PanelRightClose, PanelRightOpen,
+  Play, Pause, Volume2, VolumeX,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { parseYouTube, ytEmbedUrl } from "@/lib/youtube";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -64,6 +66,11 @@ function HangoutRoom() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const ytPlayerRef = useRef<any>(null);
   const lastRemoteUpdate = useRef<number>(0);
+  const [volume, setVolume] = useState(80);
+  const [muted, setMuted] = useState(false);
+  const [curTime, setCurTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [scrubbing, setScrubbing] = useState(false);
 
   const toggleFullscreen = async () => {
     const el = rootRef.current;
@@ -80,6 +87,63 @@ function HangoutRoom() {
   }, []);
 
   const isHost = !!user && !!party && user.id === party.host_id;
+
+  // Tick current time + duration from active player
+  useEffect(() => {
+    if (!party) return;
+    const id = setInterval(() => {
+      if (scrubbing) return;
+      if (party.media_kind === "video" && videoRef.current) {
+        const v = videoRef.current;
+        if (isFinite(v.duration)) setDuration(v.duration);
+        setCurTime(v.currentTime);
+      } else if (party.media_kind === "youtube" && ytPlayerRef.current?.getCurrentTime) {
+        try {
+          const d = ytPlayerRef.current.getDuration?.() ?? 0;
+          if (d) setDuration(d);
+          setCurTime(ytPlayerRef.current.getCurrentTime());
+        } catch {}
+      }
+    }, 500);
+    return () => clearInterval(id);
+  }, [party, scrubbing]);
+
+  // Apply volume/mute locally
+  useEffect(() => {
+    const vol = muted ? 0 : volume / 100;
+    if (videoRef.current) { videoRef.current.volume = vol; videoRef.current.muted = muted; }
+    try {
+      ytPlayerRef.current?.setVolume?.(muted ? 0 : volume);
+      if (muted) ytPlayerRef.current?.mute?.(); else ytPlayerRef.current?.unMute?.();
+    } catch {}
+  }, [volume, muted, party?.media_kind]);
+
+  const fmtTime = (s: number) => {
+    if (!isFinite(s) || s < 0) s = 0;
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  const seekTo = (t: number) => {
+    if (!party) return;
+    if (party.media_kind === "video" && videoRef.current) videoRef.current.currentTime = t;
+    if (party.media_kind === "youtube") { try { ytPlayerRef.current?.seekTo?.(t, true); } catch {} }
+    setCurTime(t);
+    if (isHost) pushState({ current_time_sec: t });
+  };
+
+  const togglePlay = () => {
+    if (!party) return;
+    const next = !party.is_playing;
+    if (party.media_kind === "video" && videoRef.current) {
+      if (next) videoRef.current.play().catch(() => {}); else videoRef.current.pause();
+    }
+    if (party.media_kind === "youtube") {
+      try { if (next) ytPlayerRef.current?.playVideo?.(); else ytPlayerRef.current?.pauseVideo?.(); } catch {}
+    }
+    if (isHost) pushState({ is_playing: next });
+  };
+
 
   useEffect(() => {
     if (!user) return;
@@ -376,7 +440,50 @@ function HangoutRoom() {
               )}
             </div>
           </div>
+
+          {(party.media_kind === "video" || party.media_kind === "youtube") && (
+            <div className="shrink-0 border-t border-border bg-background/70 backdrop-blur-xl px-3 sm:px-4 py-2.5 flex items-center gap-3">
+              <Button
+                onClick={togglePlay}
+                size="icon"
+                variant="ghost"
+                className="h-9 w-9 shrink-0 rounded-full bg-white/5 hover:bg-white/10"
+                disabled={!isHost}
+                title={isHost ? (party.is_playing ? "Pause" : "Play") : "Only the host controls playback"}
+              >
+                {party.is_playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+              <span className="text-[11px] tabular-nums text-muted-foreground w-10 text-right">{fmtTime(curTime)}</span>
+              <Slider
+                value={[Math.min(curTime, duration || 0)]}
+                max={Math.max(duration, 1)}
+                step={0.5}
+                disabled={!isHost || !duration}
+                onValueChange={(v) => { setScrubbing(true); setCurTime(v[0]); }}
+                onValueCommit={(v) => { setScrubbing(false); seekTo(v[0]); }}
+                className="flex-1"
+              />
+              <span className="text-[11px] tabular-nums text-muted-foreground w-10">{fmtTime(duration)}</span>
+              <div className="hidden sm:flex items-center gap-2 pl-2 ml-1 border-l border-white/10 w-40">
+                <button
+                  onClick={() => setMuted((m) => !m)}
+                  className="h-8 w-8 grid place-items-center rounded-lg hover:bg-white/5 transition text-muted-foreground hover:text-foreground"
+                  title={muted ? "Unmute" : "Mute"}
+                >
+                  {muted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </button>
+                <Slider
+                  value={[muted ? 0 : volume]}
+                  max={100}
+                  step={1}
+                  onValueChange={(v) => { setVolume(v[0]); if (v[0] > 0) setMuted(false); }}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          )}
         </main>
+
       )}
 
       {(showChat || chatOnly) && (

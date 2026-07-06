@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Tv, Plus, Globe, Link2, Lock, Sparkles, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Tv, Plus, Globe, Link2, Lock, Sparkles, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,8 @@ function PartyLobby() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [newOpen, setNewOpen] = useState(false);
+  const railRef = useRef<HTMLDivElement>(null);
+  const scrollBy = (dx: number) => railRef.current?.scrollBy({ left: dx, behavior: "smooth" });
 
   useEffect(() => {
     const load = async () => {
@@ -79,7 +81,17 @@ function PartyLobby() {
         <div className="flex items-center gap-2 mb-3">
           <Tv className="h-4 w-4 text-pink-400" />
           <h2 className="font-semibold">Public rooms</h2>
-          <span className="text-[10px] text-muted-foreground">· anyone can join</span>
+          <span className="text-[10px] text-muted-foreground">· swipe or use arrows</span>
+          {parties.length > 1 && (
+            <div className="ml-auto hidden sm:flex gap-1">
+              <button onClick={() => scrollBy(-360)} className="h-8 w-8 grid place-items-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition" aria-label="Scroll left">
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button onClick={() => scrollBy(360)} className="h-8 w-8 grid place-items-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition" aria-label="Scroll right">
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
         {loading ? (
           <div className="grid place-items-center py-10"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
@@ -88,13 +100,16 @@ function PartyLobby() {
             No one is hosting yet 🌙 — kick it off with the button above.
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div
+            ref={railRef}
+            className="flex gap-3 overflow-x-auto scrollbar-thin snap-x snap-mandatory pb-3 -mx-1 px-1 scroll-smooth"
+          >
             {parties.map((p) => (
               <Link
                 key={p.id}
                 to="/app/hangout/$partyId"
                 params={{ partyId: p.id }}
-                className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.02] hover:border-pink-500/40 hover:from-pink-500/10 transition p-4"
+                className="group snap-start shrink-0 w-[300px] rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.02] hover:border-pink-500/40 hover:from-pink-500/10 hover:-translate-y-0.5 transition p-4"
               >
                 <div className="aspect-video rounded-lg bg-black/50 grid place-items-center mb-3 group-hover:scale-[1.02] transition-transform">
                   <Tv className="h-8 w-8 text-pink-400/70" />
