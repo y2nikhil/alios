@@ -28,6 +28,8 @@ function PartyLobby() {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [newOpen, setNewOpen] = useState(false);
+  const railRef = useRef<HTMLDivElement>(null);
+  const scrollBy = (dx: number) => railRef.current?.scrollBy({ left: dx, behavior: "smooth" });
 
   useEffect(() => {
     const load = async () => {
