@@ -88,6 +88,63 @@ function HangoutRoom() {
 
   const isHost = !!user && !!party && user.id === party.host_id;
 
+  // Tick current time + duration from active player
+  useEffect(() => {
+    if (!party) return;
+    const id = setInterval(() => {
+      if (scrubbing) return;
+      if (party.media_kind === "video" && videoRef.current) {
+        const v = videoRef.current;
+        if (isFinite(v.duration)) setDuration(v.duration);
+        setCurTime(v.currentTime);
+      } else if (party.media_kind === "youtube" && ytPlayerRef.current?.getCurrentTime) {
+        try {
+          const d = ytPlayerRef.current.getDuration?.() ?? 0;
+          if (d) setDuration(d);
+          setCurTime(ytPlayerRef.current.getCurrentTime());
+        } catch {}
+      }
+    }, 500);
+    return () => clearInterval(id);
+  }, [party, scrubbing]);
+
+  // Apply volume/mute locally
+  useEffect(() => {
+    const vol = muted ? 0 : volume / 100;
+    if (videoRef.current) { videoRef.current.volume = vol; videoRef.current.muted = muted; }
+    try {
+      ytPlayerRef.current?.setVolume?.(muted ? 0 : volume);
+      if (muted) ytPlayerRef.current?.mute?.(); else ytPlayerRef.current?.unMute?.();
+    } catch {}
+  }, [volume, muted, party?.media_kind]);
+
+  const fmtTime = (s: number) => {
+    if (!isFinite(s) || s < 0) s = 0;
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  const seekTo = (t: number) => {
+    if (!party) return;
+    if (party.media_kind === "video" && videoRef.current) videoRef.current.currentTime = t;
+    if (party.media_kind === "youtube") { try { ytPlayerRef.current?.seekTo?.(t, true); } catch {} }
+    setCurTime(t);
+    if (isHost) pushState({ current_time_sec: t });
+  };
+
+  const togglePlay = () => {
+    if (!party) return;
+    const next = !party.is_playing;
+    if (party.media_kind === "video" && videoRef.current) {
+      if (next) videoRef.current.play().catch(() => {}); else videoRef.current.pause();
+    }
+    if (party.media_kind === "youtube") {
+      try { if (next) ytPlayerRef.current?.playVideo?.(); else ytPlayerRef.current?.pauseVideo?.(); } catch {}
+    }
+    if (isHost) pushState({ is_playing: next });
+  };
+
+
   useEffect(() => {
     if (!user) return;
     (async () => {
