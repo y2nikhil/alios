@@ -440,7 +440,50 @@ function HangoutRoom() {
               )}
             </div>
           </div>
+
+          {(party.media_kind === "video" || party.media_kind === "youtube") && (
+            <div className="shrink-0 border-t border-border bg-background/70 backdrop-blur-xl px-3 sm:px-4 py-2.5 flex items-center gap-3">
+              <Button
+                onClick={togglePlay}
+                size="icon"
+                variant="ghost"
+                className="h-9 w-9 shrink-0 rounded-full bg-white/5 hover:bg-white/10"
+                disabled={!isHost}
+                title={isHost ? (party.is_playing ? "Pause" : "Play") : "Only the host controls playback"}
+              >
+                {party.is_playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+              <span className="text-[11px] tabular-nums text-muted-foreground w-10 text-right">{fmtTime(curTime)}</span>
+              <Slider
+                value={[Math.min(curTime, duration || 0)]}
+                max={Math.max(duration, 1)}
+                step={0.5}
+                disabled={!isHost || !duration}
+                onValueChange={(v) => { setScrubbing(true); setCurTime(v[0]); }}
+                onValueCommit={(v) => { setScrubbing(false); seekTo(v[0]); }}
+                className="flex-1"
+              />
+              <span className="text-[11px] tabular-nums text-muted-foreground w-10">{fmtTime(duration)}</span>
+              <div className="hidden sm:flex items-center gap-2 pl-2 ml-1 border-l border-white/10 w-40">
+                <button
+                  onClick={() => setMuted((m) => !m)}
+                  className="h-8 w-8 grid place-items-center rounded-lg hover:bg-white/5 transition text-muted-foreground hover:text-foreground"
+                  title={muted ? "Unmute" : "Mute"}
+                >
+                  {muted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </button>
+                <Slider
+                  value={[muted ? 0 : volume]}
+                  max={100}
+                  step={1}
+                  onValueChange={(v) => { setVolume(v[0]); if (v[0] > 0) setMuted(false); }}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          )}
         </main>
+
       )}
 
       {(showChat || chatOnly) && (
