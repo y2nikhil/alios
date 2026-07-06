@@ -3,10 +3,12 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Send, Users, Tv, LogOut, Crown, Loader2, ArrowLeft,
   Maximize2, Minimize2, MessageSquare, MessageSquareOff, PanelRightClose, PanelRightOpen,
+  Play, Pause, Volume2, VolumeX,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { parseYouTube, ytEmbedUrl } from "@/lib/youtube";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
