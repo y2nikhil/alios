@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { AvatarIconRender } from "@/components/AvatarIcon";
 
 export function ProfileMenu() {
   const { user, signOut } = useAuth();
@@ -39,11 +40,16 @@ export function ProfileMenu() {
   const [end, setEnd] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [avatarIcon, setAvatarIcon] = useState<string | null>(null);
+  const [avatarGradient, setAvatarGradient] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("username").eq("id", user.id).maybeSingle().then(({ data }) => {
-      setUsername((data as { username?: string } | null)?.username ?? null);
+    supabase.from("profiles").select("username, avatar_icon, avatar_gradient").eq("id", user.id).maybeSingle().then(({ data }) => {
+      const p = data as any;
+      setUsername(p?.username ?? null);
+      setAvatarIcon(p?.avatar_icon ?? null);
+      setAvatarGradient(p?.avatar_gradient ?? null);
     });
   }, [user]);
 
