@@ -769,6 +769,54 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          handled_at: string | null
+          handled_by: string | null
+          handler_note: string | null
+          id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target_type"]
+          target_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          handler_note?: string | null
+          id?: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target_type"]
+          target_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          handler_note?: string | null
+          id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["report_target_type"]
+          target_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       schedules: {
         Row: {
           break_minutes: number
@@ -1111,6 +1159,53 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sanctions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          issued_by: string | null
+          kind: Database["public"]["Enums"]["sanction_kind"]
+          lifted_at: string | null
+          lifted_by: string | null
+          reason: string | null
+          report_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          issued_by?: string | null
+          kind: Database["public"]["Enums"]["sanction_kind"]
+          lifted_at?: string | null
+          lifted_by?: string | null
+          reason?: string | null
+          report_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          issued_by?: string | null
+          kind?: Database["public"]["Enums"]["sanction_kind"]
+          lifted_at?: string | null
+          lifted_by?: string | null
+          reason?: string | null
+          report_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sanctions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       watch_parties: {
         Row: {
           current_time_sec: number
@@ -1248,6 +1343,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_banned: { Args: { _user: string }; Returns: boolean }
+      is_muted: { Args: { _user: string }; Returns: boolean }
       is_team_member: {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
@@ -1296,7 +1393,22 @@ export type Database = {
         | "role_revoked"
         | "account_revoked"
       party_visibility: "public" | "unlisted" | "private"
+      report_reason:
+        | "harassment"
+        | "nsfw"
+        | "spam"
+        | "hate"
+        | "self_harm"
+        | "other"
+      report_status: "open" | "actioned" | "dismissed"
+      report_target_type:
+        | "chat_message"
+        | "dm_message"
+        | "user"
+        | "party_message"
+        | "note"
       request_status: "pending" | "approved" | "rejected"
+      sanction_kind: "warn" | "mute" | "temp_ban" | "perma_ban"
       task_status:
         | "todo"
         | "in_progress"
@@ -1451,7 +1563,24 @@ export const Constants = {
         "account_revoked",
       ],
       party_visibility: ["public", "unlisted", "private"],
+      report_reason: [
+        "harassment",
+        "nsfw",
+        "spam",
+        "hate",
+        "self_harm",
+        "other",
+      ],
+      report_status: ["open", "actioned", "dismissed"],
+      report_target_type: [
+        "chat_message",
+        "dm_message",
+        "user",
+        "party_message",
+        "note",
+      ],
       request_status: ["pending", "approved", "rejected"],
+      sanction_kind: ["warn", "mute", "temp_ban", "perma_ban"],
       task_status: [
         "todo",
         "in_progress",
