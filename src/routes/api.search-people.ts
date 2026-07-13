@@ -63,7 +63,7 @@ export const Route = createFileRoute("/api/search-people")({
               if (ids.length) {
                 const { data: extra } = await admin
                   .from("profiles")
-                  .select("id, username, display_name, avatar_url")
+                  .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
                   .in("id", ids);
                 const have = new Set(profiles.map((p) => p.id));
                 for (const p of (extra ?? []) as any[]) if (!have.has(p.id)) profiles.push(p);
