@@ -101,9 +101,12 @@ export function ProfileMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors pl-1 pr-3 py-1 border border-white/10">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-xs font-bold text-white">
-              {initial}
-            </div>
+            <AvatarIconRender
+              icon={avatarIcon}
+              gradient={avatarGradient}
+              initial={initial}
+              className="flex h-7 w-7 items-center justify-center rounded-full"
+            />
             <span className="hidden md:inline text-xs font-medium max-w-[140px] truncate">{handle}</span>
             {isSuperAdmin && <Crown className="h-3.5 w-3.5 text-amber-400" />}
           </button>
