@@ -384,6 +384,9 @@ function CollaboratePage() {
 
       <NewGroupDialog open={newGroupOpen} onOpenChange={setNewGroupOpen} onCreated={loadAll} userId={user?.id} />
       <NewPartyDialog open={newPartyOpen} onOpenChange={setNewPartyOpen} userId={user?.id} />
+      {activeGroup && (
+        <InviteFriendDialog open={inviteOpen} onOpenChange={setInviteOpen} groupId={activeGroup.id} groupName={activeGroup.name} />
+      )}
     </div>
   );
 }
