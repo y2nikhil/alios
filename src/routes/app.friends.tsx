@@ -17,7 +17,7 @@ type Friendship = {
   requester_id: string;
   addressee_id: string;
   status: "pending" | "accepted";
-  profile?: { id: string; display_name: string | null; username: string | null; avatar_url: string | null };
+  profile?: { id: string; display_name: string | null; username: string | null; avatar_url: string | null; avatar_icon: string | null; avatar_gradient: string | null };
 };
 
 function FriendsPage() {
