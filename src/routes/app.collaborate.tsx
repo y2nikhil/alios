@@ -409,6 +409,7 @@ function NewGroupDialog({ open, onOpenChange, onCreated, userId }:
   const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
   const [emoji, setEmoji] = useState("💬");
+  const [isPublic, setIsPublic] = useState(true);
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
@@ -417,12 +418,12 @@ function NewGroupDialog({ open, onOpenChange, onCreated, userId }:
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 32) + "-" + Math.random().toString(36).slice(2, 6);
     const { error } = await supabase.from("groups").insert({
       name: name.trim(), slug, topic: topic.trim() || null, description: description.trim() || null,
-      emoji: emoji || "💬", is_public: true, created_by: userId,
+      emoji: emoji || "💬", is_public: isPublic, created_by: userId,
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Group created");
-    setName(""); setTopic(""); setDescription(""); setEmoji("💬");
+    setName(""); setTopic(""); setDescription(""); setEmoji("💬"); setIsPublic(true);
     onOpenChange(false);
     onCreated();
   };
