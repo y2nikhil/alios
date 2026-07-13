@@ -21,7 +21,7 @@ type Msg = {
 };
 
 type Thread = { id: string; user_a: string; user_b: string };
-type Profile = { id: string; display_name: string | null; username: string | null; avatar_url: string | null };
+type Profile = { id: string; display_name: string | null; username: string | null; avatar_url: string | null; avatar_icon: string | null; avatar_gradient: string | null };
 
 function DmPage() {
   const { threadId } = Route.useParams();
