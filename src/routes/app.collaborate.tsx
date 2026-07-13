@@ -75,11 +75,16 @@ function CollaboratePage() {
     setJoinedGroupIds(joined);
 
     if (joined.size > 0) {
-      const { data: gc } = await supabase
-        .from("chat_channels")
-        .select("*")
-        .in("group_id", Array.from(joined));
+      const [{ data: gc }, { data: joinedGroupRows }] = await Promise.all([
+        supabase.from("chat_channels").select("*").in("group_id", Array.from(joined)),
+        supabase.from("groups").select("*").in("id", Array.from(joined)),
+      ]);
       setGroupChannels((gc ?? []) as Channel[]);
+      // Merge public groups + joined groups (may include private)
+      const map = new Map<string, Group>();
+      ((allGroups ?? []) as Group[]).forEach((g) => map.set(g.id, g));
+      ((joinedGroupRows ?? []) as Group[]).forEach((g) => map.set(g.id, g));
+      setGroups(Array.from(map.values()));
     } else {
       setGroupChannels([]);
     }
