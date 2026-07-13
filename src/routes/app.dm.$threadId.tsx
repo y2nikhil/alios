@@ -124,9 +124,12 @@ function DmPage() {
     <div className="flex flex-col h-[calc(100vh-3.5rem)]">
       <div className="border-b border-white/5 px-4 py-3 flex items-center gap-3 bg-background/80 backdrop-blur">
         <Button size="icon" variant="ghost" onClick={() => nav({ to: "/app/friends" })}><ArrowLeft className="h-4 w-4" /></Button>
-        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-xs font-semibold text-white">
-          {(otherName[0] ?? "?").toUpperCase()}
-        </div>
+        <AvatarIconRender
+          icon={other?.avatar_icon}
+          gradient={other?.avatar_gradient}
+          initial={otherName[0] ?? "?"}
+          className="h-9 w-9 rounded-full grid place-items-center"
+        />
         <div className="min-w-0">
           <p className="font-semibold text-sm truncate">{otherName}</p>
           {other?.username && <p className="text-[11px] text-muted-foreground truncate">@{other.username}</p>}
