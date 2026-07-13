@@ -34,6 +34,7 @@ import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
+import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
 import { Route as AppAdminModerationRouteImport } from './routes/app.admin.moderation'
 
 const SignupRoute = SignupRouteImport.update({
@@ -161,6 +162,11 @@ const AppHangoutPartyIdRoute = AppHangoutPartyIdRouteImport.update({
   path: '/hangout/$partyId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDmThreadIdRoute = AppDmThreadIdRouteImport.update({
+  id: '/dm/$threadId',
+  path: '/dm/$threadId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminModerationRoute = AppAdminModerationRouteImport.update({
   id: '/moderation',
   path: '/moderation',
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/moderation': typeof AppAdminModerationRoute
+  '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/app/timeline': typeof AppTimelineRoute
   '/app': typeof AppIndexRoute
   '/app/admin/moderation': typeof AppAdminModerationRoute
+  '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
   '/app/admin/moderation': typeof AppAdminModerationRoute
+  '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/app/timeline'
     | '/app/'
     | '/app/admin/moderation'
+    | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/app/timeline'
     | '/app'
     | '/app/admin/moderation'
+    | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/app/timeline'
     | '/app/'
     | '/app/admin/moderation'
+    | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
@@ -526,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHangoutPartyIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/dm/$threadId': {
+      id: '/app/dm/$threadId'
+      path: '/dm/$threadId'
+      fullPath: '/app/dm/$threadId'
+      preLoaderRoute: typeof AppDmThreadIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin/moderation': {
       id: '/app/admin/moderation'
       path: '/moderation'
@@ -561,6 +580,7 @@ interface AppRouteChildren {
   AppSuperRoute: typeof AppSuperRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppDmThreadIdRoute: typeof AppDmThreadIdRoute
   AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
   AppUUserIdRoute: typeof AppUUserIdRoute
@@ -580,6 +600,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSuperRoute: AppSuperRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
+  AppDmThreadIdRoute: AppDmThreadIdRoute,
   AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
   AppUUserIdRoute: AppUUserIdRoute,
