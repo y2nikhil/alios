@@ -51,11 +51,10 @@ function CollaboratePage() {
   const [parties, setParties] = useState<Party[]>([]);
   const [activeChannel, setActiveChannel] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
   const [browseOpen, setBrowseOpen] = useState(false);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
   const [newPartyOpen, setNewPartyOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const loadAll = useCallback(async () => {
