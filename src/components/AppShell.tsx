@@ -13,6 +13,8 @@ import { useRole } from "@/lib/use-role";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
+import { IdlePrompt } from "@/components/IdlePrompt";
+import { AlertCircle } from "lucide-react";
 
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
@@ -27,7 +29,7 @@ const BASE_NAV = [
 ] as const;
 
 function LiveTimer() {
-  const { activeSession, activeStatus } = useAux();
+  const { activeSession, activeStatus, markNotResponding } = useAux();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const i = setInterval(() => setNow(Date.now()), 1000);
@@ -52,6 +54,13 @@ function LiveTimer() {
       <span className="font-mono text-sm tabular-nums text-muted-foreground">
         {formatDuration(elapsed)}
       </span>
+      <button
+        onClick={() => markNotResponding()}
+        title="Mark yourself as Away"
+        className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300 hover:bg-amber-400/20 transition"
+      >
+        <AlertCircle className="h-3 w-3" /> Not responding
+      </button>
     </div>
   );
 }
@@ -265,6 +274,7 @@ export function AppShell() {
   return (
     <AuxProvider>
       <ShellInner />
+      <IdlePrompt />
     </AuxProvider>
   );
 }
