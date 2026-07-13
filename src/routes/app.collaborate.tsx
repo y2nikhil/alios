@@ -151,15 +151,6 @@ function CollaboratePage() {
     return () => { supabase.removeChannel(ch); };
   }, [activeChannel, loadMessages]);
 
-  const sendMsg = async () => {
-    if (!user || !activeChannel || !body.trim()) return;
-    setSending(true);
-    const text = body.trim();
-    setBody("");
-    const { error } = await supabase.from("chat_messages").insert({ channel_id: activeChannel, user_id: user.id, body: text });
-    setSending(false);
-    if (error) { setBody(text); toast.error("Couldn't send"); }
-  };
 
   const joinGroup = async (groupId: string) => {
     if (!user) return;
