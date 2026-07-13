@@ -107,6 +107,8 @@ export const Route = createFileRoute("/api/search-people")({
             username: p.username,
             display_name: p.display_name,
             avatar_url: p.avatar_url,
+            avatar_icon: p.avatar_icon ?? null,
+            avatar_gradient: p.avatar_gradient ?? null,
             email: emailMap.get(p.id) ?? null,
             status: statusMap.get(p.id) ?? null,
           }));
