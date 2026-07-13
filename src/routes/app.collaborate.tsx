@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { parseYouTube } from "@/lib/youtube";
 import { toast } from "sonner";
+import { ReportButton } from "@/components/ReportButton";
 
 export const Route = createFileRoute("/app/collaborate")({
   beforeLoad: async () => {
@@ -291,9 +292,16 @@ function CollaboratePage() {
                           </p>
                         </div>
                       )}
-                      <div className={cn("inline-block max-w-[75%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words",
-                        mine ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/60 rounded-tl-sm")}>
-                        {m.body}
+                      <div className={cn("group inline-flex items-start gap-1.5 max-w-[75%]", mine && "flex-row-reverse")}>
+                        <div className={cn("inline-block rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words",
+                          mine ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/60 rounded-tl-sm")}>
+                          {m.body}
+                        </div>
+                        {!mine && (
+                          <div className="opacity-0 group-hover:opacity-100 transition self-center">
+                            <ReportButton targetType="chat_message" targetId={m.id} targetUserId={m.user_id} size="xs" label="" />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
