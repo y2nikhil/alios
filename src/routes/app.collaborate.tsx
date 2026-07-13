@@ -553,3 +553,73 @@ function NewPartyDialog({ open, onOpenChange, userId }:
   );
 }
 
+function InviteFriendDialog({ open, onOpenChange, groupId, groupName }:
+  { open: boolean; onOpenChange: (v: boolean) => void; groupId: string; groupName: string }) {
+  const { user } = useAuth();
+  type Friend = { id: string; display_name: string | null; username: string | null };
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [invitedIds, setInvitedIds] = useState<Set<string>>(new Set());
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open || !user) return;
+    (async () => {
+      const { data: fs } = await supabase.from("friendships")
+        .select("requester_id, addressee_id, status").eq("status", "accepted")
+        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+      const friendIds = (fs ?? []).map((r: any) => r.requester_id === user.id ? r.addressee_id : r.requester_id);
+      if (friendIds.length === 0) { setFriends([]); return; }
+      const { data: ps } = await supabase.from("profiles")
+        .select("id, display_name, username").in("id", friendIds);
+      setFriends((ps ?? []) as Friend[]);
+
+      const { data: existing } = await (supabase.from("group_invites") as any)
+        .select("invitee_id").eq("group_id", groupId).in("invitee_id", friendIds);
+      const { data: members } = await supabase.from("group_members")
+        .select("user_id").eq("group_id", groupId).in("user_id", friendIds);
+      const set = new Set<string>();
+      (existing ?? []).forEach((r: any) => set.add(r.invitee_id));
+      (members ?? []).forEach((r: any) => set.add(r.user_id));
+      setInvitedIds(set);
+    })();
+  }, [open, user, groupId]);
+
+  const invite = async (fid: string) => {
+    if (!user) return;
+    setBusyId(fid);
+    const { error } = await (supabase.from("group_invites") as any).insert({
+      group_id: groupId, inviter_id: user.id, invitee_id: fid,
+    });
+    setBusyId(null);
+    if (error) { toast.error(error.message); return; }
+    setInvitedIds((prev) => new Set(prev).add(fid));
+    toast.success("Invite sent");
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Invite friends to {groupName}</DialogTitle></DialogHeader>
+        <div className="space-y-1.5 max-h-80 overflow-y-auto scrollbar-thin">
+          {friends.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No friends yet. Add friends first.</p>}
+          {friends.map((f) => {
+            const already = invitedIds.has(f.id);
+            return (
+              <div key={f.id} className="flex items-center justify-between rounded-lg bg-accent/30 p-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold truncate">{f.display_name ?? f.username ?? "Friend"}</p>
+                  {f.username && <p className="text-[10px] text-muted-foreground">@{f.username}</p>}
+                </div>
+                <Button size="sm" variant={already ? "ghost" : "default"} disabled={already || busyId === f.id}
+                  onClick={() => invite(f.id)}>
+                  {already ? "Invited" : busyId === f.id ? "…" : "Invite"}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
