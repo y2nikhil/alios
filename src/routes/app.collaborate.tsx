@@ -1,18 +1,23 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
-  MessageSquare, Send, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2,
+  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { parseYouTube } from "@/lib/youtube";
 import { toast } from "sonner";
 import { ReportButton } from "@/components/ReportButton";
+import { ChatComposer } from "@/components/chat/ChatComposer";
+import { PollCard } from "@/components/chat/PollCard";
+import { MindmapShareCard } from "@/components/chat/MindmapShareCard";
+import { ChatImage } from "@/components/chat/ChatImage";
+import { GroupInvitesPanel } from "@/components/GroupInvitesPanel";
 
 export const Route = createFileRoute("/app/collaborate")({
   beforeLoad: async () => {
@@ -24,9 +29,15 @@ export const Route = createFileRoute("/app/collaborate")({
 });
 
 type Team = { id: string; name: string };
-type Group = { id: string; slug: string; name: string; emoji: string; topic: string | null; description: string | null };
+type Group = { id: string; slug: string; name: string; emoji: string; topic: string | null; description: string | null; is_public: boolean; created_by: string | null };
 type Channel = { id: string; team_id: string | null; group_id: string | null; name: string };
-type Msg = { id: string; channel_id: string; user_id: string; body: string; created_at: string; email?: string };
+type Msg = {
+  id: string; channel_id: string; user_id: string;
+  body: string | null; created_at: string; email?: string;
+  kind: "text" | "image" | "poll" | "mindmap_share" | null;
+  attachment_url: string | null;
+  metadata: Record<string, any> | null;
+};
 type Party = { id: string; host_id: string; title: string; media_kind: string; started_at: string; ended_at: string | null };
 
 function CollaboratePage() {
@@ -40,11 +51,10 @@ function CollaboratePage() {
   const [parties, setParties] = useState<Party[]>([]);
   const [activeChannel, setActiveChannel] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
   const [browseOpen, setBrowseOpen] = useState(false);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
   const [newPartyOpen, setNewPartyOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const loadAll = useCallback(async () => {
@@ -65,11 +75,16 @@ function CollaboratePage() {
     setJoinedGroupIds(joined);
 
     if (joined.size > 0) {
-      const { data: gc } = await supabase
-        .from("chat_channels")
-        .select("*")
-        .in("group_id", Array.from(joined));
+      const [{ data: gc }, { data: joinedGroupRows }] = await Promise.all([
+        supabase.from("chat_channels").select("*").in("group_id", Array.from(joined)),
+        supabase.from("groups").select("*").in("id", Array.from(joined)),
+      ]);
       setGroupChannels((gc ?? []) as Channel[]);
+      // Merge public groups + joined groups (may include private)
+      const map = new Map<string, Group>();
+      ((allGroups ?? []) as Group[]).forEach((g) => map.set(g.id, g));
+      ((joinedGroupRows ?? []) as Group[]).forEach((g) => map.set(g.id, g));
+      setGroups(Array.from(map.values()));
     } else {
       setGroupChannels([]);
     }
@@ -136,15 +151,6 @@ function CollaboratePage() {
     return () => { supabase.removeChannel(ch); };
   }, [activeChannel, loadMessages]);
 
-  const sendMsg = async () => {
-    if (!user || !activeChannel || !body.trim()) return;
-    setSending(true);
-    const text = body.trim();
-    setBody("");
-    const { error } = await supabase.from("chat_messages").insert({ channel_id: activeChannel, user_id: user.id, body: text });
-    setSending(false);
-    if (error) { setBody(text); toast.error("Couldn't send"); }
-  };
 
   const joinGroup = async (groupId: string) => {
     if (!user) return;
@@ -221,9 +227,16 @@ function CollaboratePage() {
             ) : joinedGroups.map((g) => {
               const c = groupChannels.find((ch) => ch.group_id === g.id);
               if (!c) return null;
-              return <ChannelBtn key={c.id} label={`${g.emoji} ${g.name}`} active={activeChannel === c.id} onClick={() => setActiveChannel(c.id)} />;
+              return (
+                <ChannelBtn key={c.id}
+                  label={`${g.emoji} ${g.name}${g.is_public ? "" : " 🔒"}`}
+                  active={activeChannel === c.id}
+                  onClick={() => setActiveChannel(c.id)} />
+              );
             })}
           </div>
+
+          <GroupInvitesPanel onChanged={loadAll} />
 
           {/* Teams */}
           {teams.map((t) => (
@@ -250,6 +263,7 @@ function CollaboratePage() {
         {active ? (
           <>
             <header className="h-14 border-b border-border flex items-center px-4 gap-2 shrink-0">
+              {activeGroup && !activeGroup.is_public && <Lock className="h-3.5 w-3.5 text-amber-400" />}
               <Hash className="h-4 w-4 text-muted-foreground" />
               <p className="font-semibold truncate">
                 {activeGroup ? `${activeGroup.emoji} ${activeGroup.name}` : active.name}
@@ -257,7 +271,12 @@ function CollaboratePage() {
               <span className="text-xs text-muted-foreground truncate hidden sm:inline">
                 · {activeGroup ? activeGroup.topic ?? "Group" : activeTeam ? activeTeam.name : "Open to everyone"}
               </span>
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-2">
+                {activeGroup && joinedGroupIds.has(activeGroup.id) && (
+                  <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)} className="gap-1.5">
+                    <UserPlus className="h-3.5 w-3.5" /> Invite friend
+                  </Button>
+                )}
                 <Button size="sm" onClick={() => setNewPartyOpen(true)}
                   className="gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 text-white shadow-lg shadow-pink-500/20">
                   <Tv className="h-3.5 w-3.5" /> Watch party
@@ -275,6 +294,8 @@ function CollaboratePage() {
                 const showMeta = !prev || prev.user_id !== m.user_id ||
                   new Date(m.created_at).getTime() - new Date(prev.created_at).getTime() > 5 * 60 * 1000;
                 const mine = m.user_id === user?.id;
+                const kind = m.kind ?? "text";
+                const meta = m.metadata ?? {};
                 return (
                   <div key={m.id} className={cn("flex gap-3", mine && "flex-row-reverse")}>
                     {showMeta ? (
@@ -292,10 +313,25 @@ function CollaboratePage() {
                           </p>
                         </div>
                       )}
-                      <div className={cn("group inline-flex items-start gap-1.5 max-w-[75%]", mine && "flex-row-reverse")}>
-                        <div className={cn("inline-block rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words",
-                          mine ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/60 rounded-tl-sm")}>
-                          {m.body}
+                      <div className={cn("group inline-flex items-start gap-1.5 max-w-[85%]", mine && "flex-row-reverse")}>
+                        <div className={cn(
+                          "inline-block text-sm whitespace-pre-wrap break-words",
+                          kind === "text" && (mine ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-3 py-2"
+                                                   : "bg-accent/60 rounded-2xl rounded-tl-sm px-3 py-2"),
+                        )}>
+                          {kind === "text" && m.body}
+                          {kind === "image" && m.attachment_url && (
+                            <div className="space-y-1">
+                              <ChatImage path={m.attachment_url} />
+                              {m.body && <p className={cn("text-sm px-1", mine && "text-right")}>{m.body}</p>}
+                            </div>
+                          )}
+                          {kind === "poll" && (
+                            <PollCard messageId={m.id} question={meta.question ?? m.body ?? "Poll"} mine={mine} />
+                          )}
+                          {kind === "mindmap_share" && meta.board_id && (
+                            <MindmapShareCard boardId={meta.board_id} title={meta.title ?? "Mind map"} note={meta.note ?? m.body} mine={mine} />
+                          )}
                         </div>
                         {!mine && (
                           <div className="opacity-0 group-hover:opacity-100 transition self-center">
@@ -308,15 +344,7 @@ function CollaboratePage() {
                 );
               })}
             </div>
-            <div className="border-t border-border p-3 flex gap-2">
-              <textarea
-                value={body} onChange={(e) => setBody(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                placeholder={`Message #${active.name}`} rows={1}
-                className="flex-1 resize-none rounded-xl bg-accent/40 border border-border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary max-h-32"
-              />
-              <Button onClick={sendMsg} disabled={sending || !body.trim()} size="icon" className="shrink-0"><Send className="h-4 w-4" /></Button>
-            </div>
+            <ChatComposer channelId={active.id} channelName={active.name} />
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-center p-8">
@@ -330,7 +358,7 @@ function CollaboratePage() {
         <DialogContent className="max-w-2xl">
           <DialogHeader><DialogTitle>Browse study groups</DialogTitle></DialogHeader>
           <div className="grid sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
-            {groups.map((g) => {
+            {groups.filter((g) => g.is_public).map((g) => {
               const joined = joinedGroupIds.has(g.id);
               return (
                 <div key={g.id} className="rounded-xl border border-border p-3 bg-accent/30">
@@ -356,6 +384,9 @@ function CollaboratePage() {
 
       <NewGroupDialog open={newGroupOpen} onOpenChange={setNewGroupOpen} onCreated={loadAll} userId={user?.id} />
       <NewPartyDialog open={newPartyOpen} onOpenChange={setNewPartyOpen} userId={user?.id} />
+      {activeGroup && (
+        <InviteFriendDialog open={inviteOpen} onOpenChange={setInviteOpen} groupId={activeGroup.id} groupName={activeGroup.name} />
+      )}
     </div>
   );
 }
@@ -378,6 +409,7 @@ function NewGroupDialog({ open, onOpenChange, onCreated, userId }:
   const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
   const [emoji, setEmoji] = useState("💬");
+  const [isPublic, setIsPublic] = useState(true);
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
@@ -386,12 +418,12 @@ function NewGroupDialog({ open, onOpenChange, onCreated, userId }:
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 32) + "-" + Math.random().toString(36).slice(2, 6);
     const { error } = await supabase.from("groups").insert({
       name: name.trim(), slug, topic: topic.trim() || null, description: description.trim() || null,
-      emoji: emoji || "💬", is_public: true, created_by: userId,
+      emoji: emoji || "💬", is_public: isPublic, created_by: userId,
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Group created");
-    setName(""); setTopic(""); setDescription(""); setEmoji("💬");
+    setName(""); setTopic(""); setDescription(""); setEmoji("💬"); setIsPublic(true);
     onOpenChange(false);
     onCreated();
   };
@@ -407,7 +439,17 @@ function NewGroupDialog({ open, onOpenChange, onCreated, userId }:
           </div>
           <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Topic (Exam, Hangout, Project…)" />
           <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What is this group about?" rows={3} />
-          <p className="text-[11px] text-muted-foreground">Anyone signed in can find and join your group.</p>
+          <label className="flex items-center gap-2 rounded-lg border border-border bg-accent/30 p-2.5 cursor-pointer text-sm">
+            <input type="checkbox" checked={!isPublic} onChange={(e) => setIsPublic(!e.target.checked)} className="accent-primary" />
+            <Lock className="h-3.5 w-3.5 text-amber-400" />
+            <div className="min-w-0">
+              <p className="font-semibold text-xs">Private — invite friends only</p>
+              <p className="text-[10px] text-muted-foreground">Hidden from Browse. Only invited friends can join & chat.</p>
+            </div>
+          </label>
+          <p className="text-[11px] text-muted-foreground">
+            {isPublic ? "Anyone signed in can find and join your group." : "You'll be able to invite friends after creation."}
+          </p>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
@@ -506,6 +548,76 @@ function NewPartyDialog({ open, onOpenChange, userId }:
             {busy ? "Starting…" : "🎉 Go live"}
           </Button>
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function InviteFriendDialog({ open, onOpenChange, groupId, groupName }:
+  { open: boolean; onOpenChange: (v: boolean) => void; groupId: string; groupName: string }) {
+  const { user } = useAuth();
+  type Friend = { id: string; display_name: string | null; username: string | null };
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [invitedIds, setInvitedIds] = useState<Set<string>>(new Set());
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open || !user) return;
+    (async () => {
+      const { data: fs } = await supabase.from("friendships")
+        .select("requester_id, addressee_id, status").eq("status", "accepted")
+        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+      const friendIds = (fs ?? []).map((r: any) => r.requester_id === user.id ? r.addressee_id : r.requester_id);
+      if (friendIds.length === 0) { setFriends([]); return; }
+      const { data: ps } = await supabase.from("profiles")
+        .select("id, display_name, username").in("id", friendIds);
+      setFriends((ps ?? []) as Friend[]);
+
+      const { data: existing } = await (supabase.from("group_invites") as any)
+        .select("invitee_id").eq("group_id", groupId).in("invitee_id", friendIds);
+      const { data: members } = await supabase.from("group_members")
+        .select("user_id").eq("group_id", groupId).in("user_id", friendIds);
+      const set = new Set<string>();
+      (existing ?? []).forEach((r: any) => set.add(r.invitee_id));
+      (members ?? []).forEach((r: any) => set.add(r.user_id));
+      setInvitedIds(set);
+    })();
+  }, [open, user, groupId]);
+
+  const invite = async (fid: string) => {
+    if (!user) return;
+    setBusyId(fid);
+    const { error } = await (supabase.from("group_invites") as any).insert({
+      group_id: groupId, inviter_id: user.id, invitee_id: fid,
+    });
+    setBusyId(null);
+    if (error) { toast.error(error.message); return; }
+    setInvitedIds((prev) => new Set(prev).add(fid));
+    toast.success("Invite sent");
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Invite friends to {groupName}</DialogTitle></DialogHeader>
+        <div className="space-y-1.5 max-h-80 overflow-y-auto scrollbar-thin">
+          {friends.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No friends yet. Add friends first.</p>}
+          {friends.map((f) => {
+            const already = invitedIds.has(f.id);
+            return (
+              <div key={f.id} className="flex items-center justify-between rounded-lg bg-accent/30 p-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold truncate">{f.display_name ?? f.username ?? "Friend"}</p>
+                  {f.username && <p className="text-[10px] text-muted-foreground">@{f.username}</p>}
+                </div>
+                <Button size="sm" variant={already ? "ghost" : "default"} disabled={already || busyId === f.id}
+                  onClick={() => invite(f.id)}>
+                  {already ? "Invited" : busyId === f.id ? "…" : "Invite"}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
       </DialogContent>
     </Dialog>
   );

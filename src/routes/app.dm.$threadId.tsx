@@ -33,6 +33,7 @@ function DmPage() {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [signedCache, setSignedCache] = useState<Record<string, string>>({});
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -181,14 +182,33 @@ function DmPage() {
         })}
       </div>
 
-      <div className="border-t border-white/5 p-3 flex gap-2">
+      <div
+        className={cn("relative border-t border-white/5 p-3 flex gap-2", dragging && "bg-primary/10")}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault(); setDragging(false);
+          const f = e.dataTransfer.files?.[0]; if (f) upload(f);
+        }}
+      >
+        {dragging && (
+          <div className="absolute inset-2 rounded-xl border-2 border-dashed border-primary/60 grid place-items-center pointer-events-none bg-background/80 z-10">
+            <p className="text-sm text-primary font-semibold flex items-center gap-2">
+              <ImageIcon className="h-4 w-4" /> Drop image to send
+            </p>
+          </div>
+        )}
         <input ref={fileRef} type="file" accept="image/*" className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.currentTarget.value = ""; }} />
         <Button size="icon" variant="ghost" onClick={() => fileRef.current?.click()}><Paperclip className="h-4 w-4" /></Button>
         <textarea
           value={body} onChange={(e) => setBody(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder={`Message ${otherName}`} rows={1}
+          onPaste={(e) => {
+            const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/"));
+            if (f) { e.preventDefault(); upload(f); }
+          }}
+          placeholder={`Message ${otherName} — drop or paste images`} rows={1}
           className="flex-1 resize-none rounded-xl bg-accent/40 border border-border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary max-h-32"
         />
         <Button onClick={() => send()} disabled={sending || !body.trim()} size="icon"><Send className="h-4 w-4" /></Button>
