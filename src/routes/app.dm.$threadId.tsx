@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ReportButton } from "@/components/ReportButton";
+import { AvatarIconRender } from "@/components/AvatarIcon";
 
 export const Route = createFileRoute("/app/dm/$threadId")({
   head: () => ({ meta: [{ title: "Direct message — ALIOS" }] }),
