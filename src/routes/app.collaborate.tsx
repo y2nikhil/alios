@@ -29,9 +29,15 @@ export const Route = createFileRoute("/app/collaborate")({
 });
 
 type Team = { id: string; name: string };
-type Group = { id: string; slug: string; name: string; emoji: string; topic: string | null; description: string | null };
+type Group = { id: string; slug: string; name: string; emoji: string; topic: string | null; description: string | null; is_public: boolean; created_by: string | null };
 type Channel = { id: string; team_id: string | null; group_id: string | null; name: string };
-type Msg = { id: string; channel_id: string; user_id: string; body: string; created_at: string; email?: string };
+type Msg = {
+  id: string; channel_id: string; user_id: string;
+  body: string | null; created_at: string; email?: string;
+  kind: "text" | "image" | "poll" | "mindmap_share" | null;
+  attachment_url: string | null;
+  metadata: Record<string, any> | null;
+};
 type Party = { id: string; host_id: string; title: string; media_kind: string; started_at: string; ended_at: string | null };
 
 function CollaboratePage() {
