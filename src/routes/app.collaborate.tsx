@@ -256,6 +256,7 @@ function CollaboratePage() {
         {active ? (
           <>
             <header className="h-14 border-b border-border flex items-center px-4 gap-2 shrink-0">
+              {activeGroup && !activeGroup.is_public && <Lock className="h-3.5 w-3.5 text-amber-400" />}
               <Hash className="h-4 w-4 text-muted-foreground" />
               <p className="font-semibold truncate">
                 {activeGroup ? `${activeGroup.emoji} ${activeGroup.name}` : active.name}
@@ -263,7 +264,12 @@ function CollaboratePage() {
               <span className="text-xs text-muted-foreground truncate hidden sm:inline">
                 · {activeGroup ? activeGroup.topic ?? "Group" : activeTeam ? activeTeam.name : "Open to everyone"}
               </span>
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-2">
+                {activeGroup && joinedGroupIds.has(activeGroup.id) && (
+                  <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)} className="gap-1.5">
+                    <UserPlus className="h-3.5 w-3.5" /> Invite friend
+                  </Button>
+                )}
                 <Button size="sm" onClick={() => setNewPartyOpen(true)}
                   className="gap-1.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-90 text-white shadow-lg shadow-pink-500/20">
                   <Tv className="h-3.5 w-3.5" /> Watch party
@@ -281,6 +287,8 @@ function CollaboratePage() {
                 const showMeta = !prev || prev.user_id !== m.user_id ||
                   new Date(m.created_at).getTime() - new Date(prev.created_at).getTime() > 5 * 60 * 1000;
                 const mine = m.user_id === user?.id;
+                const kind = m.kind ?? "text";
+                const meta = m.metadata ?? {};
                 return (
                   <div key={m.id} className={cn("flex gap-3", mine && "flex-row-reverse")}>
                     {showMeta ? (
@@ -298,10 +306,25 @@ function CollaboratePage() {
                           </p>
                         </div>
                       )}
-                      <div className={cn("group inline-flex items-start gap-1.5 max-w-[75%]", mine && "flex-row-reverse")}>
-                        <div className={cn("inline-block rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words",
-                          mine ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/60 rounded-tl-sm")}>
-                          {m.body}
+                      <div className={cn("group inline-flex items-start gap-1.5 max-w-[85%]", mine && "flex-row-reverse")}>
+                        <div className={cn(
+                          "inline-block text-sm whitespace-pre-wrap break-words",
+                          kind === "text" && (mine ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-3 py-2"
+                                                   : "bg-accent/60 rounded-2xl rounded-tl-sm px-3 py-2"),
+                        )}>
+                          {kind === "text" && m.body}
+                          {kind === "image" && m.attachment_url && (
+                            <div className="space-y-1">
+                              <ChatImage path={m.attachment_url} />
+                              {m.body && <p className={cn("text-sm px-1", mine && "text-right")}>{m.body}</p>}
+                            </div>
+                          )}
+                          {kind === "poll" && (
+                            <PollCard messageId={m.id} question={meta.question ?? m.body ?? "Poll"} mine={mine} />
+                          )}
+                          {kind === "mindmap_share" && meta.board_id && (
+                            <MindmapShareCard boardId={meta.board_id} title={meta.title ?? "Mind map"} note={meta.note ?? m.body} mine={mine} />
+                          )}
                         </div>
                         {!mine && (
                           <div className="opacity-0 group-hover:opacity-100 transition self-center">
@@ -314,15 +337,7 @@ function CollaboratePage() {
                 );
               })}
             </div>
-            <div className="border-t border-border p-3 flex gap-2">
-              <textarea
-                value={body} onChange={(e) => setBody(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                placeholder={`Message #${active.name}`} rows={1}
-                className="flex-1 resize-none rounded-xl bg-accent/40 border border-border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary max-h-32"
-              />
-              <Button onClick={sendMsg} disabled={sending || !body.trim()} size="icon" className="shrink-0"><Send className="h-4 w-4" /></Button>
-            </div>
+            <ChatComposer channelId={active.id} channelName={active.name} />
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-center p-8">
