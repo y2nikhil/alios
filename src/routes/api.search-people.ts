@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/search-people")({
           const pattern = `%${term}%`;
           const { data: profs } = await client
             .from("profiles")
-            .select("id, username, display_name, avatar_url")
+            .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
             .or(`username.ilike.${pattern},display_name.ilike.${pattern}`)
             .limit(8);
 
