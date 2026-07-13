@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Pencil, AtSign, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { AppearancePanel } from "@/components/AppearancePanel";
+import { AwardsShelf } from "@/components/AwardsShelf";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({
@@ -32,6 +34,8 @@ function SettingsPage() {
       </div>
 
       <ProfileBlock />
+      <AppearancePanel />
+      <AwardsShelf userId={user?.id} />
       <PrivacyBlock />
 
 
