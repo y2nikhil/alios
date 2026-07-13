@@ -187,6 +187,7 @@ function ShellInner() {
     ...(isAdmin ? [
       { to: "/app/live" as const, label: "Live Feed", icon: Radio },
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
+      { to: "/app/admin/moderation" as const, label: "Moderation", icon: Shield },
     ] : []),
     ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
   ];

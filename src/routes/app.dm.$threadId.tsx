@@ -1,0 +1,194 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { Loader2, Send, Paperclip, ArrowLeft, ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { ReportButton } from "@/components/ReportButton";
+
+export const Route = createFileRoute("/app/dm/$threadId")({
+  head: () => ({ meta: [{ title: "Direct message — ALIOS" }] }),
+  component: DmPage,
+});
+
+type Msg = {
+  id: string; thread_id: string; sender_id: string;
+  body: string | null; attachment_url: string | null;
+  read_at: string | null; created_at: string;
+};
+
+type Thread = { id: string; user_a: string; user_b: string };
+type Profile = { id: string; display_name: string | null; username: string | null; avatar_url: string | null };
+
+function DmPage() {
+  const { threadId } = Route.useParams();
+  const { user } = useAuth();
+  const nav = useNavigate();
+  const [thread, setThread] = useState<Thread | null>(null);
+  const [other, setOther] = useState<Profile | null>(null);
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [signedCache, setSignedCache] = useState<Record<string, string>>({});
+  const fileRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const { data: t } = await (supabase.from("dm_threads") as any).select("*").eq("id", threadId).maybeSingle();
+      if (cancelled) return;
+      if (!t) { toast.error("Thread not found"); nav({ to: "/app/friends" }); return; }
+      setThread(t as Thread);
+      const otherId = t.user_a === user.id ? t.user_b : t.user_a;
+      const { data: p } = await supabase.from("profiles").select("id, display_name, username, avatar_url").eq("id", otherId).maybeSingle();
+      setOther((p as Profile) ?? null);
+      const { data: m } = await (supabase.from("dm_messages") as any)
+        .select("*").eq("thread_id", threadId).order("created_at").limit(500);
+      setMsgs((m ?? []) as Msg[]);
+      // mark unread from other as read
+      await (supabase.from("dm_messages") as any)
+        .update({ read_at: new Date().toISOString() })
+        .eq("thread_id", threadId).is("read_at", null).neq("sender_id", user.id);
+    })();
+    return () => { cancelled = true; };
+  }, [threadId, user, nav]);
+
+  useEffect(() => {
+    if (!threadId) return;
+    const ch = supabase.channel(`dm-${threadId}`)
+      .on("postgres_changes",
+        { event: "INSERT", schema: "public", table: "dm_messages", filter: `thread_id=eq.${threadId}` },
+        (payload) => {
+          setMsgs((prev) => [...prev, payload.new as Msg]);
+          if (user && (payload.new as Msg).sender_id !== user.id) {
+            (supabase.from("dm_messages") as any).update({ read_at: new Date().toISOString() }).eq("id", (payload.new as Msg).id);
+          }
+        })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [threadId, user]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [msgs.length]);
+
+  // Resolve signed URLs for image attachments
+  useEffect(() => {
+    const missing = msgs
+      .filter((m) => m.attachment_url && !signedCache[m.attachment_url])
+      .map((m) => m.attachment_url!) as string[];
+    if (missing.length === 0) return;
+    (async () => {
+      const uniq = Array.from(new Set(missing));
+      const entries: [string, string][] = [];
+      for (const path of uniq) {
+        const { data } = await supabase.storage.from("chat-attachments").createSignedUrl(path, 3600);
+        if (data?.signedUrl) entries.push([path, data.signedUrl]);
+      }
+      if (entries.length) setSignedCache((prev) => ({ ...prev, ...Object.fromEntries(entries) }));
+    })();
+  }, [msgs, signedCache]);
+
+  const send = async (attachmentPath?: string) => {
+    if (!user || !thread) return;
+    const text = body.trim();
+    if (!text && !attachmentPath) return;
+    setSending(true);
+    const { error } = await (supabase.from("dm_messages") as any).insert({
+      thread_id: thread.id, sender_id: user.id,
+      body: text || null, attachment_url: attachmentPath ?? null,
+    });
+    setSending(false);
+    if (error) { toast.error(error.message); return; }
+    setBody("");
+  };
+
+  const upload = async (file: File) => {
+    if (!user) return;
+    if (file.size > 8 * 1024 * 1024) { toast.error("Image must be under 8 MB"); return; }
+    const ext = file.name.split(".").pop() ?? "bin";
+    const path = `${user.id}/dm-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("chat-attachments").upload(path, file, { contentType: file.type });
+    if (error) { toast.error(error.message); return; }
+    await send(path);
+  };
+
+  const otherName = other?.display_name ?? other?.username ?? "User";
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+      <div className="border-b border-white/5 px-4 py-3 flex items-center gap-3 bg-background/80 backdrop-blur">
+        <Button size="icon" variant="ghost" onClick={() => nav({ to: "/app/friends" })}><ArrowLeft className="h-4 w-4" /></Button>
+        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-xs font-semibold text-white">
+          {(otherName[0] ?? "?").toUpperCase()}
+        </div>
+        <div className="min-w-0">
+          <p className="font-semibold text-sm truncate">{otherName}</p>
+          {other?.username && <p className="text-[11px] text-muted-foreground truncate">@{other.username}</p>}
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-thin">
+        {msgs.length === 0 && (
+          <div className="text-center text-sm text-muted-foreground py-16">
+            Say hi to {otherName} 👋
+          </div>
+        )}
+        {msgs.map((m, i) => {
+          const mine = m.sender_id === user?.id;
+          const prev = msgs[i - 1];
+          const showTime = !prev || new Date(m.created_at).getTime() - new Date(prev.created_at).getTime() > 5 * 60_000;
+          const signed = m.attachment_url ? signedCache[m.attachment_url] : null;
+          return (
+            <div key={m.id} className={cn("flex flex-col", mine ? "items-end" : "items-start")}>
+              {showTime && (
+                <div className="text-[10px] text-muted-foreground my-1">
+                  {new Date(m.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+                </div>
+              )}
+              <div className={cn("group inline-flex items-start gap-1.5 max-w-[75%]", mine && "flex-row-reverse")}>
+                <div className={cn("rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words",
+                  mine ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/60 rounded-tl-sm")}>
+                  {m.attachment_url && (
+                    signed ? (
+                      <a href={signed} target="_blank" rel="noreferrer">
+                        <img src={signed} alt="attachment" className="mb-1 rounded-lg max-h-64" />
+                      </a>
+                    ) : (
+                      <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+                        <ImageIcon className="h-3.5 w-3.5" /> loading image…
+                      </div>
+                    )
+                  )}
+                  {m.body}
+                </div>
+                {!mine && (
+                  <div className="opacity-0 group-hover:opacity-100 transition self-center">
+                    <ReportButton targetType="dm_message" targetId={m.id} targetUserId={m.sender_id} size="xs" label="" />
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="border-t border-white/5 p-3 flex gap-2">
+        <input ref={fileRef} type="file" accept="image/*" className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.currentTarget.value = ""; }} />
+        <Button size="icon" variant="ghost" onClick={() => fileRef.current?.click()}><Paperclip className="h-4 w-4" /></Button>
+        <textarea
+          value={body} onChange={(e) => setBody(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+          placeholder={`Message ${otherName}`} rows={1}
+          className="flex-1 resize-none rounded-xl bg-accent/40 border border-border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary max-h-32"
+        />
+        <Button onClick={() => send()} disabled={sending || !body.trim()} size="icon"><Send className="h-4 w-4" /></Button>
+      </div>
+    </div>
+  );
+}

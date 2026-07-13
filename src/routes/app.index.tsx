@@ -16,6 +16,7 @@ import { MyTasks } from "@/components/MyTasks";
 import { LivePartiesPanel } from "@/components/LivePartiesPanel";
 import { ContinuePlaylistsPanel } from "@/components/ContinuePlaylistsPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
+import { AwardsShelf } from "@/components/AwardsShelf";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -269,6 +270,10 @@ function CommandCenter() {
       </section>
 
       <CountdownCalendar />
+
+      <AwardsShelf userId={user?.id} showLocked />
+
+
 
 
       {/* Manager Notes + Tasks + Goal/Adherence */}

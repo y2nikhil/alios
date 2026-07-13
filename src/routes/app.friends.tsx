@@ -1,8 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { Users, UserPlus, Check, X, Loader2, Search } from "lucide-react";
+import { Users, UserPlus, Check, X, Loader2, Search, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,18 @@ type Friendship = {
 
 function FriendsPage() {
   const { user } = useAuth();
+  const nav = useNavigate();
   const [list, setList] = useState<Friendship[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
+
+  const openDm = async (otherId: string) => {
+    const { data, error } = await (supabase.rpc as any)("get_or_create_dm_thread", { _other: otherId });
+    if (error) { toast.error(error.message); return; }
+    nav({ to: "/app/dm/$threadId", params: { threadId: data as string } });
+  };
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -161,7 +168,14 @@ function FriendsPage() {
           accepted.length === 0 ? <p className="text-xs text-muted-foreground p-2">No friends yet. Search above to add some! 👋</p> :
           accepted.map((f) => (
             <Row key={f.id} f={f}
-              right={<Button size="sm" variant="ghost" onClick={() => remove(f.id)} className="text-destructive">Remove</Button>}
+              right={
+                <div className="flex gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => f.profile && openDm(f.profile.id)} className="text-cyan-400">
+                    <MessageCircle className="h-3.5 w-3.5 mr-1" /> Message
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => remove(f.id)} className="text-destructive">Remove</Button>
+                </div>
+              }
             />
           ))
         }

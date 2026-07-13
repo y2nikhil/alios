@@ -226,6 +226,36 @@ export type Database = {
         }
         Relationships: []
       }
+      awards: {
+        Row: {
+          category: string
+          code: string
+          description: string
+          icon: string
+          threshold_hours: number | null
+          tier: string
+          title: string
+        }
+        Insert: {
+          category: string
+          code: string
+          description: string
+          icon: string
+          threshold_hours?: number | null
+          tier: string
+          title: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          description?: string
+          icon?: string
+          threshold_hours?: number | null
+          tier?: string
+          title?: string
+        }
+        Relationships: []
+      }
       chat_channels: {
         Row: {
           created_at: string
@@ -267,29 +297,38 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          attachment_url: string | null
           attachments: Json
           body: string
           channel_id: string
           created_at: string
           id: string
+          kind: Database["public"]["Enums"]["chat_message_kind"]
+          metadata: Json
           reply_to: string | null
           user_id: string
         }
         Insert: {
+          attachment_url?: string | null
           attachments?: Json
           body: string
           channel_id: string
           created_at?: string
           id?: string
+          kind?: Database["public"]["Enums"]["chat_message_kind"]
+          metadata?: Json
           reply_to?: string | null
           user_id: string
         }
         Update: {
+          attachment_url?: string | null
           attachments?: Json
           body?: string
           channel_id?: string
           created_at?: string
           id?: string
+          kind?: Database["public"]["Enums"]["chat_message_kind"]
+          metadata?: Json
           reply_to?: string | null
           user_id?: string
         }
@@ -340,6 +379,68 @@ export type Database = {
           score?: number
           user_id?: string
           worked_minutes?: number
+        }
+        Relationships: []
+      }
+      dm_messages: {
+        Row: {
+          attachment_url: string | null
+          body: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+          thread_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+          thread_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dm_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "dm_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dm_threads: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_a?: string
+          user_b?: string
         }
         Relationships: []
       }
@@ -730,42 +831,160 @@ export type Database = {
         }
         Relationships: []
       }
+      poll_options: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          message_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          message_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          message_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_options_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      poll_votes: {
+        Row: {
+          created_at: string
+          id: string
+          option_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          option_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          option_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "poll_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          avatar_gradient: string
+          avatar_icon: string | null
           avatar_url: string | null
           created_at: string
           daily_goal_minutes: number
           display_name: string | null
           id: string
           theme: string
+          theme_accent: string
           timeline_public: boolean
           timeline_visibility: string
           updated_at: string
           username: string | null
         }
         Insert: {
+          avatar_gradient?: string
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
           id: string
           theme?: string
+          theme_accent?: string
           timeline_public?: boolean
           timeline_visibility?: string
           updated_at?: string
           username?: string | null
         }
         Update: {
+          avatar_gradient?: string
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
           id?: string
           theme?: string
+          theme_accent?: string
           timeline_public?: boolean
           timeline_visibility?: string
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          handled_at: string | null
+          handled_by: string | null
+          handler_note: string | null
+          id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target_type"]
+          target_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          handler_note?: string | null
+          id?: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target_type"]
+          target_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          handler_note?: string | null
+          id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["report_target_type"]
+          target_user_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -934,6 +1153,7 @@ export type Database = {
           created_at: string
           description: string | null
           due_at: string | null
+          group_id: string | null
           id: string
           priority: number
           status: Database["public"]["Enums"]["task_status"]
@@ -948,6 +1168,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_at?: string | null
+          group_id?: string | null
           id?: string
           priority?: number
           status?: Database["public"]["Enums"]["task_status"]
@@ -962,6 +1183,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_at?: string | null
+          group_id?: string | null
           id?: string
           priority?: number
           status?: Database["public"]["Enums"]["task_status"]
@@ -971,6 +1193,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_team_id_fkey"
             columns: ["team_id"]
@@ -1087,6 +1316,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_awards: {
+        Row: {
+          award_code: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          award_code: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          award_code?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_awards_award_code_fkey"
+            columns: ["award_code"]
+            isOneToOne: false
+            referencedRelation: "awards"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -1110,6 +1368,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_sanctions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          issued_by: string | null
+          kind: Database["public"]["Enums"]["sanction_kind"]
+          lifted_at: string | null
+          lifted_by: string | null
+          reason: string | null
+          report_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          issued_by?: string | null
+          kind: Database["public"]["Enums"]["sanction_kind"]
+          lifted_at?: string | null
+          lifted_by?: string | null
+          reason?: string | null
+          report_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          issued_by?: string | null
+          kind?: Database["public"]["Enums"]["sanction_kind"]
+          lifted_at?: string | null
+          lifted_by?: string | null
+          reason?: string | null
+          report_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sanctions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       watch_parties: {
         Row: {
@@ -1237,9 +1542,11 @@ export type Database = {
         Args: { _board: string; _user: string }
         Returns: boolean
       }
+      check_hour_awards: { Args: { _user: string }; Returns: undefined }
       email_for_username: { Args: { _username: string }; Returns: string }
       end_watch_party: { Args: { _party_id: string }; Returns: undefined }
       find_user_by_email: { Args: { _email: string }; Returns: string }
+      get_or_create_dm_thread: { Args: { _other: string }; Returns: string }
       get_user_email: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -1248,6 +1555,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_banned: { Args: { _user: string }; Returns: boolean }
+      is_dm_participant: {
+        Args: { _thread: string; _user: string }
+        Returns: boolean
+      }
+      is_muted: { Args: { _user: string }; Returns: boolean }
       is_team_member: {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
@@ -1280,6 +1593,7 @@ export type Database = {
     Enums: {
       app_role: "super_admin" | "admin" | "member"
       aux_category: "productive" | "neutral" | "unproductive"
+      chat_message_kind: "text" | "image" | "poll" | "mindmap_share"
       collab_role: "viewer" | "editor"
       mindmap_node_type: "text" | "image" | "link" | "task"
       notification_type:
@@ -1296,7 +1610,22 @@ export type Database = {
         | "role_revoked"
         | "account_revoked"
       party_visibility: "public" | "unlisted" | "private"
+      report_reason:
+        | "harassment"
+        | "nsfw"
+        | "spam"
+        | "hate"
+        | "self_harm"
+        | "other"
+      report_status: "open" | "actioned" | "dismissed"
+      report_target_type:
+        | "chat_message"
+        | "dm_message"
+        | "user"
+        | "party_message"
+        | "note"
       request_status: "pending" | "approved" | "rejected"
+      sanction_kind: "warn" | "mute" | "temp_ban" | "perma_ban"
       task_status:
         | "todo"
         | "in_progress"
@@ -1434,6 +1763,7 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "admin", "member"],
       aux_category: ["productive", "neutral", "unproductive"],
+      chat_message_kind: ["text", "image", "poll", "mindmap_share"],
       collab_role: ["viewer", "editor"],
       mindmap_node_type: ["text", "image", "link", "task"],
       notification_type: [
@@ -1451,7 +1781,24 @@ export const Constants = {
         "account_revoked",
       ],
       party_visibility: ["public", "unlisted", "private"],
+      report_reason: [
+        "harassment",
+        "nsfw",
+        "spam",
+        "hate",
+        "self_harm",
+        "other",
+      ],
+      report_status: ["open", "actioned", "dismissed"],
+      report_target_type: [
+        "chat_message",
+        "dm_message",
+        "user",
+        "party_message",
+        "note",
+      ],
       request_status: ["pending", "approved", "rejected"],
+      sanction_kind: ["warn", "mute", "temp_ban", "perma_ban"],
       task_status: [
         "todo",
         "in_progress",

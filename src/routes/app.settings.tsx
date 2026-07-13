@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Pencil, AtSign, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { AppearancePanel } from "@/components/AppearancePanel";
+import { AwardsShelf } from "@/components/AwardsShelf";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/app/settings")({
 });
 
 function SettingsPage() {
+  const { user } = useAuth();
   const { statuses, createStatus, updateStatus, deleteStatus } = useAux();
   const [editing, setEditing] = useState<AuxStatus | null>(null);
   const [creating, setCreating] = useState(false);
@@ -32,6 +35,8 @@ function SettingsPage() {
       </div>
 
       <ProfileBlock />
+      <AppearancePanel />
+      <AwardsShelf userId={user?.id} />
       <PrivacyBlock />
 
 
