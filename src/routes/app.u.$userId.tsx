@@ -6,6 +6,7 @@ import { Loader2, Clock, Activity, Sparkles, Lock, UserPlus, Users } from "lucid
 import { formatShortDuration } from "@/lib/format";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AwardsShelf } from "@/components/AwardsShelf";
 
 export const Route = createFileRoute("/app/u/$userId")({
   head: () => ({ meta: [{ title: "Shared timeline — ALIOS" }] }),
@@ -113,6 +114,7 @@ function PublicTimelinePage() {
         <Tile icon={Activity} label="Sessions" value={String(stats?.sessions ?? 0)} />
         <Tile icon={Sparkles} label="Active days" value={String(stats?.days ?? 0)} />
       </div>
+      <AwardsShelf userId={userId} />
     </div>
   );
 }
