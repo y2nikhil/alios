@@ -33,6 +33,7 @@ function DmPage() {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [signedCache, setSignedCache] = useState<Record<string, string>>({});
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
