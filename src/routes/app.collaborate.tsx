@@ -439,7 +439,17 @@ function NewGroupDialog({ open, onOpenChange, onCreated, userId }:
           </div>
           <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Topic (Exam, Hangout, Project…)" />
           <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What is this group about?" rows={3} />
-          <p className="text-[11px] text-muted-foreground">Anyone signed in can find and join your group.</p>
+          <label className="flex items-center gap-2 rounded-lg border border-border bg-accent/30 p-2.5 cursor-pointer text-sm">
+            <input type="checkbox" checked={!isPublic} onChange={(e) => setIsPublic(!e.target.checked)} className="accent-primary" />
+            <Lock className="h-3.5 w-3.5 text-amber-400" />
+            <div className="min-w-0">
+              <p className="font-semibold text-xs">Private — invite friends only</p>
+              <p className="text-[10px] text-muted-foreground">Hidden from Browse. Only invited friends can join & chat.</p>
+            </div>
+          </label>
+          <p className="text-[11px] text-muted-foreground">
+            {isPublic ? "Anyone signed in can find and join your group." : "You'll be able to invite friends after creation."}
+          </p>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
