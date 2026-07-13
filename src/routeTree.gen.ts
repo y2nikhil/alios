@@ -34,6 +34,7 @@ import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
+import { Route as AppAdminModerationRouteImport } from './routes/app.admin.moderation'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -160,6 +161,11 @@ const AppHangoutPartyIdRoute = AppHangoutPartyIdRouteImport.update({
   path: '/hangout/$partyId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminModerationRoute = AppAdminModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -171,7 +177,7 @@ export interface FileRoutesByFullPath {
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
-  '/app/admin': typeof AppAdminRoute
+  '/app/admin': typeof AppAdminRouteWithChildren
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/moderation': typeof AppAdminModerationRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
@@ -197,7 +204,7 @@ export interface FileRoutesByTo {
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
-  '/app/admin': typeof AppAdminRoute
+  '/app/admin': typeof AppAdminRouteWithChildren
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app': typeof AppIndexRoute
+  '/app/admin/moderation': typeof AppAdminModerationRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
@@ -225,7 +233,7 @@ export interface FileRoutesById {
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
-  '/app/admin': typeof AppAdminRoute
+  '/app/admin': typeof AppAdminRouteWithChildren
   '/app/analytics': typeof AppAnalyticsRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
@@ -237,6 +245,7 @@ export interface FileRoutesById {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
+  '/app/admin/moderation': typeof AppAdminModerationRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app/'
+    | '/app/admin/moderation'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app'
+    | '/app/admin/moderation'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app/'
+    | '/app/admin/moderation'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
@@ -514,11 +526,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHangoutPartyIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/admin/moderation': {
+      id: '/app/admin/moderation'
+      path: '/moderation'
+      fullPath: '/app/admin/moderation'
+      preLoaderRoute: typeof AppAdminModerationRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
   }
 }
 
+interface AppAdminRouteChildren {
+  AppAdminModerationRoute: typeof AppAdminModerationRoute
+}
+
+const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminModerationRoute: AppAdminModerationRoute,
+}
+
+const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
+  AppAdminRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppAdminRoute: typeof AppAdminRoute
+  AppAdminRoute: typeof AppAdminRouteWithChildren
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
   AppFriendsRoute: typeof AppFriendsRoute
@@ -537,7 +568,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAdminRoute: AppAdminRoute,
+  AppAdminRoute: AppAdminRouteWithChildren,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppCollaborateRoute: AppCollaborateRoute,
   AppFriendsRoute: AppFriendsRoute,
