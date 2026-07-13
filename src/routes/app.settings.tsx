@@ -22,6 +22,7 @@ export const Route = createFileRoute("/app/settings")({
 });
 
 function SettingsPage() {
+  const { user } = useAuth();
   const { statuses, createStatus, updateStatus, deleteStatus } = useAux();
   const [editing, setEditing] = useState<AuxStatus | null>(null);
   const [creating, setCreating] = useState(false);
