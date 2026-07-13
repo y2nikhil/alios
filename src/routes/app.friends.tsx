@@ -221,8 +221,11 @@ function Row({ f, right }: { f: Friendship; right: React.ReactNode }) {
 
 function Avatar({ p }: { p: any }) {
   return (
-    <div className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-xs font-semibold text-white">
-      {(p.display_name?.[0] ?? p.username?.[0] ?? "?").toUpperCase()}
-    </div>
+    <AvatarIconRender
+      icon={p.avatar_icon}
+      gradient={p.avatar_gradient}
+      initial={p.display_name?.[0] ?? p.username?.[0] ?? "?"}
+      className="h-9 w-9 shrink-0 rounded-full grid place-items-center"
+    />
   );
 }
