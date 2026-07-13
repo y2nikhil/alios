@@ -226,6 +226,36 @@ export type Database = {
         }
         Relationships: []
       }
+      awards: {
+        Row: {
+          category: string
+          code: string
+          description: string
+          icon: string
+          threshold_hours: number | null
+          tier: string
+          title: string
+        }
+        Insert: {
+          category: string
+          code: string
+          description: string
+          icon: string
+          threshold_hours?: number | null
+          tier: string
+          title: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          description?: string
+          icon?: string
+          threshold_hours?: number | null
+          tier?: string
+          title?: string
+        }
+        Relationships: []
+      }
       chat_channels: {
         Row: {
           created_at: string
@@ -864,36 +894,45 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_gradient: string
+          avatar_icon: string | null
           avatar_url: string | null
           created_at: string
           daily_goal_minutes: number
           display_name: string | null
           id: string
           theme: string
+          theme_accent: string
           timeline_public: boolean
           timeline_visibility: string
           updated_at: string
           username: string | null
         }
         Insert: {
+          avatar_gradient?: string
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
           id: string
           theme?: string
+          theme_accent?: string
           timeline_public?: boolean
           timeline_visibility?: string
           updated_at?: string
           username?: string | null
         }
         Update: {
+          avatar_gradient?: string
+          avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
           id?: string
           theme?: string
+          theme_accent?: string
           timeline_public?: boolean
           timeline_visibility?: string
           updated_at?: string
@@ -1277,6 +1316,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_awards: {
+        Row: {
+          award_code: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          award_code: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          award_code?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_awards_award_code_fkey"
+            columns: ["award_code"]
+            isOneToOne: false
+            referencedRelation: "awards"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -1474,6 +1542,7 @@ export type Database = {
         Args: { _board: string; _user: string }
         Returns: boolean
       }
+      check_hour_awards: { Args: { _user: string }; Returns: undefined }
       email_for_username: { Args: { _username: string }; Returns: string }
       end_watch_party: { Args: { _party_id: string }; Returns: undefined }
       find_user_by_email: { Args: { _email: string }; Returns: string }
