@@ -3,12 +3,15 @@ import { Search, Sparkles, Loader2, Tv, MessageSquare, Brain, BarChart3, User as
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { AvatarIconRender } from "@/components/AvatarIcon";
 
 type Person = {
   id: string;
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  avatar_icon: string | null;
+  avatar_gradient: string | null;
   email: string | null;
   status: { name: string; color: string; since: string } | null;
 };
