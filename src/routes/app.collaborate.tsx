@@ -358,7 +358,7 @@ function CollaboratePage() {
         <DialogContent className="max-w-2xl">
           <DialogHeader><DialogTitle>Browse study groups</DialogTitle></DialogHeader>
           <div className="grid sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
-            {groups.map((g) => {
+            {groups.filter((g) => g.is_public).map((g) => {
               const joined = joinedGroupIds.has(g.id);
               return (
                 <div key={g.id} className="rounded-xl border border-border p-3 bg-accent/30">
