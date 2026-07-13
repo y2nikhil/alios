@@ -168,7 +168,14 @@ function FriendsPage() {
           accepted.length === 0 ? <p className="text-xs text-muted-foreground p-2">No friends yet. Search above to add some! 👋</p> :
           accepted.map((f) => (
             <Row key={f.id} f={f}
-              right={<Button size="sm" variant="ghost" onClick={() => remove(f.id)} className="text-destructive">Remove</Button>}
+              right={
+                <div className="flex gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => f.profile && openDm(f.profile.id)} className="text-cyan-400">
+                    <MessageCircle className="h-3.5 w-3.5 mr-1" /> Message
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => remove(f.id)} className="text-destructive">Remove</Button>
+                </div>
+              }
             />
           ))
         }
