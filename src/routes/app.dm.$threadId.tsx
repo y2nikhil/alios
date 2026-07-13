@@ -45,7 +45,7 @@ function DmPage() {
       if (!t) { toast.error("Thread not found"); nav({ to: "/app/friends" }); return; }
       setThread(t as Thread);
       const otherId = t.user_a === user.id ? t.user_b : t.user_a;
-      const { data: p } = await supabase.from("profiles").select("id, display_name, username, avatar_url").eq("id", otherId).maybeSingle();
+      const { data: p } = await supabase.from("profiles").select("id, display_name, username, avatar_url, avatar_icon, avatar_gradient").eq("id", otherId).maybeSingle();
       setOther((p as Profile) ?? null);
       const { data: m } = await (supabase.from("dm_messages") as any)
         .select("*").eq("thread_id", threadId).order("created_at").limit(500);
