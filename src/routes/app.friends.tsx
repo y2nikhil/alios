@@ -48,7 +48,7 @@ function FriendsPage() {
     if (otherIds.length) {
       const { data: pr } = await supabase
         .from("profiles")
-        .select("id, display_name, username, avatar_url")
+        .select("id, display_name, username, avatar_url, avatar_icon, avatar_gradient")
         .in("id", otherIds);
       profiles = pr ?? [];
     }
