@@ -3,12 +3,15 @@ import { Search, Sparkles, Loader2, Tv, MessageSquare, Brain, BarChart3, User as
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { AvatarIconRender } from "@/components/AvatarIcon";
 
 type Person = {
   id: string;
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  avatar_icon: string | null;
+  avatar_gradient: string | null;
   email: string | null;
   status: { name: string; color: string; since: string } | null;
 };
@@ -198,9 +201,12 @@ export function CommandBar() {
                         {r.kind === "group" && <span className="text-base">{r.emoji}</span>}
                         {r.kind === "party" && <Tv className="h-4 w-4 text-pink-400 shrink-0" />}
                         {r.kind === "person" && (
-                          <div className="h-7 w-7 shrink-0 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-[11px] font-semibold text-white">
-                            {(r.person.display_name?.[0] ?? r.person.username?.[0] ?? "?").toUpperCase()}
-                          </div>
+                          <AvatarIconRender
+                            icon={r.person.avatar_icon}
+                            gradient={r.person.avatar_gradient}
+                            initial={r.person.display_name?.[0] ?? r.person.username?.[0] ?? "?"}
+                            className="h-7 w-7 shrink-0 rounded-full grid place-items-center"
+                          />
                         )}
                         {r.kind === "person" ? (
                           <div className="flex-1 min-w-0">

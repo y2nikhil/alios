@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ReportButton } from "@/components/ReportButton";
+import { AvatarIconRender } from "@/components/AvatarIcon";
 
 export const Route = createFileRoute("/app/dm/$threadId")({
   head: () => ({ meta: [{ title: "Direct message — ALIOS" }] }),
@@ -20,7 +21,7 @@ type Msg = {
 };
 
 type Thread = { id: string; user_a: string; user_b: string };
-type Profile = { id: string; display_name: string | null; username: string | null; avatar_url: string | null };
+type Profile = { id: string; display_name: string | null; username: string | null; avatar_url: string | null; avatar_icon: string | null; avatar_gradient: string | null };
 
 function DmPage() {
   const { threadId } = Route.useParams();
@@ -44,7 +45,7 @@ function DmPage() {
       if (!t) { toast.error("Thread not found"); nav({ to: "/app/friends" }); return; }
       setThread(t as Thread);
       const otherId = t.user_a === user.id ? t.user_b : t.user_a;
-      const { data: p } = await supabase.from("profiles").select("id, display_name, username, avatar_url").eq("id", otherId).maybeSingle();
+      const { data: p } = await supabase.from("profiles").select("id, display_name, username, avatar_url, avatar_icon, avatar_gradient").eq("id", otherId).maybeSingle();
       setOther((p as Profile) ?? null);
       const { data: m } = await (supabase.from("dm_messages") as any)
         .select("*").eq("thread_id", threadId).order("created_at").limit(500);
@@ -123,9 +124,12 @@ function DmPage() {
     <div className="flex flex-col h-[calc(100vh-3.5rem)]">
       <div className="border-b border-white/5 px-4 py-3 flex items-center gap-3 bg-background/80 backdrop-blur">
         <Button size="icon" variant="ghost" onClick={() => nav({ to: "/app/friends" })}><ArrowLeft className="h-4 w-4" /></Button>
-        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-xs font-semibold text-white">
-          {(otherName[0] ?? "?").toUpperCase()}
-        </div>
+        <AvatarIconRender
+          icon={other?.avatar_icon}
+          gradient={other?.avatar_gradient}
+          initial={otherName[0] ?? "?"}
+          className="h-9 w-9 rounded-full grid place-items-center"
+        />
         <div className="min-w-0">
           <p className="font-semibold text-sm truncate">{otherName}</p>
           {other?.username && <p className="text-[11px] text-muted-foreground truncate">@{other.username}</p>}

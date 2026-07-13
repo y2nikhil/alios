@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/search-people")({
           const pattern = `%${term}%`;
           const { data: profs } = await client
             .from("profiles")
-            .select("id, username, display_name, avatar_url")
+            .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
             .or(`username.ilike.${pattern},display_name.ilike.${pattern}`)
             .limit(8);
 
@@ -63,7 +63,7 @@ export const Route = createFileRoute("/api/search-people")({
               if (ids.length) {
                 const { data: extra } = await admin
                   .from("profiles")
-                  .select("id, username, display_name, avatar_url")
+                  .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
                   .in("id", ids);
                 const have = new Set(profiles.map((p) => p.id));
                 for (const p of (extra ?? []) as any[]) if (!have.has(p.id)) profiles.push(p);
@@ -107,6 +107,8 @@ export const Route = createFileRoute("/api/search-people")({
             username: p.username,
             display_name: p.display_name,
             avatar_url: p.avatar_url,
+            avatar_icon: p.avatar_icon ?? null,
+            avatar_gradient: p.avatar_gradient ?? null,
             email: emailMap.get(p.id) ?? null,
             status: statusMap.get(p.id) ?? null,
           }));

@@ -6,6 +6,7 @@ import { Users, UserPlus, Check, X, Loader2, Search, MessageCircle } from "lucid
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { AvatarIconRender } from "@/components/AvatarIcon";
 
 export const Route = createFileRoute("/app/friends")({
   head: () => ({ meta: [{ title: "Friends — ALIOS" }] }),
@@ -17,7 +18,7 @@ type Friendship = {
   requester_id: string;
   addressee_id: string;
   status: "pending" | "accepted";
-  profile?: { id: string; display_name: string | null; username: string | null; avatar_url: string | null };
+  profile?: { id: string; display_name: string | null; username: string | null; avatar_url: string | null; avatar_icon: string | null; avatar_gradient: string | null };
 };
 
 function FriendsPage() {
@@ -47,7 +48,7 @@ function FriendsPage() {
     if (otherIds.length) {
       const { data: pr } = await supabase
         .from("profiles")
-        .select("id, display_name, username, avatar_url")
+        .select("id, display_name, username, avatar_url, avatar_icon, avatar_gradient")
         .in("id", otherIds);
       profiles = pr ?? [];
     }
@@ -220,8 +221,11 @@ function Row({ f, right }: { f: Friendship; right: React.ReactNode }) {
 
 function Avatar({ p }: { p: any }) {
   return (
-    <div className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 grid place-items-center text-xs font-semibold text-white">
-      {(p.display_name?.[0] ?? p.username?.[0] ?? "?").toUpperCase()}
-    </div>
+    <AvatarIconRender
+      icon={p.avatar_icon}
+      gradient={p.avatar_gradient}
+      initial={p.display_name?.[0] ?? p.username?.[0] ?? "?"}
+      className="h-9 w-9 shrink-0 rounded-full grid place-items-center"
+    />
   );
 }
