@@ -227,9 +227,16 @@ function CollaboratePage() {
             ) : joinedGroups.map((g) => {
               const c = groupChannels.find((ch) => ch.group_id === g.id);
               if (!c) return null;
-              return <ChannelBtn key={c.id} label={`${g.emoji} ${g.name}`} active={activeChannel === c.id} onClick={() => setActiveChannel(c.id)} />;
+              return (
+                <ChannelBtn key={c.id}
+                  label={`${g.emoji} ${g.name}${g.is_public ? "" : " 🔒"}`}
+                  active={activeChannel === c.id}
+                  onClick={() => setActiveChannel(c.id)} />
+              );
             })}
           </div>
+
+          <GroupInvitesPanel onChanged={loadAll} />
 
           {/* Teams */}
           {teams.map((t) => (
