@@ -1,18 +1,23 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
-  MessageSquare, Send, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2,
+  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { parseYouTube } from "@/lib/youtube";
 import { toast } from "sonner";
 import { ReportButton } from "@/components/ReportButton";
+import { ChatComposer } from "@/components/chat/ChatComposer";
+import { PollCard } from "@/components/chat/PollCard";
+import { MindmapShareCard } from "@/components/chat/MindmapShareCard";
+import { ChatImage } from "@/components/chat/ChatImage";
+import { GroupInvitesPanel } from "@/components/GroupInvitesPanel";
 
 export const Route = createFileRoute("/app/collaborate")({
   beforeLoad: async () => {
