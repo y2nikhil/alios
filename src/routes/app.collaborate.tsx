@@ -198,12 +198,20 @@ function CollaboratePage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-400 shadow-lg shadow-emerald-500/30">
               <MessageSquare className="h-4 w-4 text-white" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-bold">Collaborate</p>
               <p className="text-[10px] text-muted-foreground -mt-0.5">Chat · Groups · Hangouts</p>
             </div>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden h-8 w-8 grid place-items-center rounded-md hover:bg-white/5"
+              aria-label="Close sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>
+
 
         <div className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-4">
           {/* Live parties */}
