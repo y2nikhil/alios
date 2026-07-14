@@ -29,8 +29,31 @@ function AssistantPage() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>(DEFAULT_SUGGESTIONS);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: p } = await supabase
+        .from("user_prep_profile")
+        .select("exam, attempt_year, weak_subjects, prep_stage")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (p) {
+        const exam = String(p.exam).toUpperCase();
+        const weak = (p.weak_subjects ?? [])[0];
+        setSuggestions([
+          `Plan my week for ${exam} ${p.prep_stage}`,
+          weak ? `Quiz me on ${weak}` : `Suggest weak-area drills for ${exam}`,
+          `Best resources for ${exam} ${p.attempt_year}`,
+          `How am I tracking vs my ${exam} goal?`,
+        ]);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     try { setMessages(JSON.parse(localStorage.getItem(KEY) ?? "[]")); } catch { /* ignore */ }
