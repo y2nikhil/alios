@@ -288,7 +288,10 @@ function Canvas() {
       await supabase.from("mindmap_nodes").insert({
         id, board_id: boardId, user_id: user.id, node_type: kind,
         position_x: position.x, position_y: position.y,
-        data: { text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done },
+        data: {
+          text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done,
+          videoId: data.videoId, thumbnail: data.thumbnail, videoRowId: data.videoRowId,
+        },
       });
       return id;
     },
