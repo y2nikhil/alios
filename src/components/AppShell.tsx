@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
   Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
-  MoreVertical, AlertCircle,
+  MoreVertical, AlertCircle, Calendar as CalIcon,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -19,6 +19,8 @@ import { IdlePrompt } from "@/components/IdlePrompt";
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
+  { to: "/app/calendar", label: "Calendar", icon: CalIcon },
+  { to: "/app/assistant", label: "AI Assistant", icon: Sparkles },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
   { to: "/app/collaborate", label: "Collaborate", icon: MessageSquare },
@@ -222,7 +224,7 @@ function ShellInner() {
     ...(isAdmin ? [
       { to: "/app/live" as const, label: "Live Feed", icon: Radio },
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
-      { to: "/app/admin/moderation" as const, label: "Moderation", icon: Shield },
+      { to: "/app/moderation" as const, label: "Moderation", icon: Shield },
     ] : []),
     ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
   ];

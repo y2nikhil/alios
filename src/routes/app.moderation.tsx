@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 
-export const Route = createFileRoute("/app/admin/moderation")({
+export const Route = createFileRoute("/app/moderation")({
   component: ModerationPage,
 });
 

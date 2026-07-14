@@ -20,9 +20,12 @@ import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
 import { Route as AppPartyRouteImport } from './routes/app.party'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppModerationRouteImport } from './routes/app.moderation'
 import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppFriendsRouteImport } from './routes/app.friends'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
+import { Route as AppCalendarRouteImport } from './routes/app.calendar'
+import { Route as AppAssistantRouteImport } from './routes/app.assistant'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiYoutubeParseRouteImport } from './routes/api.youtube-parse'
@@ -35,7 +38,6 @@ import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
-import { Route as AppAdminModerationRouteImport } from './routes/app.admin.moderation'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -92,6 +94,11 @@ const AppNotificationsRoute = AppNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
+const AppModerationRoute = AppModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLiveRoute = AppLiveRouteImport.update({
   id: '/live',
   path: '/live',
@@ -105,6 +112,16 @@ const AppFriendsRoute = AppFriendsRouteImport.update({
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
   id: '/collaborate',
   path: '/collaborate',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCalendarRoute = AppCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAssistantRoute = AppAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
@@ -167,11 +184,6 @@ const AppDmThreadIdRoute = AppDmThreadIdRouteImport.update({
   path: '/dm/$threadId',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminModerationRoute = AppAdminModerationRouteImport.update({
-  id: '/moderation',
-  path: '/moderation',
-  getParentRoute: () => AppAdminRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -183,11 +195,14 @@ export interface FileRoutesByFullPath {
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
-  '/app/admin': typeof AppAdminRouteWithChildren
+  '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/assistant': typeof AppAssistantRoute
+  '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
+  '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
@@ -195,7 +210,6 @@ export interface FileRoutesByFullPath {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
-  '/app/admin/moderation': typeof AppAdminModerationRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -211,11 +225,14 @@ export interface FileRoutesByTo {
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
-  '/app/admin': typeof AppAdminRouteWithChildren
+  '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/assistant': typeof AppAssistantRoute
+  '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
+  '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
@@ -223,7 +240,6 @@ export interface FileRoutesByTo {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app': typeof AppIndexRoute
-  '/app/admin/moderation': typeof AppAdminModerationRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -241,11 +257,14 @@ export interface FileRoutesById {
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
   '/api/search-people': typeof ApiSearchPeopleRoute
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
-  '/app/admin': typeof AppAdminRouteWithChildren
+  '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/assistant': typeof AppAssistantRoute
+  '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
+  '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
@@ -253,7 +272,6 @@ export interface FileRoutesById {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/app/': typeof AppIndexRoute
-  '/app/admin/moderation': typeof AppAdminModerationRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -274,9 +292,12 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/assistant'
+    | '/app/calendar'
     | '/app/collaborate'
     | '/app/friends'
     | '/app/live'
+    | '/app/moderation'
     | '/app/notifications'
     | '/app/party'
     | '/app/playlists'
@@ -284,7 +305,6 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app/'
-    | '/app/admin/moderation'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -302,9 +322,12 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/assistant'
+    | '/app/calendar'
     | '/app/collaborate'
     | '/app/friends'
     | '/app/live'
+    | '/app/moderation'
     | '/app/notifications'
     | '/app/party'
     | '/app/playlists'
@@ -312,7 +335,6 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app'
-    | '/app/admin/moderation'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -331,9 +353,12 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/assistant'
+    | '/app/calendar'
     | '/app/collaborate'
     | '/app/friends'
     | '/app/live'
+    | '/app/moderation'
     | '/app/notifications'
     | '/app/party'
     | '/app/playlists'
@@ -341,7 +366,6 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/app/'
-    | '/app/admin/moderation'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -440,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/moderation': {
+      id: '/app/moderation'
+      path: '/moderation'
+      fullPath: '/app/moderation'
+      preLoaderRoute: typeof AppModerationRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/live': {
       id: '/app/live'
       path: '/live'
@@ -459,6 +490,20 @@ declare module '@tanstack/react-router' {
       path: '/collaborate'
       fullPath: '/app/collaborate'
       preLoaderRoute: typeof AppCollaborateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/calendar': {
+      id: '/app/calendar'
+      path: '/calendar'
+      fullPath: '/app/calendar'
+      preLoaderRoute: typeof AppCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/assistant': {
+      id: '/app/assistant'
+      path: '/assistant'
+      fullPath: '/app/assistant'
+      preLoaderRoute: typeof AppAssistantRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/analytics': {
@@ -545,34 +590,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDmThreadIdRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/admin/moderation': {
-      id: '/app/admin/moderation'
-      path: '/moderation'
-      fullPath: '/app/admin/moderation'
-      preLoaderRoute: typeof AppAdminModerationRouteImport
-      parentRoute: typeof AppAdminRoute
-    }
   }
 }
 
-interface AppAdminRouteChildren {
-  AppAdminModerationRoute: typeof AppAdminModerationRoute
-}
-
-const AppAdminRouteChildren: AppAdminRouteChildren = {
-  AppAdminModerationRoute: AppAdminModerationRoute,
-}
-
-const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
-  AppAdminRouteChildren,
-)
-
 interface AppRouteChildren {
-  AppAdminRoute: typeof AppAdminRouteWithChildren
+  AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppAssistantRoute: typeof AppAssistantRoute
+  AppCalendarRoute: typeof AppCalendarRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
   AppFriendsRoute: typeof AppFriendsRoute
   AppLiveRoute: typeof AppLiveRoute
+  AppModerationRoute: typeof AppModerationRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPartyRoute: typeof AppPartyRoute
   AppPlaylistsRoute: typeof AppPlaylistsRoute
@@ -588,11 +617,14 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAdminRoute: AppAdminRouteWithChildren,
+  AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
+  AppAssistantRoute: AppAssistantRoute,
+  AppCalendarRoute: AppCalendarRoute,
   AppCollaborateRoute: AppCollaborateRoute,
   AppFriendsRoute: AppFriendsRoute,
   AppLiveRoute: AppLiveRoute,
+  AppModerationRoute: AppModerationRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPartyRoute: AppPartyRoute,
   AppPlaylistsRoute: AppPlaylistsRoute,
