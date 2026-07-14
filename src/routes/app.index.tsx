@@ -357,9 +357,43 @@ function CommandCenter() {
   );
 }
 
+function UpcomingList() {
+  const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; time?: string; color?: string }>>([]);
+  useEffect(() => {
+    try { setEvents(JSON.parse(localStorage.getItem("alios.calendar.events.v1") ?? "[]")); } catch { /* ignore */ }
+  }, []);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const upcoming = events
+    .filter((e) => new Date(e.date + "T00:00:00").getTime() >= today.getTime())
+    .sort((a, b) => (a.date + (a.time ?? "")).localeCompare(b.date + (b.time ?? "")))
+    .slice(0, 3);
+
+  if (upcoming.length === 0) {
+    return (
+      <div className="mt-3 rounded-xl border border-dashed border-white/10 p-4 text-center">
+        <p className="text-xs text-muted-foreground">No upcoming events yet.</p>
+        <Link to="/app/calendar" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-300 hover:text-violet-200">
+          <CalIcon className="h-3 w-3" /> Add your first event
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <div className="mt-3 space-y-2">
+      {upcoming.map((e) => {
+        const d = new Date(e.date + "T00:00:00");
+        const when = d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) + (e.time ? `, ${e.time}` : "");
+        const diffDays = Math.round((d.getTime() - today.getTime()) / 86400000);
+        const chip = diffDays === 0 ? "Today" : diffDays === 1 ? "Tomorrow" : `In ${diffDays}d`;
+        return <UpcomingItem key={e.id} title={e.title} when={when} chip={chip} />;
+      })}
+    </div>
+  );
+}
+
 function UpcomingItem({ title, when, chip }: { title: string; when: string; chip: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5">
+    <div className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 min-w-0">
       <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-500/30 to-cyan-400/20 grid place-items-center shrink-0">
         <CalIcon className="h-3.5 w-3.5 text-violet-300" />
       </div>
@@ -367,7 +401,7 @@ function UpcomingItem({ title, when, chip }: { title: string; when: string; chip
         <p className="text-sm font-semibold truncate">{title}</p>
         <p className="text-[11px] text-muted-foreground truncate">{when}</p>
       </div>
-      <span className="text-[10px] font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/20 rounded-full px-2 py-0.5 shrink-0">
+      <span className="text-[10px] font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/20 rounded-full px-2 py-0.5 shrink-0 whitespace-nowrap">
         {chip}
       </span>
     </div>
