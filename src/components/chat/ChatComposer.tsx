@@ -69,7 +69,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
 
   return (
     <div
-      className={cn("relative border-t border-border p-3", dragging && "bg-primary/10")}
+      className={cn("sticky bottom-0 z-20 border-t border-border bg-background/95 backdrop-blur-xl p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]", dragging && "bg-primary/10")}
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}

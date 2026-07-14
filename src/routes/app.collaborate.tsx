@@ -205,7 +205,7 @@ function CollaboratePage() {
   const joinedGroups = groups.filter((g) => joinedGroupIds.has(g.id));
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex overflow-hidden relative">
+    <div className="h-[calc(100dvh-3.5rem)] flex overflow-hidden relative">
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
