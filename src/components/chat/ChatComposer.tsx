@@ -81,7 +81,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
           </p>
         </div>
       )}
-      <input ref={fileRef} type="file" accept="image/*" className="hidden"
+      <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" className="hidden"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.currentTarget.value = ""; }} />
 
       <div className="flex gap-2 items-end">
@@ -91,7 +91,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
           </Button>
           {menuOpen && (
             <div className="absolute bottom-11 left-0 z-20 w-52 rounded-xl border border-border bg-popover shadow-lg p-1 space-y-0.5">
-              <MenuItem icon={<Paperclip className="h-3.5 w-3.5" />} label="Attach image"
+              <MenuItem icon={<Paperclip className="h-3.5 w-3.5" />} label="Attach file or image"
                 onClick={() => { setMenuOpen(false); fileRef.current?.click(); }} />
               <MenuItem icon={<BarChart3 className="h-3.5 w-3.5 text-emerald-400" />} label="Create poll"
                 onClick={() => { setMenuOpen(false); setPollOpen(true); }} />
