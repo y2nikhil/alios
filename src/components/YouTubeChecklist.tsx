@@ -222,6 +222,22 @@ export function YouTubeChecklist({
                   {v.title ?? `Video ${v.video_id}`}
                 </p>
               </button>
+              {onAddToBoard && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-violet-300 hover:text-violet-200 hover:bg-violet-500/15"
+                  title="Add as a draggable card on the mind map"
+                  onClick={() => onAddToBoard({
+                    videoId: v.video_id,
+                    title: v.title ?? `Video ${v.video_id}`,
+                    thumbnail: v.thumbnail,
+                    videoRowId: v.id,
+                  })}
+                >
+                  <Move className="h-3.5 w-3.5" />
+                </Button>
+              )}
               <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setPlaying(v)}>
                 <Play className="h-3.5 w-3.5" />
               </Button>
