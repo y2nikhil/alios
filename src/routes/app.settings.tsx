@@ -35,6 +35,7 @@ function SettingsPage() {
       </div>
 
       <ProfileBlock />
+      <PrepProfileBlock />
       <AppearancePanel />
       <AwardsShelf userId={user?.id} />
       <PrivacyBlock />
