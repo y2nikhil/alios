@@ -75,7 +75,7 @@ if (hoursAwards.length === 0) return null;
   const next = hoursAwards[safeIdx];
   if (!next) return null;
 
-  const prev = idx > 0 ? hoursAwards[idx - 1] : null;
+  const prev = safeIdx > 0 ? hoursAwards[safeIdx - 1] : null;
   const prevThreshold = prev?.threshold_hours ?? 0;
   const nextThreshold = next.threshold_hours!;
   const span = Math.max(1, nextThreshold - prevThreshold);
