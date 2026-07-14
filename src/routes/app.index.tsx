@@ -17,6 +17,7 @@ import { LivePartiesPanel } from "@/components/LivePartiesPanel";
 import { ContinuePlaylistsPanel } from "@/components/ContinuePlaylistsPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
 import { AwardsShelf } from "@/components/AwardsShelf";
+import { AISummaryPanel } from "@/components/AISummaryPanel";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
