@@ -50,7 +50,14 @@ export function useNotifications() {
         (payload) => {
           const n = payload.new as Notification;
           setItems((prev) => [n, ...prev].slice(0, 50));
+          // Sound
+          playNotificationSound(soundForCategory(n.type));
+          // In-tab toast
           toast(n.title, { description: n.body ?? undefined });
+          // OS notification when tab is hidden
+          if (typeof document !== "undefined" && document.hidden) {
+            void showLocalNotification(n.title, n.body ?? undefined, n.link ?? undefined);
+          }
         },
       )
       .subscribe();
