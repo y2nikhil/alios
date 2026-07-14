@@ -19,6 +19,8 @@ import { IdlePrompt } from "@/components/IdlePrompt";
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
+  { to: "/app/calendar", label: "Calendar", icon: CalIcon },
+  { to: "/app/assistant", label: "AI Assistant", icon: Sparkles },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/app/mindmap", label: "Mind Map", icon: Brain },
   { to: "/app/collaborate", label: "Collaborate", icon: MessageSquare },
