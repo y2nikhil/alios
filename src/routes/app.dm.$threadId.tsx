@@ -100,14 +100,20 @@ function DmPage() {
     })();
   }, [msgs, signedCache]);
 
-  const send = async (attachmentPath?: string) => {
+  const send = async (attachment?: { path: string; file: File }) => {
     if (!user || !thread) return;
     const text = body.trim();
-    if (!text && !attachmentPath) return;
+    if (!text && !attachment) return;
     setSending(true);
+    const isImage = attachment?.file.type.startsWith("image/");
     const { error } = await (supabase.from("dm_messages") as any).insert({
       thread_id: thread.id, sender_id: user.id,
-      body: text || null, attachment_url: attachmentPath ?? null,
+      body: text || null,
+      attachment_url: attachment?.path ?? null,
+      attachment_name: attachment?.file.name ?? null,
+      attachment_mime: attachment?.file.type ?? null,
+      attachment_size: attachment?.file.size ?? null,
+      kind: attachment ? (isImage ? "image" : "file") : "text",
     });
     setSending(false);
     if (error) { toast.error(error.message); return; }
@@ -116,13 +122,14 @@ function DmPage() {
 
   const upload = async (file: File) => {
     if (!user) return;
-    if (file.size > 8 * 1024 * 1024) { toast.error("Image must be under 8 MB"); return; }
-    const ext = file.name.split(".").pop() ?? "bin";
-    const path = `${user.id}/dm-${Date.now()}.${ext}`;
+    if (file.size > 20 * 1024 * 1024) { toast.error("Max 20 MB"); return; }
+    const safe = file.name.replace(/[^A-Za-z0-9._-]/g, "_");
+    const path = `${user.id}/dm-${Date.now()}-${safe}`;
     const { error } = await supabase.storage.from("chat-attachments").upload(path, file, { contentType: file.type });
     if (error) { toast.error(error.message); return; }
-    await send(path);
+    await send({ path, file });
   };
+
 
   const otherName = other?.display_name ?? other?.username ?? "User";
 
