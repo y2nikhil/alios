@@ -709,7 +709,7 @@ function ColorPicker({ onPick }: { onPick: (c: string | null) => void }) {
 }
 
 const KIND_ICON: Record<NodeKind, typeof Brain> = {
-  text: Brain, image: FileImage, link: LinkIcon, task: CheckSquare,
+  text: Brain, image: FileImage, link: LinkIcon, task: CheckSquare, video: Youtube,
 };
 
 function AliosNode(props: NodeProps<NodeData>) {
