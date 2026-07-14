@@ -8,17 +8,18 @@ export const Route = createFileRoute("/api/ai-insights")({
         const cors = { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" };
         try {
           const auth = request.headers.get("authorization");
+          if (!auth) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: cors });
           const SUPABASE_URL = process.env.SUPABASE_URL!;
           const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
           const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
-          if (!LOVABLE_API_KEY) {
-            return new Response(JSON.stringify({ insight: "AI is not configured." }), { status: 200, headers: cors });
-          }
           const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
-            global: { headers: auth ? { Authorization: auth } : {} },
+            global: { headers: { Authorization: auth } },
           });
           const { data: { user } } = await sb.auth.getUser();
           if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: cors });
+          if (!LOVABLE_API_KEY) {
+            return new Response(JSON.stringify({ insight: "AI is not configured." }), { status: 200, headers: cors });
+          }
 
           const since = new Date();
           since.setDate(since.getDate() - 7);

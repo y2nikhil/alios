@@ -23,6 +23,16 @@ export const Route = createFileRoute("/api/ai-mindmap")({
           }
 
           const { action, text } = await request.json();
+          const ALLOWED_ACTIONS = ["summarize", "expand", "tasks"] as const;
+          if (typeof action !== "string" || !(ALLOWED_ACTIONS as readonly string[]).includes(action)) {
+            return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400, headers: cors });
+          }
+          if (typeof text !== "string" || !text.trim()) {
+            return new Response(JSON.stringify({ error: "Invalid text" }), { status: 400, headers: cors });
+          }
+          if (text.length > 10000) {
+            return new Response(JSON.stringify({ error: "Text too long" }), { status: 400, headers: cors });
+          }
           const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
           if (!LOVABLE_API_KEY) {
             return new Response(JSON.stringify({ error: "AI not configured" }), { status: 500, headers: cors });
