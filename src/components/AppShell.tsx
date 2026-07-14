@@ -256,7 +256,7 @@ function ShellInner() {
   const { isAdmin, isSuperAdmin } = useRole();
   const [mobileOpen, setMobileOpen] = useState(false);
   useFocusMilestones();
-  useNotifications(); // ensures realtime + sound + local push run app-wide
+
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
