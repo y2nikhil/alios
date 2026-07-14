@@ -57,7 +57,7 @@ export const Route = createFileRoute("/app/mindmap/$boardId")({
   component: BoardPage,
 });
 
-type NodeKind = "text" | "image" | "link" | "task";
+type NodeKind = "text" | "image" | "link" | "task" | "video";
 type NodeData = {
   text?: string;
   url?: string;
@@ -68,6 +68,10 @@ type NodeData = {
   assignee?: string | null;
   tags?: string[];
   autoEdit?: boolean;
+  // video
+  videoId?: string;
+  thumbnail?: string;
+  videoRowId?: string;
   onUpdate?: (p: Partial<NodeData>) => void;
   onMenu?: (clientX: number, clientY: number) => void;
 };
@@ -200,7 +204,11 @@ function Canvas() {
       await supabase.from("mindmap_nodes").upsert({
         id: n.id, board_id: boardId, user_id: user.id, node_type: data.kind,
         position_x: n.position.x, position_y: n.position.y,
-        data: { text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done, assignee: data.assignee },
+        data: {
+          text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done,
+          assignee: data.assignee,
+          videoId: data.videoId, thumbnail: data.thumbnail, videoRowId: data.videoRowId,
+        },
         color: data.color ?? null, tags: data.tags ?? [],
       });
     },
@@ -280,7 +288,10 @@ function Canvas() {
       await supabase.from("mindmap_nodes").insert({
         id, board_id: boardId, user_id: user.id, node_type: kind,
         position_x: position.x, position_y: position.y,
-        data: { text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done },
+        data: {
+          text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done,
+          videoId: data.videoId, thumbnail: data.thumbnail, videoRowId: data.videoRowId,
+        },
       });
       return id;
     },
@@ -664,7 +675,23 @@ function Canvas() {
             ) : playlistLoading || !playlistTaskId ? (
               <p className="text-xs text-muted-foreground">Loading playlist…</p>
             ) : (
-              <YouTubeChecklist taskId={playlistTaskId} canEdit={true} />
+              <YouTubeChecklist
+                taskId={playlistTaskId}
+                canEdit={true}
+                onAddToBoard={(v) => {
+                  const center = rf.screenToFlowPosition({
+                    x: window.innerWidth / 2 - 200,
+                    y: window.innerHeight / 2 - 140,
+                  });
+                  addNode(center, "video", {
+                    text: v.title,
+                    videoId: v.videoId,
+                    thumbnail: v.thumbnail ?? undefined,
+                    videoRowId: v.videoRowId,
+                  });
+                  toast.success("Added to board — drag it anywhere");
+                }}
+              />
             )}
           </div>
         </aside>
@@ -705,7 +732,7 @@ function ColorPicker({ onPick }: { onPick: (c: string | null) => void }) {
 }
 
 const KIND_ICON: Record<NodeKind, typeof Brain> = {
-  text: Brain, image: FileImage, link: LinkIcon, task: CheckSquare,
+  text: Brain, image: FileImage, link: LinkIcon, task: CheckSquare, video: Youtube,
 };
 
 function AliosNode(props: NodeProps<NodeData>) {
@@ -741,7 +768,9 @@ function AliosNode(props: NodeProps<NodeData>) {
   return (
     <div
       onDoubleClick={onCardDoubleClick}
-      className="group relative rounded-2xl border bg-[oklch(0.21_0.025_265_/_0.92)] backdrop-blur-md min-w-[176px] max-w-sm shadow-xl transition-all"
+      className={`group relative rounded-2xl border bg-[oklch(0.21_0.025_265_/_0.92)] backdrop-blur-md shadow-xl transition-all ${
+        data.kind === "video" ? "w-[420px] max-w-[80vw]" : "min-w-[176px] max-w-sm"
+      }`}
       style={{
         borderColor: accent,
         boxShadow: selected
@@ -790,6 +819,9 @@ function AliosNode(props: NodeProps<NodeData>) {
           <a href={data.url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-primary hover:underline break-all">
             {data.url}
           </a>
+        )}
+        {data.kind === "video" && data.videoId && (
+          <VideoNodeBody data={data} onUpdate={onUpdate} />
         )}
         {data.kind === "task" && !editing && (
           <label className="flex items-start gap-2 text-sm cursor-pointer">
@@ -1054,3 +1086,84 @@ function ShareDialog({
     </Dialog>
   );
 }
+
+function VideoNodeBody({
+  data,
+  onUpdate,
+}: {
+  data: NodeData;
+  onUpdate?: (p: Partial<NodeData>) => void;
+}) {
+  const { user } = useAuth();
+  const [playing, setPlaying] = useState(false);
+  const videoId = data.videoId!;
+  const done = !!data.done;
+
+  const toggleComplete = async () => {
+    const next = !done;
+    onUpdate?.({ done: next });
+    // Also sync to task_video_progress if this video came from a playlist row.
+    if (user && data.videoRowId) {
+      await supabase.from("task_video_progress").upsert(
+        { user_id: user.id, video_row_id: data.videoRowId, completed: next, watched_seconds: 0 },
+        { onConflict: "user_id,video_row_id" } as never,
+      );
+    }
+  };
+
+  return (
+    <div className="space-y-2" onMouseDown={(e) => e.stopPropagation()}>
+      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
+        {playing ? (
+          <iframe
+            key={videoId}
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&autoplay=1&fs=1`}
+            title={data.text ?? "Video"}
+            className="absolute inset-0 h-full w-full"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+          />
+        ) : (
+          <button
+            onClick={(e) => { e.stopPropagation(); setPlaying(true); }}
+            className="group/play absolute inset-0 flex items-center justify-center"
+          >
+            {data.thumbnail ? (
+              <img src={data.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover/play:opacity-100 transition-opacity" />
+            ) : (
+              <img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover/play:opacity-100 transition-opacity" />
+            )}
+            <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/70 ring-2 ring-white/60 shadow-xl">
+              <Youtube className="h-6 w-6 text-rose-500" />
+            </span>
+          </button>
+        )}
+      </div>
+      <p className={`text-xs font-semibold leading-tight ${done ? "line-through text-muted-foreground" : ""}`}>
+        {data.text || "YouTube video"}
+      </p>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleComplete(); }}
+          className={`flex items-center gap-1.5 text-[11px] rounded-md px-2 py-1 transition-colors ${
+            done
+              ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+              : "bg-accent/60 hover:bg-accent"
+          }`}
+        >
+          <CheckSquare className="h-3 w-3" /> {done ? "Completed" : "Mark complete"}
+        </button>
+        <a
+          href={`https://www.youtube.com/watch?v=${videoId}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="ml-auto text-[11px] text-muted-foreground hover:text-foreground"
+        >
+          Open ↗
+        </a>
+      </div>
+    </div>
+  );
+}
+

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Trash2, Plus, CheckCircle2, Circle, Youtube, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Play, Trash2, Plus, CheckCircle2, Circle, Youtube, X, Move } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,15 @@ type Progress = {
   watched_seconds: number;
 };
 
-export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit: boolean }) {
+export function YouTubeChecklist({
+  taskId,
+  canEdit,
+  onAddToBoard,
+}: {
+  taskId: string;
+  canEdit: boolean;
+  onAddToBoard?: (v: { videoId: string; title: string; thumbnail: string | null; videoRowId: string }) => void;
+}) {
   const { user } = useAuth();
   const [videos, setVideos] = useState<Video[]>([]);
   const [progress, setProgress] = useState<Map<string, Progress>>(new Map());
@@ -214,6 +223,22 @@ export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit:
                   {v.title ?? `Video ${v.video_id}`}
                 </p>
               </button>
+              {onAddToBoard && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-violet-300 hover:text-violet-200 hover:bg-violet-500/15"
+                  title="Add as a draggable card on the mind map"
+                  onClick={() => onAddToBoard({
+                    videoId: v.video_id,
+                    title: v.title ?? `Video ${v.video_id}`,
+                    thumbnail: v.thumbnail,
+                    videoRowId: v.id,
+                  })}
+                >
+                  <Move className="h-3.5 w-3.5" />
+                </Button>
+              )}
               <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setPlaying(v)}>
                 <Play className="h-3.5 w-3.5" />
               </Button>
@@ -302,7 +327,8 @@ function FloatingPlayer({
     try { (e.target as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
   };
 
-  return (
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <div
       ref={containerRef}
       className="fixed z-[60] glass rounded-xl overflow-hidden shadow-2xl flex flex-col"
@@ -359,6 +385,7 @@ function FloatingPlayer({
           </button>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
