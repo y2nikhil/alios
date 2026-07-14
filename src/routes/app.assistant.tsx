@@ -121,7 +121,7 @@ function AssistantPage() {
             <p className="text-lg font-semibold">How can I help today?</p>
             <p className="text-sm text-muted-foreground mt-1">Try one of these to get started:</p>
             <div className="mt-5 grid gap-2 w-full max-w-md">
-              {SUGGESTIONS.map((s) => (
+              {suggestions.map((s: string) => (
                 <button key={s} onClick={() => send(s)}
                   className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2.5 text-sm text-left transition">
                   {s}
