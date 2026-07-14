@@ -327,6 +327,7 @@ function ShellInner() {
 export function AppShell() {
   return (
     <AuxProvider>
+      <OnboardingRedirect />
       <ShellInner />
       <IdlePrompt />
     </AuxProvider>
