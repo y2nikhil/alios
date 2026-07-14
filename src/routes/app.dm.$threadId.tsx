@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ReportButton } from "@/components/ReportButton";
 import { AvatarIconRender } from "@/components/AvatarIcon";
+import { FileAttachment } from "@/components/chat/FileAttachment";
+import { MessageReactions } from "@/components/chat/MessageReactions";
+import { MentionText } from "@/lib/mentions";
 
 export const Route = createFileRoute("/app/dm/$threadId")({
   head: () => ({ meta: [{ title: "Direct message — ALIOS" }] }),
@@ -17,6 +20,8 @@ export const Route = createFileRoute("/app/dm/$threadId")({
 type Msg = {
   id: string; thread_id: string; sender_id: string;
   body: string | null; attachment_url: string | null;
+  attachment_name: string | null; attachment_mime: string | null; attachment_size: number | null;
+  kind: string | null;
   read_at: string | null; created_at: string;
 };
 
