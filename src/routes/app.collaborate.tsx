@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
-  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock,
+  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -63,6 +63,7 @@ function CollaboratePage() {
   const [newPartyOpen, setNewPartyOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const loadAll = useCallback(async () => {
     if (!user) return;
@@ -116,6 +117,7 @@ function CollaboratePage() {
   }, [user, activeChannel]);
 
   useEffect(() => { loadAll(); /* eslint-disable-next-line */ }, [user]);
+  useEffect(() => { setSidebarOpen(false); }, [activeChannel]);
 
   // Realtime: new parties + party endings + new groups
   useEffect(() => {
@@ -180,19 +182,37 @@ function CollaboratePage() {
   const joinedGroups = groups.filter((g) => joinedGroupIds.has(g.id));
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex overflow-hidden">
-      <aside className="w-64 shrink-0 border-r border-border bg-background/40 backdrop-blur-xl flex flex-col">
+    <div className="h-[calc(100vh-3.5rem)] flex overflow-hidden relative">
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+        />
+      )}
+      <aside className={cn(
+        "shrink-0 border-r border-border bg-background/95 backdrop-blur-xl flex flex-col",
+        "fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-200 md:static md:w-64 md:translate-x-0",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full",
+      )}>
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-400 shadow-lg shadow-emerald-500/30">
               <MessageSquare className="h-4 w-4 text-white" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-bold">Collaborate</p>
               <p className="text-[10px] text-muted-foreground -mt-0.5">Chat · Groups · Hangouts</p>
             </div>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden h-8 w-8 grid place-items-center rounded-md hover:bg-white/5"
+              aria-label="Close sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>
+
 
         <div className="flex-1 overflow-y-auto scrollbar-thin p-2 space-y-4">
           {/* Live parties */}
@@ -269,9 +289,16 @@ function CollaboratePage() {
       <main className="flex-1 flex flex-col min-w-0">
         {active ? (
           <>
-            <header className="h-14 border-b border-border flex items-center px-4 gap-2 shrink-0">
+            <header className="h-14 border-b border-border flex items-center px-3 sm:px-4 gap-2 shrink-0">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="md:hidden h-9 w-9 grid place-items-center rounded-lg hover:bg-white/5 shrink-0"
+                aria-label="Open channels"
+              >
+                <Menu className="h-4 w-4" />
+              </button>
               {activeGroup && !activeGroup.is_public && <Lock className="h-3.5 w-3.5 text-amber-400" />}
-              <Hash className="h-4 w-4 text-muted-foreground" />
+              <Hash className="h-4 w-4 text-muted-foreground shrink-0" />
               <p className="font-semibold truncate">
                 {activeGroup ? `${activeGroup.emoji} ${activeGroup.name}` : active.name}
               </p>
