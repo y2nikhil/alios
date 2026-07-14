@@ -18,7 +18,7 @@ export const Route = createFileRoute("/app/assistant")({
 type Msg = { role: "user" | "assistant"; content: string };
 const KEY = "alios.assistant.chat.v1";
 
-const SUGGESTIONS = [
+const DEFAULT_SUGGESTIONS = [
   "What did I focus on this week?",
   "Give me a plan for tomorrow.",
   "How can I improve my focus score?",
@@ -29,8 +29,31 @@ function AssistantPage() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>(DEFAULT_SUGGESTIONS);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: p } = await supabase
+        .from("user_prep_profile")
+        .select("exam, attempt_year, weak_subjects, prep_stage")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (p) {
+        const exam = String(p.exam).toUpperCase();
+        const weak = (p.weak_subjects ?? [])[0];
+        setSuggestions([
+          `Plan my week for ${exam} ${p.prep_stage}`,
+          weak ? `Quiz me on ${weak}` : `Suggest weak-area drills for ${exam}`,
+          `Best resources for ${exam} ${p.attempt_year}`,
+          `How am I tracking vs my ${exam} goal?`,
+        ]);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     try { setMessages(JSON.parse(localStorage.getItem(KEY) ?? "[]")); } catch { /* ignore */ }
@@ -98,7 +121,7 @@ function AssistantPage() {
             <p className="text-lg font-semibold">How can I help today?</p>
             <p className="text-sm text-muted-foreground mt-1">Try one of these to get started:</p>
             <div className="mt-5 grid gap-2 w-full max-w-md">
-              {SUGGESTIONS.map((s) => (
+              {suggestions.map((s: string) => (
                 <button key={s} onClick={() => send(s)}
                   className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2.5 text-sm text-left transition">
                   {s}

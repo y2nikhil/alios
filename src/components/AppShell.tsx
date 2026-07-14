@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
@@ -15,6 +15,32 @@ import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
 import { IdlePrompt } from "@/components/IdlePrompt";
+import { supabase } from "@/integrations/supabase/client";
+
+function OnboardingRedirect() {
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!user) return;
+    if (location.pathname.startsWith("/app/onboarding")) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("user_prep_profile")
+        .select("onboarded_at")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const skipped = sessionStorage.getItem("alios.onboarding.skipped") === "1";
+      if (!data?.onboarded_at && !skipped) {
+        navigate({ to: "/app/onboarding" });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user, location.pathname, navigate]);
+  return null;
+}
 
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
@@ -301,6 +327,7 @@ function ShellInner() {
 export function AppShell() {
   return (
     <AuxProvider>
+      <OnboardingRedirect />
       <ShellInner />
       <IdlePrompt />
     </AuxProvider>

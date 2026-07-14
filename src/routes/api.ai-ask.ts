@@ -50,6 +50,15 @@ export const Route = createFileRoute("/api/ai-ask")({
                   }
                   context = `User tracked ~${Math.round(total / 60000)} minutes over ${sess.length} sessions in the last 7 days. `;
                 }
+                const { data: prof } = await sb
+                  .from("user_prep_profile")
+                  .select("exam, attempt_year, daily_hours, preferred_time, prep_stage, weak_subjects, goal, coaching_status")
+                  .eq("user_id", user.id)
+                  .maybeSingle();
+                if (prof) {
+                  const weak = (prof.weak_subjects ?? []).slice(0, 4).join(", ") || "none flagged";
+                  context = `[Prep profile] Exam: ${String(prof.exam).toUpperCase()} ${prof.attempt_year}, ~${prof.daily_hours} hrs/day (${prof.preferred_time}), stage: ${prof.prep_stage}, weak: ${weak}, coaching: ${prof.coaching_status}${prof.goal ? `, goal: ${prof.goal}` : ""}. ` + context;
+                }
               }
             } catch { /* ignore */ }
           }

@@ -1500,6 +1500,54 @@ export type Database = {
           },
         ]
       }
+      user_prep_profile: {
+        Row: {
+          attempt_year: number
+          coaching_status: Database["public"]["Enums"]["coaching_status"]
+          created_at: string
+          daily_hours: number
+          exam: Database["public"]["Enums"]["prep_exam"]
+          exam_date: string | null
+          goal: string | null
+          onboarded_at: string | null
+          preferred_time: Database["public"]["Enums"]["prep_time_pref"]
+          prep_stage: Database["public"]["Enums"]["prep_stage"]
+          updated_at: string
+          user_id: string
+          weak_subjects: string[]
+        }
+        Insert: {
+          attempt_year: number
+          coaching_status?: Database["public"]["Enums"]["coaching_status"]
+          created_at?: string
+          daily_hours?: number
+          exam: Database["public"]["Enums"]["prep_exam"]
+          exam_date?: string | null
+          goal?: string | null
+          onboarded_at?: string | null
+          preferred_time?: Database["public"]["Enums"]["prep_time_pref"]
+          prep_stage?: Database["public"]["Enums"]["prep_stage"]
+          updated_at?: string
+          user_id: string
+          weak_subjects?: string[]
+        }
+        Update: {
+          attempt_year?: number
+          coaching_status?: Database["public"]["Enums"]["coaching_status"]
+          created_at?: string
+          daily_hours?: number
+          exam?: Database["public"]["Enums"]["prep_exam"]
+          exam_date?: string | null
+          goal?: string | null
+          onboarded_at?: string | null
+          preferred_time?: Database["public"]["Enums"]["prep_time_pref"]
+          prep_stage?: Database["public"]["Enums"]["prep_stage"]
+          updated_at?: string
+          user_id?: string
+          weak_subjects?: string[]
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -1753,6 +1801,7 @@ export type Database = {
       app_role: "super_admin" | "admin" | "member"
       aux_category: "productive" | "neutral" | "unproductive"
       chat_message_kind: "text" | "image" | "poll" | "mindmap_share" | "file"
+      coaching_status: "self_study" | "coaching" | "hybrid"
       collab_role: "viewer" | "editor"
       mindmap_node_type: "text" | "image" | "link" | "task"
       notification_type:
@@ -1771,6 +1820,9 @@ export type Database = {
         | "system"
         | "mindmap_comment"
       party_visibility: "public" | "unlisted" | "private"
+      prep_exam: "cat" | "jee" | "neet" | "railways" | "ssc_upsc" | "banking"
+      prep_stage: "beginner" | "revision" | "mock"
+      prep_time_pref: "morning" | "afternoon" | "evening" | "night"
       report_reason:
         | "harassment"
         | "nsfw"
@@ -1925,6 +1977,7 @@ export const Constants = {
       app_role: ["super_admin", "admin", "member"],
       aux_category: ["productive", "neutral", "unproductive"],
       chat_message_kind: ["text", "image", "poll", "mindmap_share", "file"],
+      coaching_status: ["self_study", "coaching", "hybrid"],
       collab_role: ["viewer", "editor"],
       mindmap_node_type: ["text", "image", "link", "task"],
       notification_type: [
@@ -1944,6 +1997,9 @@ export const Constants = {
         "mindmap_comment",
       ],
       party_visibility: ["public", "unlisted", "private"],
+      prep_exam: ["cat", "jee", "neet", "railways", "ssc_upsc", "banking"],
+      prep_stage: ["beginner", "revision", "mock"],
+      prep_time_pref: ["morning", "afternoon", "evening", "night"],
       report_reason: [
         "harassment",
         "nsfw",
