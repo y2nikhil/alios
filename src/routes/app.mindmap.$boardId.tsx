@@ -675,7 +675,23 @@ function Canvas() {
             ) : playlistLoading || !playlistTaskId ? (
               <p className="text-xs text-muted-foreground">Loading playlist…</p>
             ) : (
-              <YouTubeChecklist taskId={playlistTaskId} canEdit={true} />
+              <YouTubeChecklist
+                taskId={playlistTaskId}
+                canEdit={true}
+                onAddToBoard={(v) => {
+                  const center = rf.screenToFlowPosition({
+                    x: window.innerWidth / 2 - 200,
+                    y: window.innerHeight / 2 - 140,
+                  });
+                  addNode(center, "video", {
+                    text: v.title,
+                    videoId: v.videoId,
+                    thumbnail: v.thumbnail ?? undefined,
+                    videoRowId: v.videoRowId,
+                  });
+                  toast.success("Added to board — drag it anywhere");
+                }}
+              />
             )}
           </div>
         </aside>
