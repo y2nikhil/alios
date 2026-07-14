@@ -52,7 +52,7 @@ export const Route = createFileRoute("/api/ai-mindmap")({
               model: "google/gemini-3-flash-preview",
               messages: [
                 { role: "system", content: sys },
-                { role: "user", content: String(text).slice(0, 4000) },
+                { role: "user", content: text.slice(0, 4000) },
               ],
               ...(action === "tasks" ? { response_format: { type: "json_object" } } : {}),
             }),
