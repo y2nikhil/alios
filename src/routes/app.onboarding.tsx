@@ -90,6 +90,10 @@ function OnboardingPage() {
     setSubmitting(true);
     try {
       const res = await save({ data: form });
+      try {
+        localStorage.setItem("alios.onboarded", "1");
+        sessionStorage.removeItem("alios.onboarding.skipped");
+      } catch {}
       toast.success("You're all set!");
       if (res?.boardId) {
         navigate({ to: "/app/mindmap/$boardId", params: { boardId: res.boardId } });
@@ -101,6 +105,12 @@ function OnboardingPage() {
       setSubmitting(false);
     }
   };
+
+  const skip = () => {
+    try { sessionStorage.setItem("alios.onboarding.skipped", "1"); } catch {}
+    navigate({ to: "/app" });
+  };
+
 
   const totalSteps = 4;
 
@@ -299,12 +309,13 @@ function OnboardingPage() {
         <div className="mt-5 flex items-center justify-between gap-3">
           <Button
             variant="ghost"
-            onClick={() => (step === 0 ? navigate({ to: "/app" }) : setStep((s) => s - 1))}
+            onClick={() => (step === 0 ? skip() : setStep((s) => s - 1))}
             disabled={submitting}
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {step === 0 ? "Skip for now" : "Back"}
           </Button>
+
 
           {step < totalSteps - 1 ? (
             <Button

@@ -19,11 +19,17 @@ import { supabase } from "@/integrations/supabase/client";
 
 function OnboardingRedirect() {
   const { user } = useAuth();
-  const location = useLocation();
   const navigate = useNavigate();
+  const [checked, setChecked] = useState(false);
   useEffect(() => {
-    if (!user) return;
-    if (location.pathname.startsWith("/app/onboarding")) return;
+    if (!user || checked) return;
+    if (typeof window !== "undefined" && localStorage.getItem("alios.onboarded") === "1") {
+      setChecked(true);
+      return;
+    }
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/app/onboarding")) {
+      return;
+    }
     let cancelled = false;
     (async () => {
       const { data } = await supabase
@@ -32,15 +38,21 @@ function OnboardingRedirect() {
         .eq("user_id", user.id)
         .maybeSingle();
       if (cancelled) return;
+      setChecked(true);
+      if (data?.onboarded_at) {
+        try { localStorage.setItem("alios.onboarded", "1"); } catch {}
+        return;
+      }
       const skipped = sessionStorage.getItem("alios.onboarding.skipped") === "1";
-      if (!data?.onboarded_at && !skipped) {
+      if (!skipped) {
         navigate({ to: "/app/onboarding" });
       }
     })();
     return () => { cancelled = true; };
-  }, [user, location.pathname, navigate]);
+  }, [user, checked, navigate]);
   return null;
 }
+
 
 const BASE_NAV = [
   { to: "/app", label: "Command", icon: LayoutDashboard },
