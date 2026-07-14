@@ -16,6 +16,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
 import { IdlePrompt } from "@/components/IdlePrompt";
 import { supabase } from "@/integrations/supabase/client";
+import { useFocusMilestones } from "@/lib/use-focus-milestones";
 
 function OnboardingRedirect() {
   const { user } = useAuth();
@@ -254,6 +255,8 @@ function ShellInner() {
   const location = useLocation();
   const { isAdmin, isSuperAdmin } = useRole();
   const [mobileOpen, setMobileOpen] = useState(false);
+  useFocusMilestones();
+
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 

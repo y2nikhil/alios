@@ -10,6 +10,7 @@ import { Plus, Trash2, Pencil, AtSign, Check, Loader2, GraduationCap } from "luc
 import { toast } from "sonner";
 import { AppearancePanel } from "@/components/AppearancePanel";
 import { AwardsShelf } from "@/components/AwardsShelf";
+import { NotificationSettings } from "@/components/NotificationSettings";
 import { EXAM_BY_KEY } from "@/lib/exam-catalog";
 
 export const Route = createFileRoute("/app/settings")({
@@ -37,6 +38,7 @@ function SettingsPage() {
 
       <ProfileBlock />
       <PrepProfileBlock />
+      <NotificationSettings />
       <AppearancePanel />
       <AwardsShelf userId={user?.id} />
       <PrivacyBlock />
