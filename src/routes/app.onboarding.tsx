@@ -309,12 +309,13 @@ function OnboardingPage() {
         <div className="mt-5 flex items-center justify-between gap-3">
           <Button
             variant="ghost"
-            onClick={() => (step === 0 ? navigate({ to: "/app" }) : setStep((s) => s - 1))}
+            onClick={() => (step === 0 ? skip() : setStep((s) => s - 1))}
             disabled={submitting}
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {step === 0 ? "Skip for now" : "Back"}
           </Button>
+
 
           {step < totalSteps - 1 ? (
             <Button
