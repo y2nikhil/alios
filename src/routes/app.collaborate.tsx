@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
-  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X,
+  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X, Trash2, Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -22,6 +22,7 @@ import { MessageReactions } from "@/components/chat/MessageReactions";
 import { MindmapCommentsPanel } from "@/components/chat/MindmapCommentsPanel";
 import { MentionText } from "@/lib/mentions";
 import { GroupInvitesPanel } from "@/components/GroupInvitesPanel";
+import { useIsSuperAdmin } from "@/lib/useIsSuperAdmin";
 
 export const Route = createFileRoute("/app/collaborate")({
   beforeLoad: async () => {
@@ -49,6 +50,7 @@ type Party = { id: string; host_id: string; title: string; media_kind: string; s
 
 function CollaboratePage() {
   const { user } = useAuth();
+  const isSuperAdmin = useIsSuperAdmin();
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamChannels, setTeamChannels] = useState<Channel[]>([]);
   const [globalChannels, setGlobalChannels] = useState<Channel[]>([]);
@@ -68,9 +70,13 @@ function CollaboratePage() {
   const loadAll = useCallback(async () => {
     if (!user) return;
 
+    const groupsQuery = isSuperAdmin
+      ? supabase.from("groups").select("*").order("name")
+      : supabase.from("groups").select("*").eq("is_public", true).order("name");
+
     const [{ data: globals }, { data: allGroups }, { data: memberships }, { data: liveParties }] = await Promise.all([
       supabase.from("chat_channels").select("*").is("team_id", null).is("group_id", null).order("created_at"),
-      supabase.from("groups").select("*").eq("is_public", true).order("name"),
+      groupsQuery,
       supabase.from("group_members").select("group_id").eq("user_id", user.id),
       supabase.from("watch_parties").select("id,host_id,title,media_kind,started_at,ended_at").is("ended_at", null).order("started_at", { ascending: false }),
     ]);
@@ -79,7 +85,10 @@ function CollaboratePage() {
     setGroups((allGroups ?? []) as Group[]);
     setParties((liveParties ?? []) as Party[]);
 
-    const joined = new Set<string>((memberships ?? []).map((m: any) => m.group_id as string));
+    // Super admin implicitly "joins" every group so they appear in sidebar for moderation.
+    const joined = isSuperAdmin
+      ? new Set<string>(((allGroups ?? []) as Group[]).map((g) => g.id))
+      : new Set<string>((memberships ?? []).map((m: any) => m.group_id as string));
     setJoinedGroupIds(joined);
 
     if (joined.size > 0) {
@@ -88,7 +97,6 @@ function CollaboratePage() {
         supabase.from("groups").select("*").in("id", Array.from(joined)),
       ]);
       setGroupChannels((gc ?? []) as Channel[]);
-      // Merge public groups + joined groups (may include private)
       const map = new Map<string, Group>();
       ((allGroups ?? []) as Group[]).forEach((g) => map.set(g.id, g));
       ((joinedGroupRows ?? []) as Group[]).forEach((g) => map.set(g.id, g));
