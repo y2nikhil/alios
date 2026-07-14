@@ -90,6 +90,10 @@ function OnboardingPage() {
     setSubmitting(true);
     try {
       const res = await save({ data: form });
+      try {
+        localStorage.setItem("alios.onboarded", "1");
+        sessionStorage.removeItem("alios.onboarding.skipped");
+      } catch {}
       toast.success("You're all set!");
       if (res?.boardId) {
         navigate({ to: "/app/mindmap/$boardId", params: { boardId: res.boardId } });
@@ -101,6 +105,12 @@ function OnboardingPage() {
       setSubmitting(false);
     }
   };
+
+  const skip = () => {
+    try { sessionStorage.setItem("alios.onboarding.skipped", "1"); } catch {}
+    navigate({ to: "/app" });
+  };
+
 
   const totalSteps = 4;
 
