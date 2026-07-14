@@ -122,9 +122,9 @@ function CollaboratePage() {
       const room = (globals ?? []).find((c: any) => c.name === "chat-room") ?? (globals ?? [])[0];
       if (room) setActiveChannel(room.id);
     }
-  }, [user, activeChannel]);
+  }, [user, activeChannel, isSuperAdmin]);
 
-  useEffect(() => { loadAll(); /* eslint-disable-next-line */ }, [user]);
+  useEffect(() => { loadAll(); /* eslint-disable-next-line */ }, [user, isSuperAdmin]);
   useEffect(() => { setSidebarOpen(false); }, [activeChannel]);
 
   // Realtime: new parties + party endings + new groups
