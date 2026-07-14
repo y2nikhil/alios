@@ -25,6 +25,7 @@ import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppFriendsRouteImport } from './routes/app.friends'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
+import { Route as AppAssistantRouteImport } from './routes/app.assistant'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiYoutubeParseRouteImport } from './routes/api.youtube-parse'
@@ -118,6 +119,11 @@ const AppCalendarRoute = AppCalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAssistantRoute = AppAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
@@ -220,6 +227,7 @@ export interface FileRoutesByTo {
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/api/youtube-parse': typeof ApiYoutubeParseRoute
   '/app/admin': typeof AppAdminRoute
   '/app/analytics': typeof AppAnalyticsRoute
+  '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
   '/app/friends': typeof AppFriendsRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
     | '/app/friends'
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
     | '/app/friends'
@@ -342,6 +353,7 @@ export interface FileRouteTypes {
     | '/api/youtube-parse'
     | '/app/admin'
     | '/app/analytics'
+    | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
     | '/app/friends'
@@ -487,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCalendarRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/assistant': {
+      id: '/app/assistant'
+      path: '/assistant'
+      fullPath: '/app/assistant'
+      preLoaderRoute: typeof AppAssistantRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/analytics': {
       id: '/app/analytics'
       path: '/analytics'
@@ -577,6 +596,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppAssistantRoute: typeof AppAssistantRoute
   AppCalendarRoute: typeof AppCalendarRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
   AppFriendsRoute: typeof AppFriendsRoute
@@ -599,6 +619,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
+  AppAssistantRoute: AppAssistantRoute,
   AppCalendarRoute: AppCalendarRoute,
   AppCollaborateRoute: AppCollaborateRoute,
   AppFriendsRoute: AppFriendsRoute,

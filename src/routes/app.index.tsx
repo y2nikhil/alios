@@ -68,7 +68,7 @@ function CommandCenter() {
   const focusPct = Math.min(100, Math.round((stats.productiveSeconds / focusGoal) * 100));
 
   const quickActions = [
-    { label: "AI Assistant", icon: Sparkles, to: "/app/mindmap", color: "from-violet-500 to-fuchsia-500" },
+    { label: "AI Assistant", icon: Sparkles, to: "/app/assistant", color: "from-violet-500 to-fuchsia-500" },
     { label: "Take Break", icon: Coffee, find: "Break", color: "from-amber-500 to-orange-500" },
     { label: "Mind Map", icon: FileText, to: "/app/mindmap", color: "from-cyan-500 to-blue-500" },
   ];
