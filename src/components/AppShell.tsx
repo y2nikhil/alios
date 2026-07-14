@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
   Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
-  MoreVertical, AlertCircle,
+  MoreVertical, AlertCircle, Calendar as CalIcon,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
