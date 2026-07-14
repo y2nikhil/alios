@@ -164,6 +164,12 @@ function CollaboratePage() {
           setMessages((prev) => [...prev, { ...m, email: (e as string) ?? undefined }]);
           setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
         })
+      .on("postgres_changes",
+        { event: "DELETE", schema: "public", table: "chat_messages", filter: `channel_id=eq.${activeChannel}` },
+        (payload) => {
+          const oldId = (payload.old as any)?.id;
+          if (oldId) setMessages((prev) => prev.filter((m) => m.id !== oldId));
+        })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [activeChannel, loadMessages]);
