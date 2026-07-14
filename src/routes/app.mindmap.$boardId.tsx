@@ -802,6 +802,9 @@ function AliosNode(props: NodeProps<NodeData>) {
             {data.url}
           </a>
         )}
+        {data.kind === "video" && data.videoId && (
+          <VideoNodeBody data={data} onUpdate={onUpdate} />
+        )}
         {data.kind === "task" && !editing && (
           <label className="flex items-start gap-2 text-sm cursor-pointer">
             <input
