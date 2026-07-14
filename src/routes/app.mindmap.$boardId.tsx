@@ -752,7 +752,9 @@ function AliosNode(props: NodeProps<NodeData>) {
   return (
     <div
       onDoubleClick={onCardDoubleClick}
-      className="group relative rounded-2xl border bg-[oklch(0.21_0.025_265_/_0.92)] backdrop-blur-md min-w-[176px] max-w-sm shadow-xl transition-all"
+      className={`group relative rounded-2xl border bg-[oklch(0.21_0.025_265_/_0.92)] backdrop-blur-md shadow-xl transition-all ${
+        data.kind === "video" ? "w-[420px] max-w-[80vw]" : "min-w-[176px] max-w-sm"
+      }`}
       style={{
         borderColor: accent,
         boxShadow: selected
