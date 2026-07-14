@@ -204,7 +204,11 @@ function Canvas() {
       await supabase.from("mindmap_nodes").upsert({
         id: n.id, board_id: boardId, user_id: user.id, node_type: data.kind,
         position_x: n.position.x, position_y: n.position.y,
-        data: { text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done, assignee: data.assignee },
+        data: {
+          text: data.text, url: data.url, imageUrl: data.imageUrl, done: data.done,
+          assignee: data.assignee,
+          videoId: data.videoId, thumbnail: data.thumbnail, videoRowId: data.videoRowId,
+        },
         color: data.color ?? null, tags: data.tags ?? [],
       });
     },
