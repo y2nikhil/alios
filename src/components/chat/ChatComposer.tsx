@@ -25,18 +25,22 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const uploadImage = useCallback(async (file: File) => {
+  const uploadFile = useCallback(async (file: File) => {
     if (!user) return;
-    if (!file.type.startsWith("image/")) { toast.error("Only images supported"); return; }
-    if (file.size > 8 * 1024 * 1024) { toast.error("Max 8 MB"); return; }
+    if (file.size > 20 * 1024 * 1024) { toast.error("Max 20 MB"); return; }
+    const isImage = file.type.startsWith("image/");
     setSending(true);
-    const ext = file.name.split(".").pop() ?? "png";
-    const path = `${user.id}/chat-${Date.now()}.${ext}`;
+    const safe = file.name.replace(/[^A-Za-z0-9._-]/g, "_");
+    const path = `${user.id}/chat-${Date.now()}-${safe}`;
     const { error: upErr } = await supabase.storage.from("chat-attachments").upload(path, file, { contentType: file.type });
     if (upErr) { toast.error(upErr.message); setSending(false); return; }
     const { error } = await (supabase.from("chat_messages") as any).insert({
       channel_id: channelId, user_id: user.id, body: body.trim() || null,
-      kind: "image", attachment_url: path,
+      kind: isImage ? "image" : "file",
+      attachment_url: path,
+      attachment_name: file.name,
+      attachment_mime: file.type || null,
+      attachment_size: file.size,
     });
     setSending(false);
     if (error) toast.error(error.message);
@@ -59,8 +63,9 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
     e.preventDefault();
     setDragging(false);
     const f = e.dataTransfer.files?.[0];
-    if (f) uploadImage(f);
+    if (f) uploadFile(f);
   };
+
 
   return (
     <div
