@@ -205,7 +205,7 @@ export function ManagerNotes() {
           </SheetTrigger>
           <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
             <SheetHeader>
-              <SheetTitle>All Manager Notes</SheetTitle>
+              <SheetTitle>All Notes</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-2">
               {notes.map((n) => (
