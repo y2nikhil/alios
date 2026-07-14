@@ -385,6 +385,7 @@ function FloatingPlayer({
           </button>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
