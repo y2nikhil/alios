@@ -28,13 +28,31 @@ const BASE_NAV = [
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
+const IDLE_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
+
 function LiveTimer() {
   const { activeSession, activeStatus, markNotResponding } = useAux();
   const [now, setNow] = useState(() => Date.now());
+  const [lastActivity, setLastActivity] = useState(() => Date.now());
+
   useEffect(() => {
     const i = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(i);
   }, []);
+
+  // Track user activity to determine idleness
+  useEffect(() => {
+    const bump = () => setLastActivity(Date.now());
+    const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll"] as const;
+    events.forEach((e) => window.addEventListener(e, bump, { passive: true }));
+    return () => { events.forEach((e) => window.removeEventListener(e, bump)); };
+  }, []);
+
+  // Reset activity when the user punches a new status
+  useEffect(() => {
+    setLastActivity(Date.now());
+  }, [activeSession?.id]);
+
   if (!activeSession || !activeStatus) {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -44,6 +62,7 @@ function LiveTimer() {
     );
   }
   const elapsed = Math.floor((now - new Date(activeSession.started_at).getTime()) / 1000);
+  const isIdle = now - lastActivity >= IDLE_THRESHOLD_MS;
   return (
     <div className="flex items-center gap-3">
       <span
@@ -54,13 +73,15 @@ function LiveTimer() {
       <span className="font-mono text-sm tabular-nums text-muted-foreground">
         {formatDuration(elapsed)}
       </span>
-      <button
-        onClick={() => markNotResponding()}
-        title="Mark yourself as Away"
-        className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300 hover:bg-amber-400/20 transition"
-      >
-        <AlertCircle className="h-3 w-3" /> Not responding
-      </button>
+      {isIdle && (
+        <button
+          onClick={() => markNotResponding()}
+          title="You've been idle for 30+ minutes — mark yourself as Away"
+          className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300 hover:bg-amber-400/20 transition"
+        >
+          <AlertCircle className="h-3 w-3" /> Not responding
+        </button>
+      )}
     </div>
   );
 }
