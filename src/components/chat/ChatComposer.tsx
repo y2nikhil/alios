@@ -82,7 +82,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
         </div>
       )}
       <input ref={fileRef} type="file" accept="image/*" className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); e.currentTarget.value = ""; }} />
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.currentTarget.value = ""; }} />
 
       <div className="flex gap-2 items-end">
         <div className="relative">
@@ -106,7 +106,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendText(); } }}
           onPaste={(e) => {
             const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/"));
-            if (f) { e.preventDefault(); uploadImage(f); }
+            if (f) { e.preventDefault(); uploadFile(f); }
           }}
           placeholder={disabled ? "Read-only" : `Message #${channelName} — drop images or use +`} rows={1}
           disabled={disabled}
