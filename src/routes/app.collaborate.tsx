@@ -63,6 +63,7 @@ function CollaboratePage() {
   const [newPartyOpen, setNewPartyOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const loadAll = useCallback(async () => {
     if (!user) return;
