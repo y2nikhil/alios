@@ -38,8 +38,11 @@ type Channel = { id: string; team_id: string | null; group_id: string | null; na
 type Msg = {
   id: string; channel_id: string; user_id: string;
   body: string | null; created_at: string; email?: string;
-  kind: "text" | "image" | "poll" | "mindmap_share" | null;
+  kind: "text" | "image" | "poll" | "mindmap_share" | "file" | null;
   attachment_url: string | null;
+  attachment_name: string | null;
+  attachment_mime: string | null;
+  attachment_size: number | null;
   metadata: Record<string, any> | null;
 };
 type Party = { id: string; host_id: string; title: string; media_kind: string; started_at: string; ended_at: string | null };
