@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
-  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock,
+  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
