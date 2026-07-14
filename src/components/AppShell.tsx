@@ -17,7 +17,6 @@ import { CommandBar } from "@/components/CommandBar";
 import { IdlePrompt } from "@/components/IdlePrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
-import { useNotifications } from "@/lib/use-notifications";
 
 function OnboardingRedirect() {
   const { user } = useAuth();
