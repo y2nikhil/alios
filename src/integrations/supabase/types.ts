@@ -302,7 +302,7 @@ export type Database = {
           attachment_size: number | null
           attachment_url: string | null
           attachments: Json
-          body: string
+          body: string | null
           channel_id: string
           created_at: string
           id: string
@@ -317,7 +317,7 @@ export type Database = {
           attachment_size?: number | null
           attachment_url?: string | null
           attachments?: Json
-          body: string
+          body?: string | null
           channel_id: string
           created_at?: string
           id?: string
@@ -332,7 +332,7 @@ export type Database = {
           attachment_size?: number | null
           attachment_url?: string | null
           attachments?: Json
-          body?: string
+          body?: string | null
           channel_id?: string
           created_at?: string
           id?: string
