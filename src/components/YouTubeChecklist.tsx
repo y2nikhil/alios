@@ -327,7 +327,8 @@ function FloatingPlayer({
     try { (e.target as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
   };
 
-  return (
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <div
       ref={containerRef}
       className="fixed z-[60] glass rounded-xl overflow-hidden shadow-2xl flex flex-col"
