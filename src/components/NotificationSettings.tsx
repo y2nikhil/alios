@@ -110,7 +110,7 @@ export function NotificationSettings() {
   const testIt = async () => {
     playNotificationSound(prefs.sound);
     try {
-      await sendTestPush({ data: undefined as never });
+      await sendTestPush();
       toast.success("Test notification sent");
     } catch {
       toast.error("Failed to send test notification");
