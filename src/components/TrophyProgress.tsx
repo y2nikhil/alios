@@ -69,9 +69,12 @@ export function TrophyProgress({ userId }: { userId?: string }) {
   const [idx, setIdx] = useState(0);
   useEffect(() => { setIdx(nextIdx); }, [nextIdx]);
 
-  if (hoursAwards.length === 0) return null;
+if (hoursAwards.length === 0) return null;
 
-  const next = hoursAwards[idx];
+  const safeIdx = Math.max(0, Math.min(idx, hoursAwards.length - 1));
+  const next = hoursAwards[safeIdx];
+  if (!next) return null;
+
   const prev = idx > 0 ? hoursAwards[idx - 1] : null;
   const prevThreshold = prev?.threshold_hours ?? 0;
   const nextThreshold = next.threshold_hours!;
