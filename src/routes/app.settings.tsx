@@ -279,4 +279,50 @@ function PrivacyBlock() {
   );
 }
 
+function PrepProfileBlock() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_prep_profile").select("*").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+      setProfile(data);
+      setLoading(false);
+    });
+  }, [user]);
+  if (loading) return null;
+  const exam = profile ? EXAM_BY_KEY[profile.exam as keyof typeof EXAM_BY_KEY] : null;
+  return (
+    <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="h-4 w-4 text-violet-400" />
+          <h3 className="font-semibold">Prep profile</h3>
+        </div>
+        <Link to="/app/onboarding">
+          <Button size="sm" variant="outline" className="bg-white/5 border-white/10">
+            {profile ? <><Pencil className="h-3.5 w-3.5 mr-1.5" /> Edit</> : "Set up"}
+          </Button>
+        </Link>
+      </div>
+      {profile ? (
+        <div className="grid sm:grid-cols-2 gap-3 text-sm">
+          <div><span className="text-muted-foreground">Exam:</span> <strong>{exam?.emoji} {exam?.label} {profile.attempt_year}</strong></div>
+          <div><span className="text-muted-foreground">Daily hours:</span> <strong>{profile.daily_hours}h ({profile.preferred_time})</strong></div>
+          <div><span className="text-muted-foreground">Stage:</span> <strong className="capitalize">{profile.prep_stage}</strong></div>
+          <div><span className="text-muted-foreground">Coaching:</span> <strong className="capitalize">{String(profile.coaching_status).replace("_", " ")}</strong></div>
+          {profile.weak_subjects?.length > 0 && (
+            <div className="sm:col-span-2"><span className="text-muted-foreground">Weak areas:</span> <strong>{profile.weak_subjects.join(", ")}</strong></div>
+          )}
+          {profile.goal && (
+            <div className="sm:col-span-2"><span className="text-muted-foreground">Goal:</span> <strong>{profile.goal}</strong></div>
+          )}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">Tell ALIOS about your exam prep and we'll personalize your plan, mind map roadmap, and AI assistant.</p>
+      )}
+    </div>
+  );
+}
+
 
