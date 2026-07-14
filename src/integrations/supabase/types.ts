@@ -1803,7 +1803,7 @@ export type Database = {
       chat_message_kind: "text" | "image" | "poll" | "mindmap_share" | "file"
       coaching_status: "self_study" | "coaching" | "hybrid"
       collab_role: "viewer" | "editor"
-      mindmap_node_type: "text" | "image" | "link" | "task"
+      mindmap_node_type: "text" | "image" | "link" | "task" | "video"
       notification_type:
         | "task_assigned"
         | "task_status_changed"
@@ -1979,7 +1979,7 @@ export const Constants = {
       chat_message_kind: ["text", "image", "poll", "mindmap_share", "file"],
       coaching_status: ["self_study", "coaching", "hybrid"],
       collab_role: ["viewer", "editor"],
-      mindmap_node_type: ["text", "image", "link", "task"],
+      mindmap_node_type: ["text", "image", "link", "task", "video"],
       notification_type: [
         "task_assigned",
         "task_status_changed",
