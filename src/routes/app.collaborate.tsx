@@ -17,6 +17,10 @@ import { ChatComposer } from "@/components/chat/ChatComposer";
 import { PollCard } from "@/components/chat/PollCard";
 import { MindmapShareCard } from "@/components/chat/MindmapShareCard";
 import { ChatImage } from "@/components/chat/ChatImage";
+import { FileAttachment } from "@/components/chat/FileAttachment";
+import { MessageReactions } from "@/components/chat/MessageReactions";
+import { MindmapCommentsPanel } from "@/components/chat/MindmapCommentsPanel";
+import { MentionText } from "@/lib/mentions";
 import { GroupInvitesPanel } from "@/components/GroupInvitesPanel";
 
 export const Route = createFileRoute("/app/collaborate")({
