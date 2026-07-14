@@ -1819,6 +1819,9 @@ export type Database = {
         | "account_revoked"
         | "system"
         | "mindmap_comment"
+        | "focus_milestone"
+        | "task_completed"
+        | "moderation_alert"
       party_visibility: "public" | "unlisted" | "private"
       prep_exam: "cat" | "jee" | "neet" | "railways" | "ssc_upsc" | "banking"
       prep_stage: "beginner" | "revision" | "mock"
@@ -1995,6 +1998,9 @@ export const Constants = {
         "account_revoked",
         "system",
         "mindmap_comment",
+        "focus_milestone",
+        "task_completed",
+        "moderation_alert",
       ],
       party_visibility: ["public", "unlisted", "private"],
       prep_exam: ["cat", "jee", "neet", "railways", "ssc_upsc", "banking"],
