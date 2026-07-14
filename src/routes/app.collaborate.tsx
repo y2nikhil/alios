@@ -223,8 +223,17 @@ function CollaboratePage() {
               <MessageSquare className="h-4 w-4 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold">Collaborate</p>
-              <p className="text-[10px] text-muted-foreground -mt-0.5">Chat · Groups · Hangouts</p>
+              <p className="text-sm font-bold flex items-center gap-1.5">
+                Collaborate
+                {isSuperAdmin && (
+                  <span className="inline-flex items-center gap-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-200 px-1.5 py-0.5 text-[9px] font-semibold">
+                    <Shield className="h-2.5 w-2.5" /> ADMIN
+                  </span>
+                )}
+              </p>
+              <p className="text-[10px] text-muted-foreground -mt-0.5">
+                {isSuperAdmin ? "Moderating every group" : "Chat · Groups · Hangouts"}
+              </p>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
