@@ -110,6 +110,24 @@ export type Database = {
         }
         Relationships: []
       }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -494,6 +512,30 @@ export type Database = {
           updated_at?: string
           user_a?: string
           user_b?: string
+        }
+        Relationships: []
+      }
+      focus_milestone_events: {
+        Row: {
+          created_at: string
+          id: string
+          milestone_minutes: number
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          milestone_minutes: number
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          milestone_minutes?: number
+          session_id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1056,6 +1098,7 @@ export type Database = {
           daily_goal_minutes: number
           display_name: string | null
           id: string
+          notification_prefs: Json
           theme: string
           theme_accent: string
           timeline_public: boolean
@@ -1071,6 +1114,7 @@ export type Database = {
           daily_goal_minutes?: number
           display_name?: string | null
           id: string
+          notification_prefs?: Json
           theme?: string
           theme_accent?: string
           timeline_public?: boolean
@@ -1086,12 +1130,46 @@ export type Database = {
           daily_goal_minutes?: number
           display_name?: string | null
           id?: string
+          notification_prefs?: Json
           theme?: string
           theme_accent?: string
           timeline_public?: boolean
           timeline_visibility?: string
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_seen_at: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_seen_at?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_seen_at?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1819,6 +1897,9 @@ export type Database = {
         | "account_revoked"
         | "system"
         | "mindmap_comment"
+        | "focus_milestone"
+        | "task_completed"
+        | "moderation_alert"
       party_visibility: "public" | "unlisted" | "private"
       prep_exam: "cat" | "jee" | "neet" | "railways" | "ssc_upsc" | "banking"
       prep_stage: "beginner" | "revision" | "mock"
@@ -1995,6 +2076,9 @@ export const Constants = {
         "account_revoked",
         "system",
         "mindmap_comment",
+        "focus_milestone",
+        "task_completed",
+        "moderation_alert",
       ],
       party_visibility: ["public", "unlisted", "private"],
       prep_exam: ["cat", "jee", "neet", "railways", "ssc_upsc", "banking"],
