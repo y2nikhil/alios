@@ -118,7 +118,7 @@ export function ManagerNotes() {
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400">
             <MessageSquare className="h-3.5 w-3.5 text-white" />
           </div>
-          <h3 className="text-sm font-semibold">Manager Notes</h3>
+          <h3 className="text-sm font-semibold">Notes</h3>
           <span className="text-[10px] text-muted-foreground">{notes.length}</span>
         </div>
         <Button variant="ghost" size="sm" onClick={() => setComposing((v) => !v)}>
@@ -205,7 +205,7 @@ export function ManagerNotes() {
           </SheetTrigger>
           <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
             <SheetHeader>
-              <SheetTitle>All Manager Notes</SheetTitle>
+              <SheetTitle>All Notes</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-2">
               {notes.map((n) => (

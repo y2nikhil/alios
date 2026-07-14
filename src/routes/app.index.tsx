@@ -17,6 +17,7 @@ import { LivePartiesPanel } from "@/components/LivePartiesPanel";
 import { ContinuePlaylistsPanel } from "@/components/ContinuePlaylistsPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
 import { AwardsShelf } from "@/components/AwardsShelf";
+import { AISummaryPanel } from "@/components/AISummaryPanel";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -192,15 +193,18 @@ function CommandCenter() {
         </div>
       </motion.div>
 
-      {/* Mini timeline */}
-      <div className="glass rounded-2xl p-4 lg:p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold">Today's timeline</h3>
-          <Link to="/app/timeline" className="text-xs text-muted-foreground hover:text-foreground">
-            View full →
-          </Link>
+      {/* Mini timeline + AI summary */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="glass rounded-2xl p-4 lg:p-6 lg:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold">Today's timeline</h3>
+            <Link to="/app/timeline" className="text-xs text-muted-foreground hover:text-foreground">
+              View full →
+            </Link>
+          </div>
+          <MiniTimeline />
         </div>
-        <MiniTimeline />
+        <AISummaryPanel />
       </div>
 
       {/* Continue watching playlists */}
