@@ -326,18 +326,27 @@ function CollaboratePage() {
                           kind === "text" && (mine ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-3 py-2"
                                                    : "bg-accent/60 rounded-2xl rounded-tl-sm px-3 py-2"),
                         )}>
-                          {kind === "text" && m.body}
+                          {kind === "text" && m.body && <MentionText text={m.body} meId={user?.id} />}
                           {kind === "image" && m.attachment_url && (
                             <div className="space-y-1">
                               <ChatImage path={m.attachment_url} />
-                              {m.body && <p className={cn("text-sm px-1", mine && "text-right")}>{m.body}</p>}
+                              {m.body && <p className={cn("text-sm px-1", mine && "text-right")}><MentionText text={m.body} meId={user?.id} /></p>}
+                            </div>
+                          )}
+                          {kind === "file" && m.attachment_url && (
+                            <div className="space-y-1">
+                              <FileAttachment path={m.attachment_url} name={m.attachment_name} mime={m.attachment_mime} size={m.attachment_size} mine={mine} />
+                              {m.body && <p className={cn("text-sm px-1", mine && "text-right")}><MentionText text={m.body} meId={user?.id} /></p>}
                             </div>
                           )}
                           {kind === "poll" && (
                             <PollCard messageId={m.id} question={meta.question ?? m.body ?? "Poll"} mine={mine} />
                           )}
                           {kind === "mindmap_share" && meta.board_id && (
-                            <MindmapShareCard boardId={meta.board_id} title={meta.title ?? "Mind map"} note={meta.note ?? m.body} mine={mine} />
+                            <div className="space-y-1">
+                              <MindmapShareCard boardId={meta.board_id} title={meta.title ?? "Mind map"} note={meta.note ?? m.body} mine={mine} />
+                              <MindmapCommentsPanel messageId={m.id} mine={mine} />
+                            </div>
                           )}
                         </div>
                         {!mine && (
@@ -346,12 +355,14 @@ function CollaboratePage() {
                           </div>
                         )}
                       </div>
+                      <MessageReactions messageId={m.id} align={mine ? "right" : "left"} />
                     </div>
                   </div>
                 );
               })}
             </div>
             <ChatComposer channelId={active.id} channelName={active.name} />
+
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-center p-8">
