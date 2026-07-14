@@ -19,7 +19,7 @@ import { AdherenceRing } from "@/components/AdherenceRing";
 import { MyTasks } from "@/components/MyTasks";
 import { AISummaryPanel } from "@/components/AISummaryPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
-import { AwardsShelf } from "@/components/AwardsShelf";
+import { TrophyProgress } from "@/components/TrophyProgress";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -338,19 +338,8 @@ function CommandCenter() {
 
           <CountdownCalendar />
 
-          <div className="glass rounded-3xl p-5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Trophy className="h-3.5 w-3.5 text-amber-400" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-                  Trophy Shelf
-                </p>
-              </div>
-            </div>
-            <div className="mt-3">
-              <AwardsShelf userId={user?.id} showLocked />
-            </div>
-          </div>
+          <TrophyProgress userId={user?.id} />
+
         </div>
       </div>
     </div>

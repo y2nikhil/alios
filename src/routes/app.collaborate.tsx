@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
-  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X,
+  MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X, Trash2, Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -22,6 +22,7 @@ import { MessageReactions } from "@/components/chat/MessageReactions";
 import { MindmapCommentsPanel } from "@/components/chat/MindmapCommentsPanel";
 import { MentionText } from "@/lib/mentions";
 import { GroupInvitesPanel } from "@/components/GroupInvitesPanel";
+import { useIsSuperAdmin } from "@/lib/useIsSuperAdmin";
 
 export const Route = createFileRoute("/app/collaborate")({
   beforeLoad: async () => {
@@ -49,6 +50,7 @@ type Party = { id: string; host_id: string; title: string; media_kind: string; s
 
 function CollaboratePage() {
   const { user } = useAuth();
+  const isSuperAdmin = useIsSuperAdmin();
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamChannels, setTeamChannels] = useState<Channel[]>([]);
   const [globalChannels, setGlobalChannels] = useState<Channel[]>([]);
@@ -68,9 +70,13 @@ function CollaboratePage() {
   const loadAll = useCallback(async () => {
     if (!user) return;
 
+    const groupsQuery = isSuperAdmin
+      ? supabase.from("groups").select("*").order("name")
+      : supabase.from("groups").select("*").eq("is_public", true).order("name");
+
     const [{ data: globals }, { data: allGroups }, { data: memberships }, { data: liveParties }] = await Promise.all([
       supabase.from("chat_channels").select("*").is("team_id", null).is("group_id", null).order("created_at"),
-      supabase.from("groups").select("*").eq("is_public", true).order("name"),
+      groupsQuery,
       supabase.from("group_members").select("group_id").eq("user_id", user.id),
       supabase.from("watch_parties").select("id,host_id,title,media_kind,started_at,ended_at").is("ended_at", null).order("started_at", { ascending: false }),
     ]);
@@ -79,7 +85,10 @@ function CollaboratePage() {
     setGroups((allGroups ?? []) as Group[]);
     setParties((liveParties ?? []) as Party[]);
 
-    const joined = new Set<string>((memberships ?? []).map((m: any) => m.group_id as string));
+    // Super admin implicitly "joins" every group so they appear in sidebar for moderation.
+    const joined = isSuperAdmin
+      ? new Set<string>(((allGroups ?? []) as Group[]).map((g) => g.id))
+      : new Set<string>((memberships ?? []).map((m: any) => m.group_id as string));
     setJoinedGroupIds(joined);
 
     if (joined.size > 0) {
@@ -88,7 +97,6 @@ function CollaboratePage() {
         supabase.from("groups").select("*").in("id", Array.from(joined)),
       ]);
       setGroupChannels((gc ?? []) as Channel[]);
-      // Merge public groups + joined groups (may include private)
       const map = new Map<string, Group>();
       ((allGroups ?? []) as Group[]).forEach((g) => map.set(g.id, g));
       ((joinedGroupRows ?? []) as Group[]).forEach((g) => map.set(g.id, g));
@@ -114,9 +122,9 @@ function CollaboratePage() {
       const room = (globals ?? []).find((c: any) => c.name === "chat-room") ?? (globals ?? [])[0];
       if (room) setActiveChannel(room.id);
     }
-  }, [user, activeChannel]);
+  }, [user, activeChannel, isSuperAdmin]);
 
-  useEffect(() => { loadAll(); /* eslint-disable-next-line */ }, [user]);
+  useEffect(() => { loadAll(); /* eslint-disable-next-line */ }, [user, isSuperAdmin]);
   useEffect(() => { setSidebarOpen(false); }, [activeChannel]);
 
   // Realtime: new parties + party endings + new groups
@@ -156,6 +164,12 @@ function CollaboratePage() {
           setMessages((prev) => [...prev, { ...m, email: (e as string) ?? undefined }]);
           setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
         })
+      .on("postgres_changes",
+        { event: "DELETE", schema: "public", table: "chat_messages", filter: `channel_id=eq.${activeChannel}` },
+        (payload) => {
+          const oldId = (payload.old as any)?.id;
+          if (oldId) setMessages((prev) => prev.filter((m) => m.id !== oldId));
+        })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [activeChannel, loadMessages]);
@@ -173,6 +187,15 @@ function CollaboratePage() {
     await supabase.from("group_members").delete().eq("group_id", groupId).eq("user_id", user.id);
     await loadAll();
   };
+
+  const deleteMessage = async (messageId: string) => {
+    if (!confirm("Delete this message? This can't be undone.")) return;
+    const { error } = await supabase.from("chat_messages").delete().eq("id", messageId);
+    if (error) return toast.error(error.message);
+    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+    toast.success("Message deleted");
+  };
+
 
   const allChannels = useMemo(() => [...globalChannels, ...groupChannels, ...teamChannels], [globalChannels, groupChannels, teamChannels]);
   const active = allChannels.find((c) => c.id === activeChannel);
@@ -200,8 +223,17 @@ function CollaboratePage() {
               <MessageSquare className="h-4 w-4 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold">Collaborate</p>
-              <p className="text-[10px] text-muted-foreground -mt-0.5">Chat · Groups · Hangouts</p>
+              <p className="text-sm font-bold flex items-center gap-1.5">
+                Collaborate
+                {isSuperAdmin && (
+                  <span className="inline-flex items-center gap-0.5 rounded-full bg-fuchsia-500/20 text-fuchsia-200 px-1.5 py-0.5 text-[9px] font-semibold">
+                    <Shield className="h-2.5 w-2.5" /> ADMIN
+                  </span>
+                )}
+              </p>
+              <p className="text-[10px] text-muted-foreground -mt-0.5">
+                {isSuperAdmin ? "Moderating every group" : "Chat · Groups · Hangouts"}
+              </p>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -376,11 +408,21 @@ function CollaboratePage() {
                             </div>
                           )}
                         </div>
-                        {!mine && (
-                          <div className="opacity-0 group-hover:opacity-100 transition self-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition self-center flex items-center gap-1">
+                          {!mine && (
                             <ReportButton targetType="chat_message" targetId={m.id} targetUserId={m.user_id} size="xs" label="" />
-                          </div>
-                        )}
+                          )}
+                          {(mine || isSuperAdmin) && (
+                            <button
+                              onClick={() => deleteMessage(m.id)}
+                              className="h-6 w-6 grid place-items-center rounded-md text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition"
+                              title={isSuperAdmin && !mine ? "Delete (super admin)" : "Delete message"}
+                              aria-label="Delete message"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <MessageReactions messageId={m.id} align={mine ? "right" : "left"} />
                     </div>

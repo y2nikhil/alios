@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ListChecks, MessageSquare, Send, Youtube as YoutubeIcon, Plus } from "lucide-react";
+import { ListChecks, MessageSquare, Send, Youtube as YoutubeIcon, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
@@ -100,6 +100,15 @@ export function MyTasks() {
     else toast.success(`Marked ${STATUS_OPTIONS.find((s) => s.value === status)?.label}`);
   }
 
+  async function deleteTask(t: Task, e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!confirm(`Delete "${t.title}"? This can't be undone.`)) return;
+    const { error } = await supabase.from("tasks").delete().eq("id", t.id);
+    if (error) return toast.error(error.message);
+    toast.success("Task deleted");
+    setTasks((prev) => prev.filter((x) => x.id !== t.id));
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -169,6 +178,14 @@ export function MyTasks() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <button
+                    onClick={(e) => deleteTask(t, e)}
+                    className="h-7 w-7 grid place-items-center rounded-md text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition shrink-0"
+                    aria-label="Delete task"
+                    title="Delete task"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </div>
             );

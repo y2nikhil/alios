@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import * as Icons from "lucide-react";
-import { Trophy } from "lucide-react";
+import { Trophy, Sparkles } from "lucide-react";
+import { TrophyInfoDialog } from "@/components/TrophyProgress";
 
 type Award = {
   code: string; title: string; description: string;
@@ -20,6 +21,7 @@ const TIER_STYLES: Record<string, { ring: string; bg: string; text: string }> = 
 export function AwardsShelf({ userId, showLocked = true }: { userId?: string; showLocked?: boolean }) {
   const [awards, setAwards] = useState<Award[]>([]);
   const [unlocked, setUnlocked] = useState<UserAward[]>([]);
+  const [infoOpen, setInfoOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -58,8 +60,23 @@ export function AwardsShelf({ userId, showLocked = true }: { userId?: string; sh
         <span className="text-xs text-muted-foreground ml-auto">
           {unlocked.length} / {awards.length} unlocked
         </span>
+        <button
+          onClick={() => setInfoOpen(true)}
+          className="h-7 w-7 grid place-items-center rounded-full hover:bg-white/10 text-cyan-300 transition"
+          aria-label="Ask AI about trophies"
+          title="Ask AI what trophies are for"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+        </button>
       </div>
+      <TrophyInfoDialog
+        open={infoOpen}
+        onOpenChange={setInfoOpen}
+        awards={awards}
+        unlocked={new Set(unlocked.map((u) => u.award_code))}
+      />
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+
         {list.map((a) => {
           const Icon = (Icons as any)[a.icon] ?? Trophy;
           const earned = unlockedMap.has(a.code);
