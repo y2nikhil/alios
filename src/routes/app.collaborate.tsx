@@ -182,6 +182,15 @@ function CollaboratePage() {
     await loadAll();
   };
 
+  const deleteMessage = async (messageId: string) => {
+    if (!confirm("Delete this message? This can't be undone.")) return;
+    const { error } = await supabase.from("chat_messages").delete().eq("id", messageId);
+    if (error) return toast.error(error.message);
+    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+    toast.success("Message deleted");
+  };
+
+
   const allChannels = useMemo(() => [...globalChannels, ...groupChannels, ...teamChannels], [globalChannels, groupChannels, teamChannels]);
   const active = allChannels.find((c) => c.id === activeChannel);
   const activeGroup = active?.group_id ? groups.find((g) => g.id === active.group_id) : null;
