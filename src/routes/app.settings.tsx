@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAux, type AuxStatus } from "@/lib/aux-store";
 import { useAuth } from "@/lib/auth";
@@ -6,10 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Pencil, AtSign, Check, Loader2 } from "lucide-react";
+import { Plus, Trash2, Pencil, AtSign, Check, Loader2, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { AppearancePanel } from "@/components/AppearancePanel";
 import { AwardsShelf } from "@/components/AwardsShelf";
+import { EXAM_BY_KEY } from "@/lib/exam-catalog";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({
