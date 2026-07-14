@@ -297,6 +297,9 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          attachment_mime: string | null
+          attachment_name: string | null
+          attachment_size: number | null
           attachment_url: string | null
           attachments: Json
           body: string
@@ -309,6 +312,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attachment_mime?: string | null
+          attachment_name?: string | null
+          attachment_size?: number | null
           attachment_url?: string | null
           attachments?: Json
           body: string
@@ -321,6 +327,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attachment_mime?: string | null
+          attachment_name?: string | null
+          attachment_size?: number | null
           attachment_url?: string | null
           attachments?: Json
           body?: string
@@ -382,30 +391,74 @@ export type Database = {
         }
         Relationships: []
       }
+      dm_message_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dm_message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "dm_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dm_messages: {
         Row: {
+          attachment_mime: string | null
+          attachment_name: string | null
+          attachment_size: number | null
           attachment_url: string | null
           body: string | null
           created_at: string
           id: string
+          kind: string
           read_at: string | null
           sender_id: string
           thread_id: string
         }
         Insert: {
+          attachment_mime?: string | null
+          attachment_name?: string | null
+          attachment_size?: number | null
           attachment_url?: string | null
           body?: string | null
           created_at?: string
           id?: string
+          kind?: string
           read_at?: string | null
           sender_id: string
           thread_id: string
         }
         Update: {
+          attachment_mime?: string | null
+          attachment_name?: string | null
+          attachment_size?: number | null
           attachment_url?: string | null
           body?: string | null
           created_at?: string
           id?: string
+          kind?: string
           read_at?: string | null
           sender_id?: string
           thread_id?: string
@@ -618,6 +671,38 @@ export type Database = {
           },
         ]
       }
+      message_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mindmap_boards: {
         Row: {
           created_at: string
@@ -797,6 +882,38 @@ export type Database = {
             columns: ["board_id"]
             isOneToOne: false
             referencedRelation: "mindmap_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mindmap_share_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          message_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mindmap_share_comments_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
             referencedColumns: ["id"]
           },
         ]
@@ -1635,7 +1752,7 @@ export type Database = {
     Enums: {
       app_role: "super_admin" | "admin" | "member"
       aux_category: "productive" | "neutral" | "unproductive"
-      chat_message_kind: "text" | "image" | "poll" | "mindmap_share"
+      chat_message_kind: "text" | "image" | "poll" | "mindmap_share" | "file"
       collab_role: "viewer" | "editor"
       mindmap_node_type: "text" | "image" | "link" | "task"
       notification_type:
@@ -1651,6 +1768,8 @@ export type Database = {
         | "role_granted"
         | "role_revoked"
         | "account_revoked"
+        | "system"
+        | "mindmap_comment"
       party_visibility: "public" | "unlisted" | "private"
       report_reason:
         | "harassment"
@@ -1805,7 +1924,7 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "admin", "member"],
       aux_category: ["productive", "neutral", "unproductive"],
-      chat_message_kind: ["text", "image", "poll", "mindmap_share"],
+      chat_message_kind: ["text", "image", "poll", "mindmap_share", "file"],
       collab_role: ["viewer", "editor"],
       mindmap_node_type: ["text", "image", "link", "task"],
       notification_type: [
@@ -1821,6 +1940,8 @@ export const Constants = {
         "role_granted",
         "role_revoked",
         "account_revoked",
+        "system",
+        "mindmap_comment",
       ],
       party_visibility: ["public", "unlisted", "private"],
       report_reason: [

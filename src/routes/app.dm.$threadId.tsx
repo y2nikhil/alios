@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ReportButton } from "@/components/ReportButton";
 import { AvatarIconRender } from "@/components/AvatarIcon";
+import { FileAttachment } from "@/components/chat/FileAttachment";
+import { MessageReactions } from "@/components/chat/MessageReactions";
+import { MentionText } from "@/lib/mentions";
 
 export const Route = createFileRoute("/app/dm/$threadId")({
   head: () => ({ meta: [{ title: "Direct message — ALIOS" }] }),
@@ -17,6 +20,8 @@ export const Route = createFileRoute("/app/dm/$threadId")({
 type Msg = {
   id: string; thread_id: string; sender_id: string;
   body: string | null; attachment_url: string | null;
+  attachment_name: string | null; attachment_mime: string | null; attachment_size: number | null;
+  kind: string | null;
   read_at: string | null; created_at: string;
 };
 
@@ -95,14 +100,20 @@ function DmPage() {
     })();
   }, [msgs, signedCache]);
 
-  const send = async (attachmentPath?: string) => {
+  const send = async (attachment?: { path: string; file: File }) => {
     if (!user || !thread) return;
     const text = body.trim();
-    if (!text && !attachmentPath) return;
+    if (!text && !attachment) return;
     setSending(true);
+    const isImage = attachment?.file.type.startsWith("image/");
     const { error } = await (supabase.from("dm_messages") as any).insert({
       thread_id: thread.id, sender_id: user.id,
-      body: text || null, attachment_url: attachmentPath ?? null,
+      body: text || null,
+      attachment_url: attachment?.path ?? null,
+      attachment_name: attachment?.file.name ?? null,
+      attachment_mime: attachment?.file.type ?? null,
+      attachment_size: attachment?.file.size ?? null,
+      kind: attachment ? (isImage ? "image" : "file") : "text",
     });
     setSending(false);
     if (error) { toast.error(error.message); return; }
@@ -111,13 +122,14 @@ function DmPage() {
 
   const upload = async (file: File) => {
     if (!user) return;
-    if (file.size > 8 * 1024 * 1024) { toast.error("Image must be under 8 MB"); return; }
-    const ext = file.name.split(".").pop() ?? "bin";
-    const path = `${user.id}/dm-${Date.now()}.${ext}`;
+    if (file.size > 20 * 1024 * 1024) { toast.error("Max 20 MB"); return; }
+    const safe = file.name.replace(/[^A-Za-z0-9._-]/g, "_");
+    const path = `${user.id}/dm-${Date.now()}-${safe}`;
     const { error } = await supabase.storage.from("chat-attachments").upload(path, file, { contentType: file.type });
     if (error) { toast.error(error.message); return; }
-    await send(path);
+    await send({ path, file });
   };
+
 
   const otherName = other?.display_name ?? other?.username ?? "User";
 
@@ -158,7 +170,11 @@ function DmPage() {
               <div className={cn("group inline-flex items-start gap-1.5 max-w-[75%]", mine && "flex-row-reverse")}>
                 <div className={cn("rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words",
                   mine ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-accent/60 rounded-tl-sm")}>
-                  {m.attachment_url && (
+                  {m.attachment_url && (m.kind === "file" || (m.attachment_mime && !m.attachment_mime.startsWith("image/"))) ? (
+                    <div className="mb-1">
+                      <FileAttachment path={m.attachment_url} name={m.attachment_name} mime={m.attachment_mime} size={m.attachment_size} mine={mine} />
+                    </div>
+                  ) : m.attachment_url ? (
                     signed ? (
                       <a href={signed} target="_blank" rel="noreferrer">
                         <img src={signed} alt="attachment" className="mb-1 rounded-lg max-h-64" />
@@ -168,8 +184,8 @@ function DmPage() {
                         <ImageIcon className="h-3.5 w-3.5" /> loading image…
                       </div>
                     )
-                  )}
-                  {m.body}
+                  ) : null}
+                  {m.body && <MentionText text={m.body} meId={user?.id} />}
                 </div>
                 {!mine && (
                   <div className="opacity-0 group-hover:opacity-100 transition self-center">
@@ -177,6 +193,7 @@ function DmPage() {
                   </div>
                 )}
               </div>
+              <MessageReactions messageId={m.id} table="dm_message_reactions" align={mine ? "right" : "left"} />
             </div>
           );
         })}
@@ -194,11 +211,13 @@ function DmPage() {
         {dragging && (
           <div className="absolute inset-2 rounded-xl border-2 border-dashed border-primary/60 grid place-items-center pointer-events-none bg-background/80 z-10">
             <p className="text-sm text-primary font-semibold flex items-center gap-2">
-              <ImageIcon className="h-4 w-4" /> Drop image to send
+              <ImageIcon className="h-4 w-4" /> Drop to send
             </p>
           </div>
         )}
-        <input ref={fileRef} type="file" accept="image/*" className="hidden"
+        <input ref={fileRef} type="file"
+          accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip"
+          className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.currentTarget.value = ""; }} />
         <Button size="icon" variant="ghost" onClick={() => fileRef.current?.click()}><Paperclip className="h-4 w-4" /></Button>
         <textarea
@@ -208,7 +227,8 @@ function DmPage() {
             const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/"));
             if (f) { e.preventDefault(); upload(f); }
           }}
-          placeholder={`Message ${otherName} — drop or paste images`} rows={1}
+          placeholder={`Message ${otherName} — drop images or files, @mention friends`} rows={1}
+
           className="flex-1 resize-none rounded-xl bg-accent/40 border border-border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary max-h-32"
         />
         <Button onClick={() => send()} disabled={sending || !body.trim()} size="icon"><Send className="h-4 w-4" /></Button>

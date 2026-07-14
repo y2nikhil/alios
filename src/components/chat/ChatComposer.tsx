@@ -25,18 +25,22 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const uploadImage = useCallback(async (file: File) => {
+  const uploadFile = useCallback(async (file: File) => {
     if (!user) return;
-    if (!file.type.startsWith("image/")) { toast.error("Only images supported"); return; }
-    if (file.size > 8 * 1024 * 1024) { toast.error("Max 8 MB"); return; }
+    if (file.size > 20 * 1024 * 1024) { toast.error("Max 20 MB"); return; }
+    const isImage = file.type.startsWith("image/");
     setSending(true);
-    const ext = file.name.split(".").pop() ?? "png";
-    const path = `${user.id}/chat-${Date.now()}.${ext}`;
+    const safe = file.name.replace(/[^A-Za-z0-9._-]/g, "_");
+    const path = `${user.id}/chat-${Date.now()}-${safe}`;
     const { error: upErr } = await supabase.storage.from("chat-attachments").upload(path, file, { contentType: file.type });
     if (upErr) { toast.error(upErr.message); setSending(false); return; }
     const { error } = await (supabase.from("chat_messages") as any).insert({
       channel_id: channelId, user_id: user.id, body: body.trim() || null,
-      kind: "image", attachment_url: path,
+      kind: isImage ? "image" : "file",
+      attachment_url: path,
+      attachment_name: file.name,
+      attachment_mime: file.type || null,
+      attachment_size: file.size,
     });
     setSending(false);
     if (error) toast.error(error.message);
@@ -59,8 +63,9 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
     e.preventDefault();
     setDragging(false);
     const f = e.dataTransfer.files?.[0];
-    if (f) uploadImage(f);
+    if (f) uploadFile(f);
   };
+
 
   return (
     <div
@@ -76,8 +81,8 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
           </p>
         </div>
       )}
-      <input ref={fileRef} type="file" accept="image/*" className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); e.currentTarget.value = ""; }} />
+      <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.currentTarget.value = ""; }} />
 
       <div className="flex gap-2 items-end">
         <div className="relative">
@@ -86,7 +91,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
           </Button>
           {menuOpen && (
             <div className="absolute bottom-11 left-0 z-20 w-52 rounded-xl border border-border bg-popover shadow-lg p-1 space-y-0.5">
-              <MenuItem icon={<Paperclip className="h-3.5 w-3.5" />} label="Attach image"
+              <MenuItem icon={<Paperclip className="h-3.5 w-3.5" />} label="Attach file or image"
                 onClick={() => { setMenuOpen(false); fileRef.current?.click(); }} />
               <MenuItem icon={<BarChart3 className="h-3.5 w-3.5 text-emerald-400" />} label="Create poll"
                 onClick={() => { setMenuOpen(false); setPollOpen(true); }} />
@@ -101,7 +106,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendText(); } }}
           onPaste={(e) => {
             const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/"));
-            if (f) { e.preventDefault(); uploadImage(f); }
+            if (f) { e.preventDefault(); uploadFile(f); }
           }}
           placeholder={disabled ? "Read-only" : `Message #${channelName} — drop images or use +`} rows={1}
           disabled={disabled}
