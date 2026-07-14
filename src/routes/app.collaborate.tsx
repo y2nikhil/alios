@@ -393,11 +393,21 @@ function CollaboratePage() {
                             </div>
                           )}
                         </div>
-                        {!mine && (
-                          <div className="opacity-0 group-hover:opacity-100 transition self-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition self-center flex items-center gap-1">
+                          {!mine && (
                             <ReportButton targetType="chat_message" targetId={m.id} targetUserId={m.user_id} size="xs" label="" />
-                          </div>
-                        )}
+                          )}
+                          {(mine || isSuperAdmin) && (
+                            <button
+                              onClick={() => deleteMessage(m.id)}
+                              className="h-6 w-6 grid place-items-center rounded-md text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition"
+                              title={isSuperAdmin && !mine ? "Delete (super admin)" : "Delete message"}
+                              aria-label="Delete message"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <MessageReactions messageId={m.id} align={mine ? "right" : "left"} />
                     </div>
