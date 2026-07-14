@@ -134,7 +134,7 @@ function DmPage() {
   const otherName = other?.display_name ?? other?.username ?? "User";
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+    <div className="flex flex-col h-[calc(100dvh-3.5rem)]">
       <div className="border-b border-white/5 px-4 py-3 flex items-center gap-3 bg-background/80 backdrop-blur">
         <Button size="icon" variant="ghost" onClick={() => nav({ to: "/app/friends" })}><ArrowLeft className="h-4 w-4" /></Button>
         <AvatarIconRender
