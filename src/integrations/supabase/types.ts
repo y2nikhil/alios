@@ -497,6 +497,30 @@ export type Database = {
         }
         Relationships: []
       }
+      focus_milestone_events: {
+        Row: {
+          created_at: string
+          id: string
+          milestone_minutes: number
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          milestone_minutes: number
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          milestone_minutes?: number
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           accepted_at: string | null
@@ -1056,6 +1080,7 @@ export type Database = {
           daily_goal_minutes: number
           display_name: string | null
           id: string
+          notification_prefs: Json
           theme: string
           theme_accent: string
           timeline_public: boolean
@@ -1071,6 +1096,7 @@ export type Database = {
           daily_goal_minutes?: number
           display_name?: string | null
           id: string
+          notification_prefs?: Json
           theme?: string
           theme_accent?: string
           timeline_public?: boolean
@@ -1086,12 +1112,46 @@ export type Database = {
           daily_goal_minutes?: number
           display_name?: string | null
           id?: string
+          notification_prefs?: Json
           theme?: string
           theme_accent?: string
           timeline_public?: boolean
           timeline_visibility?: string
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_seen_at: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_seen_at?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_seen_at?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
