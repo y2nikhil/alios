@@ -19,6 +19,7 @@ import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
 import { Route as AppPartyRouteImport } from './routes/app.party'
+import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppModerationRouteImport } from './routes/app.moderation'
 import { Route as AppLiveRouteImport } from './routes/app.live'
@@ -87,6 +88,11 @@ const AppPlaylistsRoute = AppPlaylistsRouteImport.update({
 const AppPartyRoute = AppPartyRouteImport.update({
   id: '/party',
   path: '/party',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AppRoute,
 } as any)
 const AppNotificationsRoute = AppNotificationsRouteImport.update({
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/app/live': typeof AppLiveRoute
   '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/app/live': typeof AppLiveRoute
   '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/app/live': typeof AppLiveRoute
   '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/onboarding': typeof AppOnboardingRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/app/live'
     | '/app/moderation'
     | '/app/notifications'
+    | '/app/onboarding'
     | '/app/party'
     | '/app/playlists'
     | '/app/settings'
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/app/live'
     | '/app/moderation'
     | '/app/notifications'
+    | '/app/onboarding'
     | '/app/party'
     | '/app/playlists'
     | '/app/settings'
@@ -360,6 +371,7 @@ export interface FileRouteTypes {
     | '/app/live'
     | '/app/moderation'
     | '/app/notifications'
+    | '/app/onboarding'
     | '/app/party'
     | '/app/playlists'
     | '/app/settings'
@@ -455,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/party'
       fullPath: '/app/party'
       preLoaderRoute: typeof AppPartyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/onboarding': {
+      id: '/app/onboarding'
+      path: '/onboarding'
+      fullPath: '/app/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/notifications': {
@@ -603,6 +622,7 @@ interface AppRouteChildren {
   AppLiveRoute: typeof AppLiveRoute
   AppModerationRoute: typeof AppModerationRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
+  AppOnboardingRoute: typeof AppOnboardingRoute
   AppPartyRoute: typeof AppPartyRoute
   AppPlaylistsRoute: typeof AppPlaylistsRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -626,6 +646,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLiveRoute: AppLiveRoute,
   AppModerationRoute: AppModerationRoute,
   AppNotificationsRoute: AppNotificationsRoute,
+  AppOnboardingRoute: AppOnboardingRoute,
   AppPartyRoute: AppPartyRoute,
   AppPlaylistsRoute: AppPlaylistsRoute,
   AppSettingsRoute: AppSettingsRoute,
