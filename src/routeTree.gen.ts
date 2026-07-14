@@ -39,6 +39,7 @@ import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
+import { Route as ApiPublicHooksDispatchPushRouteImport } from './routes/api.public.hooks.dispatch-push'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -190,6 +191,12 @@ const AppDmThreadIdRoute = AppDmThreadIdRouteImport.update({
   path: '/dm/$threadId',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicHooksDispatchPushRoute =
+  ApiPublicHooksDispatchPushRouteImport.update({
+    id: '/api/public/hooks/dispatch-push',
+    path: '/api/public/hooks/dispatch-push',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
+  '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
+  '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -286,6 +295,7 @@ export interface FileRoutesById {
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
+  '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
     | '/app/mindmap/'
+    | '/api/public/hooks/dispatch-push'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
     | '/app/mindmap'
+    | '/api/public/hooks/dispatch-push'
   id:
     | '__root__'
     | '/'
@@ -383,6 +395,7 @@ export interface FileRouteTypes {
     | '/app/mindmap/$boardId'
     | '/app/u/$userId'
     | '/app/mindmap/'
+    | '/api/public/hooks/dispatch-push'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -395,6 +408,7 @@ export interface RootRouteChildren {
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
   ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
+  ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -609,6 +623,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDmThreadIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/hooks/dispatch-push': {
+      id: '/api/public/hooks/dispatch-push'
+      path: '/api/public/hooks/dispatch-push'
+      fullPath: '/api/public/hooks/dispatch-push'
+      preLoaderRoute: typeof ApiPublicHooksDispatchPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -672,6 +693,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiMindmapRoute: ApiAiMindmapRoute,
   ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
+  ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
