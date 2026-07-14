@@ -181,8 +181,18 @@ function CollaboratePage() {
   const joinedGroups = groups.filter((g) => joinedGroupIds.has(g.id));
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex overflow-hidden">
-      <aside className="w-64 shrink-0 border-r border-border bg-background/40 backdrop-blur-xl flex flex-col">
+    <div className="h-[calc(100vh-3.5rem)] flex overflow-hidden relative">
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+        />
+      )}
+      <aside className={cn(
+        "shrink-0 border-r border-border bg-background/95 backdrop-blur-xl flex flex-col",
+        "fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-200 md:static md:w-64 md:translate-x-0",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full",
+      )}>
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-400 shadow-lg shadow-emerald-500/30">
