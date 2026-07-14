@@ -25,7 +25,15 @@ type Progress = {
   watched_seconds: number;
 };
 
-export function YouTubeChecklist({ taskId, canEdit }: { taskId: string; canEdit: boolean }) {
+export function YouTubeChecklist({
+  taskId,
+  canEdit,
+  onAddToBoard,
+}: {
+  taskId: string;
+  canEdit: boolean;
+  onAddToBoard?: (v: { videoId: string; title: string; thumbnail: string | null; videoRowId: string }) => void;
+}) {
   const { user } = useAuth();
   const [videos, setVideos] = useState<Video[]>([]);
   const [progress, setProgress] = useState<Map<string, Progress>>(new Map());
