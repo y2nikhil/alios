@@ -63,23 +63,27 @@ function OnboardingPage() {
   });
 
   useEffect(() => {
-    load().then((existing) => {
-      if (existing) {
-        setForm((f) => ({
-          ...f,
-          exam: existing.exam as ExamKey,
-          attempt_year: existing.attempt_year,
-          exam_date: existing.exam_date ?? f.exam_date,
-          daily_hours: Number(existing.daily_hours),
-          preferred_time: existing.preferred_time as any,
-          prep_stage: existing.prep_stage as any,
-          weak_subjects: existing.weak_subjects ?? [],
-          goal: existing.goal ?? "",
-          coaching_status: existing.coaching_status as any,
-        }));
-      }
-    }).finally(() => setInitialized(true));
+    load()
+      .then((existing) => {
+        if (existing) {
+          setForm((f) => ({
+            ...f,
+            exam: existing.exam as ExamKey,
+            attempt_year: existing.attempt_year,
+            exam_date: existing.exam_date ?? f.exam_date,
+            daily_hours: Number(existing.daily_hours),
+            preferred_time: existing.preferred_time as any,
+            prep_stage: existing.prep_stage as any,
+            weak_subjects: existing.weak_subjects ?? [],
+            goal: existing.goal ?? "",
+            coaching_status: existing.coaching_status as any,
+          }));
+        }
+      })
+      .catch(() => { /* no profile yet or not authed — start fresh */ })
+      .finally(() => setInitialized(true));
   }, [load]);
+
 
   const set = <K extends keyof PrepProfileInput>(k: K, v: PrepProfileInput[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
