@@ -18,7 +18,7 @@ export const Route = createFileRoute("/app/assistant")({
 type Msg = { role: "user" | "assistant"; content: string };
 const KEY = "alios.assistant.chat.v1";
 
-const SUGGESTIONS = [
+const DEFAULT_SUGGESTIONS = [
   "What did I focus on this week?",
   "Give me a plan for tomorrow.",
   "How can I improve my focus score?",
