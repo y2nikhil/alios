@@ -117,6 +117,7 @@ function CollaboratePage() {
   }, [user, activeChannel]);
 
   useEffect(() => { loadAll(); /* eslint-disable-next-line */ }, [user]);
+  useEffect(() => { setSidebarOpen(false); }, [activeChannel]);
 
   // Realtime: new parties + party endings + new groups
   useEffect(() => {
