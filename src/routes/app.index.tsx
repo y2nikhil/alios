@@ -324,20 +324,17 @@ function CommandCenter() {
           <AISummaryPanel />
 
           <div className="glass rounded-3xl p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground truncate">
                 Upcoming
               </p>
-              <Link to="/app/timeline" className="text-[11px] text-muted-foreground hover:text-foreground">
-                View calendar →
+              <Link to="/app/calendar" className="text-[11px] text-muted-foreground hover:text-foreground shrink-0">
+                Open calendar →
               </Link>
             </div>
-            <div className="mt-3 space-y-2">
-              <UpcomingItem title="CAT Mock Test" when="Today, 06:00 PM" chip="In 1h 25m" />
-              <UpcomingItem title="Interview with ABC Corp" when="Tomorrow, 11:00 AM" chip="In 18h" />
-              <UpcomingItem title="Dentist Appointment" when="Sat, 10:00 AM" chip="In 2 days" />
-            </div>
+            <UpcomingList />
           </div>
+
 
           <CountdownCalendar />
 
