@@ -57,7 +57,7 @@ export const Route = createFileRoute("/app/mindmap/$boardId")({
   component: BoardPage,
 });
 
-type NodeKind = "text" | "image" | "link" | "task";
+type NodeKind = "text" | "image" | "link" | "task" | "video";
 type NodeData = {
   text?: string;
   url?: string;
@@ -68,6 +68,10 @@ type NodeData = {
   assignee?: string | null;
   tags?: string[];
   autoEdit?: boolean;
+  // video
+  videoId?: string;
+  thumbnail?: string;
+  videoRowId?: string;
   onUpdate?: (p: Partial<NodeData>) => void;
   onMenu?: (clientX: number, clientY: number) => void;
 };
