@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { playNotificationSound, soundForCategory } from "@/lib/notification-sounds";
+import { showLocalNotification } from "@/lib/push-client";
 
 export type Notification = {
   id: string;
