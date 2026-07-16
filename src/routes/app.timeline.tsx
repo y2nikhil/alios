@@ -5,7 +5,7 @@ import { useAux, type AuxSession, type AuxStatus } from "@/lib/aux-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatShortDuration, formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,9 @@ export const Route = createFileRoute("/app/timeline")({
   component: TimelinePage,
 });
 
-type Zoom = "15min" | "hour" | "day";
+type Tick = "5min" | "15min" | "30min";
+
+const WINDOW_MIN = 120; // fixed 2-hour window
 
 function TimelinePage() {
   const { user } = useAuth();
@@ -30,9 +32,37 @@ function TimelinePage() {
     return d;
   });
   const [sessions, setSessions] = useState<AuxSession[]>([]);
-  const [zoom, setZoom] = useState<Zoom>("hour");
+  const [tick, setTick] = useState<Tick>("15min");
   const [selected, setSelected] = useState<AuxSession | null>(null);
-  const [replayMin, setReplayMin] = useState<number | null>(null);
+
+  // windowEndMin: minute-of-day where the visible window ends. Default: now (if today) or end of day.
+  const nowMin = () => {
+    const n = new Date();
+    return n.getHours() * 60 + n.getMinutes();
+  };
+  const isToday = date.toDateString() === new Date().toDateString();
+  const maxEnd = isToday ? Math.max(WINDOW_MIN, nowMin()) : 1440;
+  const [windowEndMin, setWindowEndMin] = useState<number>(maxEnd);
+
+  // Keep windowEndMin in valid range whenever the day/isToday changes
+  useEffect(() => {
+    setWindowEndMin(isToday ? Math.max(WINDOW_MIN, nowMin()) : 1440);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
+
+  // Auto-advance the window edge as time passes when viewing today at "live" edge
+  useEffect(() => {
+    if (!isToday) return;
+    const i = setInterval(() => {
+      setWindowEndMin((cur) => {
+        const n = nowMin();
+        // If user is at (or near) the live edge, keep pinning to now
+        if (Math.abs(cur - n) < 2 || cur >= n) return Math.max(WINDOW_MIN, n);
+        return cur;
+      });
+    }, 30000);
+    return () => clearInterval(i);
+  }, [isToday]);
 
   useEffect(() => {
     if (!user) return;
@@ -49,30 +79,19 @@ function TimelinePage() {
       .then(({ data }) => setSessions((data as AuxSession[]) ?? []));
   }, [user, date]);
 
-  // Replay timer
-  useEffect(() => {
-    if (replayMin === null) return;
-    const i = setInterval(() => {
-      setReplayMin((m) => {
-        if (m === null) return null;
-        if (m >= 1440) {
-          return null;
-        }
-        return m + 6;
-      });
-    }, 60);
-    return () => clearInterval(i);
-  }, [replayMin]);
-
   const statusMap = useMemo(() => new Map(statuses.map((s) => [s.id, s])), [statuses]);
   const dayStart = date.getTime();
-  const dayMs = 24 * 60 * 60 * 1000;
 
-  const hours = zoom === "15min" ? 96 : zoom === "hour" ? 24 : 8;
-  const labels = Array.from({ length: hours }, (_, i) => {
-    if (zoom === "15min") return `${String(Math.floor(i / 4)).padStart(2, "0")}:${String((i % 4) * 15).padStart(2, "0")}`;
-    if (zoom === "hour") return `${String(i).padStart(2, "0")}:00`;
-    return `${i * 3}h`;
+  const tickMin = tick === "5min" ? 5 : tick === "15min" ? 15 : 30;
+  const ticks = WINDOW_MIN / tickMin;
+  const windowStartMin = Math.max(0, windowEndMin - WINDOW_MIN);
+  const windowEndMs = dayStart + windowEndMin * 60 * 1000;
+  const windowStartMs = dayStart + windowStartMin * 60 * 1000;
+  const windowMs = WINDOW_MIN * 60 * 1000;
+
+  const labels = Array.from({ length: ticks }, (_, i) => {
+    const m = windowStartMin + i * tickMin;
+    return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
   });
 
   const shiftDay = (delta: number) => {
@@ -81,78 +100,73 @@ function TimelinePage() {
     setDate(d);
   };
 
-  const isToday = date.toDateString() === new Date().toDateString();
+  const goLive = () => {
+    if (!isToday) {
+      const d = new Date(); d.setHours(0, 0, 0, 0); setDate(d);
+    }
+    setWindowEndMin(Math.max(WINDOW_MIN, nowMin()));
+  };
 
   return (
     <div className="p-4 lg:p-6 space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Timeline</h1>
-          <p className="text-sm text-muted-foreground">{date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
+          <p className="text-sm text-muted-foreground">{date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })} · last 2 hours</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => shiftDay(-1)} className="bg-white/5 border-white/10">
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setDate(() => { const d = new Date(); d.setHours(0,0,0,0); return d; })} className="bg-white/5 border-white/10">
-            Today
+          <Button variant="outline" size="sm" onClick={goLive} className="bg-white/5 border-white/10">
+            {isToday ? "Live" : "Today"}
           </Button>
           <Button variant="outline" size="icon" disabled={isToday} onClick={() => shiftDay(1)} className="bg-white/5 border-white/10">
             <ChevronRight className="h-4 w-4" />
           </Button>
           <div className="ml-2 flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5">
-            {(["15min", "hour", "day"] as Zoom[]).map((z) => (
+            {(["5min", "15min", "30min"] as Tick[]).map((z) => (
               <button
                 key={z}
-                onClick={() => setZoom(z)}
+                onClick={() => setTick(z)}
                 className={cn(
                   "px-2.5 py-1 text-xs rounded-md transition-colors",
-                  zoom === z ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground",
+                  tick === z ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {z}
               </button>
             ))}
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setReplayMin(replayMin === null ? 0 : null)}
-            className="bg-white/5 border-white/10"
-          >
-            {replayMin === null ? <Play className="h-3.5 w-3.5 mr-1" /> : <Pause className="h-3.5 w-3.5 mr-1" />}
-            Replay
-          </Button>
-          {replayMin !== null && (
-            <Button variant="ghost" size="icon" onClick={() => setReplayMin(0)}>
-              <RotateCcw className="h-3.5 w-3.5" />
-            </Button>
-          )}
         </div>
       </div>
 
       {/* Track */}
-      <div className="glass rounded-2xl p-4 lg:p-6 overflow-x-auto scrollbar-thin">
-        <div className="min-w-[800px]">
-          {/* Hour labels */}
-          <div className="grid text-[10px] text-muted-foreground" style={{ gridTemplateColumns: `repeat(${hours}, 1fr)` }}>
+      <div className="glass rounded-2xl p-4 lg:p-6">
+        <div>
+          {/* Tick labels */}
+          <div className="grid text-[10px] text-muted-foreground" style={{ gridTemplateColumns: `repeat(${ticks}, 1fr)` }}>
             {labels.map((l, i) => (
-              <div key={i} className="px-1">{l}</div>
+              <div key={i} className="px-1 truncate">{l}</div>
             ))}
           </div>
           {/* Track */}
           <div className="relative mt-2 h-20 rounded-xl bg-white/5 overflow-hidden border border-white/5">
             {/* gridlines */}
-            <div className="absolute inset-0 grid pointer-events-none" style={{ gridTemplateColumns: `repeat(${hours}, 1fr)` }}>
-              {Array.from({ length: hours }).map((_, i) => (
+            <div className="absolute inset-0 grid pointer-events-none" style={{ gridTemplateColumns: `repeat(${ticks}, 1fr)` }}>
+              {Array.from({ length: ticks }).map((_, i) => (
                 <div key={i} className="border-r border-white/[0.04]" />
               ))}
             </div>
             {sessions.map((sess) => {
               const start = new Date(sess.started_at).getTime();
               const end = sess.ended_at ? new Date(sess.ended_at).getTime() : Date.now();
-              const left = ((start - dayStart) / dayMs) * 100;
-              const width = ((end - start) / dayMs) * 100;
+              // clip to window
+              if (end <= windowStartMs || start >= windowEndMs) return null;
+              const clipStart = Math.max(start, windowStartMs);
+              const clipEnd = Math.min(end, windowEndMs);
+              const left = ((clipStart - windowStartMs) / windowMs) * 100;
+              const width = ((clipEnd - clipStart) / windowMs) * 100;
               const status = statusMap.get(sess.status_id);
               return (
                 <motion.button
@@ -163,7 +177,7 @@ function TimelinePage() {
                   className="absolute top-2 bottom-2 rounded-md transition-all hover:brightness-125 hover:top-1 hover:bottom-1"
                   style={{
                     left: `${left}%`,
-                    width: `${Math.max(0.3, width)}%`,
+                    width: `${Math.max(0.5, width)}%`,
                     backgroundColor: status?.color ?? "#666",
                     boxShadow: `0 0 16px -4px ${status?.color ?? "#666"}80`,
                   }}
@@ -171,17 +185,41 @@ function TimelinePage() {
                 />
               );
             })}
-            {/* Now indicator or replay cursor */}
-            <div
-              className="absolute top-0 bottom-0 w-0.5 bg-white/80 pointer-events-none"
-              style={{
-                left: `${replayMin !== null ? (replayMin / 1440) * 100 : isToday ? ((Date.now() - dayStart) / dayMs) * 100 : 100}%`,
-                boxShadow: "0 0 12px rgba(255,255,255,0.6)",
-              }}
+            {/* Now indicator (only if in-window) */}
+            {isToday && Date.now() >= windowStartMs && Date.now() <= windowEndMs && (
+              <div
+                className="absolute top-0 bottom-0 w-0.5 bg-white/80 pointer-events-none"
+                style={{
+                  left: `${((Date.now() - windowStartMs) / windowMs) * 100}%`,
+                  boxShadow: "0 0 12px rgba(255,255,255,0.6)",
+                }}
+              />
+            )}
+          </div>
+
+          {/* Scrollback slider */}
+          <div className="mt-4 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Scroll back through the day</span>
+              <span className="font-mono tabular-nums">
+                {String(Math.floor(windowStartMin / 60)).padStart(2, "0")}:{String(windowStartMin % 60).padStart(2, "0")}
+                {" → "}
+                {String(Math.floor(windowEndMin / 60)).padStart(2, "0")}:{String(windowEndMin % 60).padStart(2, "0")}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={WINDOW_MIN}
+              max={maxEnd}
+              step={5}
+              value={Math.min(windowEndMin, maxEnd)}
+              onChange={(e) => setWindowEndMin(Number(e.target.value))}
+              className="w-full accent-primary"
             />
           </div>
         </div>
       </div>
+
 
       {/* Sessions list */}
       <div className="glass rounded-2xl">
