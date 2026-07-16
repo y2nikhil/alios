@@ -29,7 +29,7 @@ export const Route = createFileRoute("/app/collaborate")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Collaborate — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Collaborate — ClassLab" }] }),
   component: CollaboratePage,
 });
 

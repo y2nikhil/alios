@@ -10,7 +10,7 @@ export const Route = createFileRoute("/app/notifications")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Notifications — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Notifications — ClassLab" }] }),
   component: NotificationsPage,
 });
 

@@ -50,7 +50,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export const Route = createFileRoute("/app/mindmap/$boardId")({
   head: () => ({
     meta: [
-      { title: "Mind Map — ALIOS" },
+      { title: "Mind Map — ClassLab" },
       { name: "description", content: "Infinite-canvas mind map." },
     ],
   }),

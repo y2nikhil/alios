@@ -24,7 +24,7 @@ import { TrophyProgress } from "@/components/TrophyProgress";
 export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
-      { title: "Command Center — ALIOS" },
+      { title: "Command Center — ClassLab" },
       { name: "description", content: "Your personal command center: live status, focus score, AI insights." },
     ],
   }),

@@ -152,7 +152,7 @@ export const finalizeOnboarding = createServerFn({ method: "POST" })
           body: JSON.stringify({
             model: "google/gemini-3-flash-preview",
             messages: [
-              { role: "system", content: "You are ALIOS, a study coach. Write a compact weekly study plan (Mon–Sun) with 1 short line per day. Under 140 words total. Plain text, no markdown headers." },
+              { role: "system", content: "You are ClassLab, a study coach. Write a compact weekly study plan (Mon–Sun) with 1 short line per day. Under 140 words total. Plain text, no markdown headers." },
               { role: "user", content: `Exam: ${data.exam.toUpperCase()} ${data.attempt_year}. Daily hours: ${data.daily_hours}. Preferred time: ${data.preferred_time}. Stage: ${data.prep_stage}. Weak areas: ${(data.weak_subjects ?? []).join(", ") || "none"}. Coaching: ${data.coaching_status}. Goal: ${data.goal ?? "n/a"}.` },
             ],
           }),

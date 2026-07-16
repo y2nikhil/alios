@@ -10,8 +10,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Sign in — ALIOS" },
-      { name: "description", content: "Sign in to your ALIOS productivity workspace." },
+      { title: "Sign in — ClassLab" },
+      { name: "description", content: "Sign in to your ClassLab productivity workspace." },
     ],
   }),
   component: LoginPage,
@@ -49,7 +49,7 @@ function LoginPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
             <Sparkles className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gradient">ALIOS</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gradient">ClassLab</h1>
           <p className="mt-1 text-sm text-muted-foreground">Your personal life operating system</p>
         </div>
 

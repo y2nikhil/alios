@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/ai-ask")({
             body: JSON.stringify({
               model: "google/gemini-2.5-flash",
               messages: [
-                { role: "system", content: "You are ALIOS, a friendly productivity assistant. Keep answers under 80 words, plain English, no markdown headers." },
+                { role: "system", content: "You are ClassLab, a friendly productivity assistant. Keep answers under 80 words, plain English, no markdown headers." },
                 { role: "user", content: `${context}Question: ${question}` },
               ],
             }),

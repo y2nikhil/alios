@@ -16,7 +16,7 @@ import { EXAM_BY_KEY } from "@/lib/exam-catalog";
 export const Route = createFileRoute("/app/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — ALIOS" },
+      { title: "Settings — ClassLab" },
       { name: "description", content: "Manage AUX statuses, goals, and preferences." },
     ],
   }),
@@ -321,7 +321,7 @@ function PrepProfileBlock() {
           )}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">Tell ALIOS about your exam prep and we'll personalize your plan, mind map roadmap, and AI assistant.</p>
+        <p className="text-sm text-muted-foreground">Tell ClassLab about your exam prep and we'll personalize your plan, mind map roadmap, and AI assistant.</p>
       )}
     </div>
   );

@@ -212,7 +212,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
             <Sparkles className="h-4 w-4 text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold tracking-tight leading-none">ALIOS</p>
+            <p className="text-sm font-bold tracking-tight leading-none">ClassLab</p>
             <p className="text-[10px] text-muted-foreground mt-1">AI Life OS</p>
           </div>
         </Link>

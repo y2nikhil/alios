@@ -11,7 +11,7 @@ export const Route = createFileRoute("/app/live")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Live Feed — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Live Feed — ClassLab" }] }),
   component: LiveFeedPage,
 });
 

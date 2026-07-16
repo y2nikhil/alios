@@ -18,7 +18,7 @@ export const Route = createFileRoute("/app/hangout/$partyId")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Hangout — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Hangout — ClassLab" }] }),
   component: HangoutRoom,
 });
 

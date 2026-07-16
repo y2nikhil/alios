@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/app/analytics")({
   head: () => ({
     meta: [
-      { title: "Analytics — ALIOS" },
+      { title: "Analytics — ClassLab" },
       { name: "description", content: "Productivity heatmap, charts, and reality checks." },
     ],
   }),

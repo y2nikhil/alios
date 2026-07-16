@@ -29,7 +29,7 @@ export const Route = createFileRoute("/app/super")({
     }
   },
   head: () => ({
-    meta: [{ title: "Super Admin — ALIOS" }],
+    meta: [{ title: "Super Admin — ClassLab" }],
   }),
   component: SuperAdminPanel,
 });

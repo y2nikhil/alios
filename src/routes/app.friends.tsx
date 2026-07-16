@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AvatarIconRender } from "@/components/AvatarIcon";
 
 export const Route = createFileRoute("/app/friends")({
-  head: () => ({ meta: [{ title: "Friends — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Friends — ClassLab" }] }),
   component: FriendsPage,
 });
 
