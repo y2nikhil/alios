@@ -176,7 +176,7 @@ export function CommandBar() {
                     } else if (results[0]) pick(results[0]);
                   }
                 }}
-                placeholder={askMode ? "Ask anything…" : "Search users (@username, name, email), pages, parties…"}
+                placeholder={askMode ? "Ask anything…" : "Search @username, name, email, groups, parties — or ask a question"}
                 className="flex-1 bg-transparent outline-none text-sm"
               />
               <button
