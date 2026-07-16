@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AwardsShelf } from "@/components/AwardsShelf";
 
 export const Route = createFileRoute("/app/u/$userId")({
-  head: () => ({ meta: [{ title: "Shared timeline — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Shared timeline — ClassLab" }] }),
   component: PublicTimelinePage,
 });
 

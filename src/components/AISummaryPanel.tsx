@@ -76,7 +76,7 @@ export function AISummaryPanel() {
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
             <Sparkles className="h-3.5 w-3.5 text-white" />
           </div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">ALIOS AI Summary</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">ClassLab AI Summary</p>
         </div>
         <button
           onClick={fetchInsight}

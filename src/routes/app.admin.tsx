@@ -30,7 +30,7 @@ export const Route = createFileRoute("/app/admin")({
     if (!isAdmin) throw redirect({ to: "/app" });
   },
   head: () => ({
-    meta: [{ title: "Admin Panel — ALIOS" }],
+    meta: [{ title: "Admin Panel — ClassLab" }],
   }),
   component: AdminPanel,
 });

@@ -14,8 +14,8 @@ import { getPrepProfile, finalizeOnboarding, type PrepProfileInput } from "@/lib
 export const Route = createFileRoute("/app/onboarding")({
   head: () => ({
     meta: [
-      { title: "Get Started — ALIOS" },
-      { name: "description", content: "Personalize ALIOS for your exam prep." },
+      { title: "Get Started — ClassLab" },
+      { name: "description", content: "Personalize ClassLab for your exam prep." },
     ],
   }),
   component: OnboardingPage,
@@ -126,7 +126,7 @@ function OnboardingPage() {
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Let's personalize ALIOS</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Let's personalize ClassLab</h1>
             <p className="text-sm text-muted-foreground">A quick 4-step setup — we'll tailor everything to your prep.</p>
           </div>
         </div>

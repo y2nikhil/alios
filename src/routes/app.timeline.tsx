@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/app/timeline")({
   head: () => ({
     meta: [
-      { title: "Timeline — ALIOS" },
+      { title: "Timeline — ClassLab" },
       { name: "description", content: "Full day timeline of your status sessions." },
     ],
   }),

@@ -9,12 +9,12 @@ import landingHero from "@/assets/landing-hero.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ALIOS — The All-In-One Productivity & Management OS" },
+      { title: "ClassLab — The All-In-One Productivity & Management OS" },
       {
         name: "description",
         content: "Track your day in real-time, capture ideas on infinite mind maps, and unlock AI-powered focus insights. The premium operating system for your work.",
       },
-      { property: "og:title", content: "ALIOS — AI Life Operating System" },
+      { property: "og:title", content: "ClassLab — AI Life Operating System" },
       { property: "og:description", content: "Track your day, focus deeper, and lead your team — all in one premium productivity OS." },
       { property: "og:image", content: "/src/assets/landing-hero.jpg" },
       { property: "twitter:image", content: "/src/assets/landing-hero.jpg" },
@@ -59,7 +59,7 @@ function LandingPage() {
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <p className="text-base font-bold tracking-tight">ALIOS</p>
+            <p className="text-base font-bold tracking-tight">ClassLab</p>
             <p className="text-[10px] text-muted-foreground -mt-0.5">AI Life OS</p>
           </div>
         </Link>
@@ -149,7 +149,7 @@ function LandingPage() {
             <div className="absolute -inset-8 bg-gradient-to-br from-violet-500/30 to-cyan-400/20 blur-3xl rounded-full" />
             <img
               src={landingHero}
-              alt="ALIOS dashboard preview with mind map, analytics, and focus tracking"
+              alt="ClassLab dashboard preview with mind map, analytics, and focus tracking"
               width={1024}
               height={1024}
               className="relative rounded-3xl border border-white/10 shadow-2xl shadow-violet-500/20 hover-lift"
@@ -259,7 +259,7 @@ function LandingPage() {
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-violet-500 to-cyan-400">
               <Sparkles className="h-3 w-3 text-white" />
             </div>
-            <span>© {new Date().getFullYear()} ALIOS — AI Life Operating System</span>
+            <span>© {new Date().getFullYear()} ClassLab — AI Life Operating System</span>
           </div>
           <div className="flex gap-5">
             <Link to="/login" className="hover:text-foreground">Sign in</Link>

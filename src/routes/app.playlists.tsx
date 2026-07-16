@@ -16,7 +16,7 @@ export const Route = createFileRoute("/app/playlists")({
   },
   head: () => ({
     meta: [
-      { title: "Playlists — ALIOS" },
+      { title: "Playlists — ClassLab" },
       { name: "description", content: "Track YouTube learning tasks and playlist completion in one place." },
     ],
   }),

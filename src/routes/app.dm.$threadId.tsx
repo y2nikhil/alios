@@ -13,7 +13,7 @@ import { MessageReactions } from "@/components/chat/MessageReactions";
 import { MentionText } from "@/lib/mentions";
 
 export const Route = createFileRoute("/app/dm/$threadId")({
-  head: () => ({ meta: [{ title: "Direct message — ALIOS" }] }),
+  head: () => ({ meta: [{ title: "Direct message — ClassLab" }] }),
   component: DmPage,
 });
 

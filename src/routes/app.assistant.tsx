@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/app/assistant")({
   head: () => ({
     meta: [
-      { title: "AI Assistant — ALIOS" },
-      { name: "description", content: "Chat with ALIOS, your personal productivity assistant." },
+      { title: "AI Assistant — ClassLab" },
+      { name: "description", content: "Chat with ClassLab, your personal productivity assistant." },
     ],
   }),
   component: AssistantPage,
@@ -101,7 +101,7 @@ function AssistantPage() {
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">ALIOS Assistant</h1>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">ClassLab Assistant</h1>
             <p className="text-xs text-muted-foreground truncate">Ask about your habits, plans, or anything productivity.</p>
           </div>
         </div>
@@ -168,7 +168,7 @@ function AssistantPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder="Ask ALIOS anything…"
+          placeholder="Ask ClassLab anything…"
           rows={1}
           className="flex-1 min-w-0 resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-violet-400/50 max-h-40"
         />

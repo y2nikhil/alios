@@ -17,7 +17,7 @@ async function fetchVideoTitle(id: string): Promise<string> {
 async function fetchPlaylistVideos(playlistId: string): Promise<VideoMeta[]> {
   const r = await fetch(`https://www.youtube.com/playlist?list=${playlistId}`, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; ALIOS/1.0)",
+      "User-Agent": "Mozilla/5.0 (compatible; ClassLab/1.0)",
       "Accept-Language": "en",
     },
   });

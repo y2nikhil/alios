@@ -12,7 +12,7 @@ type Board = { id: string; title: string; description: string | null; updated_at
 export const Route = createFileRoute("/app/mindmap/")({
   head: () => ({
     meta: [
-      { title: "Mind Maps — ALIOS" },
+      { title: "Mind Maps — ClassLab" },
       { name: "description", content: "Your infinite-canvas mind map boards." },
     ],
   }),

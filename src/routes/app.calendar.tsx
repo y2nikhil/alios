@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/app/calendar")({
   head: () => ({
     meta: [
-      { title: "Calendar — ALIOS" },
+      { title: "Calendar — ClassLab" },
       { name: "description", content: "Plan your events, deadlines, and reminders." },
     ],
   }),
