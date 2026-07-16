@@ -140,8 +140,8 @@ export function CommandBar() {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
-        <div className="fixed inset-x-0 top-[64px] z-[100] flex justify-center px-4 pointer-events-none">
+          <div className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
+        <div className="fixed inset-x-0 top-[64px] z-[9999] flex justify-center px-4 pointer-events-none">
           <div
             ref={panelRef}
             className="pointer-events-auto w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden ring-1 ring-white/5"
