@@ -139,10 +139,11 @@ export function CommandBar() {
         <kbd className="hidden md:inline-flex h-5 items-center rounded border border-white/10 bg-white/5 px-1.5 text-[10px] font-mono">⌘K</kbd>
       </button>
 
-      {open && (
+      {open && typeof document !== "undefined" && createPortal(
         <>
           <div className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
         <div className="fixed inset-x-0 top-[64px] z-[9999] flex justify-center px-4 pointer-events-none">
+
           <div
             ref={panelRef}
             className="pointer-events-auto w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden ring-1 ring-white/5"
