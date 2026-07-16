@@ -283,7 +283,8 @@ function HangoutRoom() {
       if (cancelled) return;
       ytPlayerRef.current = new YT.Player(`yt-${partyId}`, {
         videoId: party.media_id,
-        playerVars: { playsinline: 1, modestbranding: 1, rel: 0 },
+        host: "https://www.youtube-nocookie.com",
+        playerVars: { playsinline: 1, modestbranding: 1, rel: 0, origin: window.location.origin },
         events: {
           onReady: () => {
             try {
