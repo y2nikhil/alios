@@ -238,8 +238,10 @@ export function CommandBar() {
             </div>
           </div>
         </div>
-        </>
+        </>,
+        document.body
       )}
+
     </>
   );
 }
