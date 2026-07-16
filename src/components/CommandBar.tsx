@@ -168,8 +168,12 @@ export function CommandBar() {
                 onChange={(e) => { setQ(e.target.value); setAnswer(null); }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    if (askMode) ask();
-                    else if (results[0]) pick(results[0]);
+                    if (askMode) { ask(); return; }
+                    const trimmed = q.trim();
+                    const noPeopleOrContent = !results.some((r) => r.kind !== "page");
+                    if (trimmed && (looksLikeQuestion(trimmed) || noPeopleOrContent)) {
+                      ask(trimmed);
+                    } else if (results[0]) pick(results[0]);
                   }
                 }}
                 placeholder={askMode ? "Ask anything…" : "Search users (@username, name, email), pages, parties…"}
