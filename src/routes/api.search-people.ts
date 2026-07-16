@@ -16,9 +16,11 @@ export const Route = createFileRoute("/api/search-people")({
       POST: async ({ request }) => {
         const cors = { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" };
         try {
-          const { q } = await request.json();
-          const term = typeof q === "string" ? q.trim().slice(0, 80) : "";
-          if (!term) return new Response(JSON.stringify({ results: [] }), { status: 200, headers: cors });
+          const body = await request.json().catch(() => ({}));
+          const raw = typeof body?.q === "string" ? body.q.trim().slice(0, 80) : "";
+          // Strip a leading @ so "@nikhil" matches usernames
+          const term = raw.replace(/^@+/, "").trim();
+          const listAll = raw === "@" || raw === "";
 
           const auth = request.headers.get("authorization");
           if (!auth) return new Response(JSON.stringify({ results: [] }), { status: 200, headers: cors });
@@ -29,7 +31,8 @@ export const Route = createFileRoute("/api/search-people")({
           const { data: { user } } = await userClient.auth.getUser();
           if (!user) return new Response(JSON.stringify({ results: [] }), { status: 200, headers: cors });
 
-          // is requester admin?
+          if (!term && !listAll) return new Response(JSON.stringify({ results: [] }), { status: 200, headers: cors });
+
           const { data: rolesRows } = await userClient
             .from("user_roles")
             .select("role")
@@ -37,25 +40,35 @@ export const Route = createFileRoute("/api/search-people")({
           const roles = (rolesRows ?? []).map((r: any) => r.role);
           const isAdmin = roles.includes("admin") || roles.includes("super_admin");
 
-          // Admin path: use service role to search across all profiles and emails.
           const admin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
             auth: { persistSession: false, autoRefreshToken: false },
           });
 
-          const client = isAdmin ? admin : userClient;
+          // Search profiles visible under RLS (public + friends + self) via user client,
+          // widened by admin lookups (email, non-public profiles) for admin.
           const pattern = `%${term}%`;
-          const { data: profs } = await client
-            .from("profiles")
-            .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
-            .or(`username.ilike.${pattern},display_name.ilike.${pattern}`)
-            .limit(8);
+          let profiles: any[] = [];
+          if (listAll) {
+            const { data } = await userClient
+              .from("profiles")
+              .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
+              .order("updated_at", { ascending: false })
+              .limit(10);
+            profiles = data ?? [];
+          } else {
+            const { data } = await (isAdmin ? admin : userClient)
+              .from("profiles")
+              .select("id, username, display_name, avatar_url, avatar_icon, avatar_gradient")
+              .or(`username.ilike.${pattern},display_name.ilike.${pattern}`)
+              .limit(10);
+            profiles = data ?? [];
+          }
 
-          let profiles = (profs ?? []) as any[];
-
-          // For admin, also search by email
-          if (isAdmin && term.includes("@") === false ? false : isAdmin) {
+          // Email lookup — everyone can find a user by (part of) their email.
+          // Uses service role, but we only expose emails of the caller or of admins.
+          if (term && term.length >= 2) {
             try {
-              const { data: users } = await (admin as any).auth.admin.listUsers({ page: 1, perPage: 50 });
+              const { data: users } = await (admin as any).auth.admin.listUsers({ page: 1, perPage: 200 });
               const matched = (users?.users ?? []).filter((u: any) =>
                 (u.email ?? "").toLowerCase().includes(term.toLowerCase()),
               );
@@ -75,18 +88,16 @@ export const Route = createFileRoute("/api/search-people")({
 
           const ids = profiles.map((p) => p.id);
 
-          // Emails for admin
-          let emailMap = new Map<string, string>();
-          if (isAdmin) {
-            try {
-              const { data: users } = await (admin as any).auth.admin.listUsers({ page: 1, perPage: 200 });
-              for (const u of (users?.users ?? [])) {
-                if (ids.includes(u.id)) emailMap.set(u.id, u.email ?? "");
-              }
-            } catch { /* ignore */ }
-          }
+          // Emails: fetch all, but only reveal them to admin or for the caller themselves.
+          const emailMap = new Map<string, string>();
+          try {
+            const { data: users } = await (admin as any).auth.admin.listUsers({ page: 1, perPage: 200 });
+            for (const u of (users?.users ?? [])) {
+              if (!ids.includes(u.id)) continue;
+              if (isAdmin || u.id === user.id) emailMap.set(u.id, u.email ?? "");
+            }
+          } catch { /* ignore */ }
 
-          // Active aux session -> status name
           const { data: sessions } = await admin
             .from("aux_sessions")
             .select("user_id, status_id, started_at, aux_statuses(name, color)")
@@ -102,7 +113,7 @@ export const Route = createFileRoute("/api/search-people")({
             });
           }
 
-          const results = profiles.map((p) => ({
+          const results = profiles.slice(0, 12).map((p) => ({
             id: p.id,
             username: p.username,
             display_name: p.display_name,
