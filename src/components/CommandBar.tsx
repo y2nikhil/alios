@@ -72,34 +72,43 @@ export function CommandBar() {
 
   useEffect(() => {
     let cancelled = false;
-    const term = q.trim().toLowerCase();
-    if (!term) { setResults(PAGES); return; }
-    (async () => {
+    const raw = q.trim();
+    if (!raw) { setResults(PAGES); return; }
+    // Debounce
+    const t = setTimeout(async () => {
+      const stripped = raw.replace(/^@+/, "").trim();
+      const listAllPeople = raw === "@";
+      const searchTerm = stripped.toLowerCase();
       const { data: { session } } = await supabase.auth.getSession();
       const [{ data: groups }, { data: parties }, peopleRes] = await Promise.all([
-        supabase.from("groups").select("id, name, emoji").ilike("name", `%${term}%`).limit(4),
-        (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${term}%`).limit(4),
+        searchTerm
+          ? supabase.from("groups").select("id, name, emoji").ilike("name", `%${searchTerm}%`).limit(4)
+          : Promise.resolve({ data: [] as any[] }),
+        searchTerm
+          ? (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${searchTerm}%`).limit(4)
+          : Promise.resolve({ data: [] as any[] }),
         fetch("/api/search-people", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
-          body: JSON.stringify({ q: term }),
+          body: JSON.stringify({ q: listAllPeople ? "@" : (raw.startsWith("@") ? raw : searchTerm) }),
         }).then((r) => r.json()).catch(() => ({ results: [] })),
       ]);
       if (cancelled) return;
       const people: Person[] = peopleRes?.results ?? [];
       const next: Result[] = [
         ...people.map((p) => ({ kind: "person" as const, person: p })),
-        ...PAGES.filter((p) => p.kind === "page" && p.label.toLowerCase().includes(term)),
+        ...PAGES.filter((p) => p.kind === "page" && searchTerm && p.label.toLowerCase().includes(searchTerm)),
         ...((groups ?? []) as any[]).map((g) => ({ kind: "group" as const, label: g.name, emoji: g.emoji ?? "💬", id: g.id })),
         ...((parties ?? []) as any[]).filter((p) => p.visibility !== "private").map((p) => ({ kind: "party" as const, label: p.title, id: p.id })),
       ];
       setResults(next);
-    })();
-    return () => { cancelled = true; };
+    }, 180);
+    return () => { cancelled = true; clearTimeout(t); };
   }, [q]);
 
-  const ask = async () => {
-    if (!q.trim()) return;
+  const ask = async (question?: string) => {
+    const query = (question ?? q).trim();
+    if (!query) return;
     setAsking(true);
     setAnswer(null);
     try {
@@ -107,7 +116,7 @@ export function CommandBar() {
       const res = await fetch("/api/ai-ask", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
-        body: JSON.stringify({ question: q.trim() }),
+        body: JSON.stringify({ question: query }),
       });
       const json = await res.json();
       setAnswer(json.answer ?? "No answer.");
@@ -117,6 +126,8 @@ export function CommandBar() {
       setAsking(false);
     }
   };
+
+  const looksLikeQuestion = (s: string) => /\?$/.test(s.trim()) || /^(how|why|what|when|where|who|can|should|is|are|do|does|help|explain|suggest|recommend)\b/i.test(s.trim());
 
   const pick = (r: Result) => {
     setOpen(false);
