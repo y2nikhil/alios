@@ -65,19 +65,19 @@ function TimelinePage() {
   }, [isToday]);
 
   useEffect(() => {
-    if (!auth.user) return;
+    if (!user) return;
     const start = new Date(date);
     const end = new Date(date);
     end.setHours(23, 59, 59, 999);
     supabase
       .from("aux_sessions")
       .select("*")
-      .eq("user_id", auth.user.id)
+      .eq("user_id", user.id)
       .gte("started_at", start.toISOString())
       .lte("started_at", end.toISOString())
       .order("started_at")
       .then(({ data }) => setSessions((data as AuxSession[]) ?? []));
-  }, [auth.user, date]);
+  }, [user, date]);
 
   const statusMap = useMemo(() => new Map(statuses.map((s) => [s.id, s])), [statuses]);
   const dayStart = date.getTime();
