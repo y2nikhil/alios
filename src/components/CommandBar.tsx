@@ -72,34 +72,43 @@ export function CommandBar() {
 
   useEffect(() => {
     let cancelled = false;
-    const term = q.trim().toLowerCase();
-    if (!term) { setResults(PAGES); return; }
-    (async () => {
+    const raw = q.trim();
+    if (!raw) { setResults(PAGES); return; }
+    // Debounce
+    const t = setTimeout(async () => {
+      const stripped = raw.replace(/^@+/, "").trim();
+      const listAllPeople = raw === "@";
+      const searchTerm = stripped.toLowerCase();
       const { data: { session } } = await supabase.auth.getSession();
       const [{ data: groups }, { data: parties }, peopleRes] = await Promise.all([
-        supabase.from("groups").select("id, name, emoji").ilike("name", `%${term}%`).limit(4),
-        (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${term}%`).limit(4),
+        searchTerm
+          ? supabase.from("groups").select("id, name, emoji").ilike("name", `%${searchTerm}%`).limit(4)
+          : Promise.resolve({ data: [] as any[] }),
+        searchTerm
+          ? (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${searchTerm}%`).limit(4)
+          : Promise.resolve({ data: [] as any[] }),
         fetch("/api/search-people", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
-          body: JSON.stringify({ q: term }),
+          body: JSON.stringify({ q: listAllPeople ? "@" : (raw.startsWith("@") ? raw : searchTerm) }),
         }).then((r) => r.json()).catch(() => ({ results: [] })),
       ]);
       if (cancelled) return;
       const people: Person[] = peopleRes?.results ?? [];
       const next: Result[] = [
         ...people.map((p) => ({ kind: "person" as const, person: p })),
-        ...PAGES.filter((p) => p.kind === "page" && p.label.toLowerCase().includes(term)),
+        ...PAGES.filter((p) => p.kind === "page" && searchTerm && p.label.toLowerCase().includes(searchTerm)),
         ...((groups ?? []) as any[]).map((g) => ({ kind: "group" as const, label: g.name, emoji: g.emoji ?? "💬", id: g.id })),
         ...((parties ?? []) as any[]).filter((p) => p.visibility !== "private").map((p) => ({ kind: "party" as const, label: p.title, id: p.id })),
       ];
       setResults(next);
-    })();
-    return () => { cancelled = true; };
+    }, 180);
+    return () => { cancelled = true; clearTimeout(t); };
   }, [q]);
 
-  const ask = async () => {
-    if (!q.trim()) return;
+  const ask = async (question?: string) => {
+    const query = (question ?? q).trim();
+    if (!query) return;
     setAsking(true);
     setAnswer(null);
     try {
@@ -107,7 +116,7 @@ export function CommandBar() {
       const res = await fetch("/api/ai-ask", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}) },
-        body: JSON.stringify({ question: q.trim() }),
+        body: JSON.stringify({ question: query }),
       });
       const json = await res.json();
       setAnswer(json.answer ?? "No answer.");
@@ -117,6 +126,8 @@ export function CommandBar() {
       setAsking(false);
     }
   };
+
+  const looksLikeQuestion = (s: string) => /\?$/.test(s.trim()) || /^(how|why|what|when|where|who|can|should|is|are|do|does|help|explain|suggest|recommend)\b/i.test(s.trim());
 
   const pick = (r: Result) => {
     setOpen(false);
@@ -157,11 +168,15 @@ export function CommandBar() {
                 onChange={(e) => { setQ(e.target.value); setAnswer(null); }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    if (askMode) ask();
-                    else if (results[0]) pick(results[0]);
+                    if (askMode) { ask(); return; }
+                    const trimmed = q.trim();
+                    const noPeopleOrContent = !results.some((r) => r.kind !== "page");
+                    if (trimmed && (looksLikeQuestion(trimmed) || noPeopleOrContent)) {
+                      ask(trimmed);
+                    } else if (results[0]) pick(results[0]);
                   }
                 }}
-                placeholder={askMode ? "Ask anything…" : "Search users (@username, name, email), pages, parties…"}
+                placeholder={askMode ? "Ask anything…" : "Search @username, name, email, groups, parties — or ask a question"}
                 className="flex-1 bg-transparent outline-none text-sm"
               />
               <button
@@ -188,11 +203,19 @@ export function CommandBar() {
                   ) : (
                     <div className="text-xs text-muted-foreground">Ask about your productivity, "how do I focus better", or anything else. Enter to send.</div>
                   )}
-                  <button onClick={ask} disabled={!q.trim() || asking} className="w-full rounded-lg bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold py-2 disabled:opacity-50">Ask</button>
+                  <button onClick={() => ask()} disabled={!q.trim() || asking} className="w-full rounded-lg bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold py-2 disabled:opacity-50">Ask</button>
                 </div>
               ) : (
                 <ul className="py-2">
-                  {results.length === 0 && <li className="px-4 py-6 text-xs text-muted-foreground text-center">No matches</li>}
+                  {(asking || answer) && (
+                    <li className="px-4 pb-2">
+                      <div className="rounded-xl bg-gradient-to-br from-pink-500/10 to-violet-500/10 border border-white/10 p-3 text-sm leading-relaxed whitespace-pre-wrap flex gap-2">
+                        <Sparkles className="h-4 w-4 text-pink-400 shrink-0 mt-0.5" />
+                        <div className="flex-1">{asking ? <span className="text-muted-foreground inline-flex items-center gap-2"><Loader2 className="h-3 w-3 animate-spin" /> Thinking…</span> : answer}</div>
+                      </div>
+                    </li>
+                  )}
+                  {results.length === 0 && !asking && !answer && <li className="px-4 py-6 text-xs text-muted-foreground text-center">No matches — press Enter to ask AI</li>}
                   {results.map((r, i) => (
                     <li key={`${r.kind}-${i}`}>
                       <button
