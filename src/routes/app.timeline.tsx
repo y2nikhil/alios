@@ -24,8 +24,7 @@ type Tick = "5min" | "15min" | "30min";
 const WINDOW_MIN = 120; // fixed 2-hour window
 
 function TimelinePage() {
-  const { user } = useAux() && useAuth();
-  const auth = useAuth();
+  const { user } = useAuth();
   const { statuses } = useAux();
   const [date, setDate] = useState(() => {
     const d = new Date();
