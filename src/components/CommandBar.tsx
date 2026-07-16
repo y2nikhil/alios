@@ -207,7 +207,15 @@ export function CommandBar() {
                 </div>
               ) : (
                 <ul className="py-2">
-                  {results.length === 0 && <li className="px-4 py-6 text-xs text-muted-foreground text-center">No matches</li>}
+                  {(asking || answer) && (
+                    <li className="px-4 pb-2">
+                      <div className="rounded-xl bg-gradient-to-br from-pink-500/10 to-violet-500/10 border border-white/10 p-3 text-sm leading-relaxed whitespace-pre-wrap flex gap-2">
+                        <Sparkles className="h-4 w-4 text-pink-400 shrink-0 mt-0.5" />
+                        <div className="flex-1">{asking ? <span className="text-muted-foreground inline-flex items-center gap-2"><Loader2 className="h-3 w-3 animate-spin" /> Thinking…</span> : answer}</div>
+                      </div>
+                    </li>
+                  )}
+                  {results.length === 0 && !asking && !answer && <li className="px-4 py-6 text-xs text-muted-foreground text-center">No matches — press Enter to ask AI</li>}
                   {results.map((r, i) => (
                     <li key={`${r.kind}-${i}`}>
                       <button
