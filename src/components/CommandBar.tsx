@@ -203,7 +203,7 @@ export function CommandBar() {
                   ) : (
                     <div className="text-xs text-muted-foreground">Ask about your productivity, "how do I focus better", or anything else. Enter to send.</div>
                   )}
-                  <button onClick={ask} disabled={!q.trim() || asking} className="w-full rounded-lg bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold py-2 disabled:opacity-50">Ask</button>
+                  <button onClick={() => ask()} disabled={!q.trim() || asking} className="w-full rounded-lg bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold py-2 disabled:opacity-50">Ask</button>
                 </div>
               ) : (
                 <ul className="py-2">
