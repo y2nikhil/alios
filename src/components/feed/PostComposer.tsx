@@ -29,6 +29,12 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("classlab:open-post-composer", handler);
+    return () => window.removeEventListener("classlab:open-post-composer", handler);
+  }, []);
+
   const guessKind = (url: string) => {
     if (!url) return null;
     if (/\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(url)) return "image";
