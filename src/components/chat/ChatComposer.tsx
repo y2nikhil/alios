@@ -151,7 +151,9 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
       <PollDialog open={pollOpen} onOpenChange={setPollOpen} channelId={channelId} />
       <MindmapPickerDialog open={mindmapOpen} onOpenChange={setMindmapOpen} channelId={channelId} />
     </div>
+    </>
   );
+
 }
 
 function MenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
