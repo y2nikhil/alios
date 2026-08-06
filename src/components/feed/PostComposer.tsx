@@ -1,9 +1,19 @@
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Paperclip, Send, X } from "lucide-react";
+import { FileText, HelpCircle, ImagePlus, Link2, Loader2, Network, Paperclip, PenLine, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { POST_TAGS, uploadPostMedia } from "@/lib/feed";
 import { cn } from "@/lib/utils";
+
+const QUICK_TYPES: { label: string; icon: typeof PenLine; tag?: string; attach?: boolean }[] = [
+  { label: "Post", icon: PenLine },
+  { label: "Question", icon: HelpCircle, tag: "General" },
+  { label: "Image", icon: ImagePlus, attach: true },
+  { label: "Note", icon: FileText, tag: "Resources" },
+  { label: "Mind Map", icon: Network, tag: "Study Tips" },
+  { label: "Link", icon: Link2 },
+];
+
 
 export function PostComposer({ onCreated }: { onCreated?: () => void }) {
   const { user } = useAuth();
