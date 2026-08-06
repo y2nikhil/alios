@@ -90,6 +90,20 @@ function LoginPage() {
     navigate({ to: "/app" });
   };
 
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setLoading(false);
+      return toast.error(result.error.message ?? "Google sign-in failed");
+    }
+    if (result.redirected) return;
+    setLoading(false);
+    toast.success("Welcome back");
+    navigate({ to: "/app" });
+  };
 
 
   return (
