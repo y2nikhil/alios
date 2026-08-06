@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Loader2, Phone, KeyRound } from "lucide-react";
+import { Sparkles, Loader2, Phone, KeyRound, Apple } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -73,6 +74,23 @@ function LoginPage() {
     toast.success("Welcome back");
     navigate({ to: "/app" });
   };
+
+  const signInWithApple = async () => {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setLoading(false);
+      return toast.error(result.error.message ?? "Apple sign-in failed");
+    }
+    if (result.redirected) return;
+    setLoading(false);
+    toast.success("Welcome back");
+    navigate({ to: "/app" });
+  };
+
+
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
@@ -145,6 +163,18 @@ function LoginPage() {
               </button>
             </form>
           )}
+
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-[11px] uppercase tracking-wide text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <Button type="button" variant="outline" onClick={signInWithApple} disabled={loading} className="w-full gap-2">
+            <Apple className="h-4 w-4" /> Continue with Apple
+          </Button>
+
+
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             New here?{" "}
