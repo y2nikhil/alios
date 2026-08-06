@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { LogOut, ShieldCheck, CalendarOff, UserCircle2, Crown, Sun, Moon, Bell } from "lucide-react";
+import { LogOut, ShieldCheck, CalendarOff, UserCircle2, Crown, Bell } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useRole } from "@/lib/use-role";
 import { useTheme } from "@/lib/theme";
@@ -31,7 +31,7 @@ import { AvatarIconRender } from "@/components/AvatarIcon";
 export function ProfileMenu() {
   const { user, signOut } = useAuth();
   const { isSuperAdmin, isAdmin } = useRole();
-  const { theme, toggle } = useTheme();
+  
   const navigate = useNavigate();
   const [adminOpen, setAdminOpen] = useState(false);
   const [timeOffOpen, setTimeOffOpen] = useState(false);
@@ -126,10 +126,6 @@ export function ProfileMenu() {
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate({ to: "/app/notifications" })}>
             <Bell className="h-4 w-4 mr-2" /> Notifications
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={(e) => { e.preventDefault(); toggle(); }}>
-            {theme === "dark" ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
-            {theme === "dark" ? "Light mode" : "Dark mode"}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {isSuperAdmin && (
