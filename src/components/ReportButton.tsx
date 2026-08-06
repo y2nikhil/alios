@@ -21,7 +21,7 @@ const REASONS: { value: string; label: string; hint: string }[] = [
   { value: "other", label: "Something else", hint: "" },
 ];
 
-export type ReportTargetType = "chat_message" | "dm_message" | "user" | "party_message" | "note";
+export type ReportTargetType = "chat_message" | "dm_message" | "user" | "party_message" | "note" | "post" | "post_comment";
 
 export function ReportButton({
   targetType, targetId, targetUserId, size = "sm", label = "Report",

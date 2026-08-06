@@ -16,6 +16,7 @@ export type Post = {
   media_url: string | null;
   media_kind: string | null;
   tag: string | null;
+  slug?: string | null;
   up_count: number;
   down_count: number;
   comment_count: number;
@@ -122,4 +123,36 @@ export async function fetchAuthors(ids: string[]): Promise<Record<string, Author
   const map: Record<string, Author> = {};
   (data ?? []).forEach((a: any) => { map[a.id] = a as Author; });
   return map;
+}
+
+export function postPath(post: { slug?: string | null; id: string }) {
+  return post.slug ? `/post/${post.slug}` : `/post/${post.id}`;
+}
+
+const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
+
+export function kindFromFile(file: File): "image" | "video" | "link" {
+  if (file.type.startsWith("image/")) return "image";
+  if (file.type.startsWith("video/")) return "video";
+  return "link";
+}
+
+/** Upload an attachment to the post-media bucket and return a long-lived URL. */
+export async function uploadPostMedia(userId: string, file: File) {
+  const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-60);
+  const path = `${userId}/${Date.now()}-${safe}`;
+  const { error } = await supabase.storage.from("post-media").upload(path, file, {
+    cacheControl: "31536000",
+    upsert: false,
+    contentType: file.type || undefined,
+  });
+  if (error) throw error;
+  const { data, error: sErr } = await supabase.storage.from("post-media").createSignedUrl(path, TEN_YEARS);
+  if (sErr || !data?.signedUrl) throw sErr ?? new Error("Could not create media URL");
+  return { url: data.signedUrl, kind: kindFromFile(file) };
+}
+
+export function readingTime(body?: string | null) {
+  const words = (body ?? "").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
 }
