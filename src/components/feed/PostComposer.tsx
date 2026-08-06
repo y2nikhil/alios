@@ -1,9 +1,19 @@
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Paperclip, Send, X } from "lucide-react";
+import { FileText, HelpCircle, ImagePlus, Link2, Loader2, Network, Paperclip, PenLine, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { POST_TAGS, uploadPostMedia } from "@/lib/feed";
 import { cn } from "@/lib/utils";
+
+const QUICK_TYPES: { label: string; icon: typeof PenLine; tag?: string; attach?: boolean }[] = [
+  { label: "Post", icon: PenLine },
+  { label: "Question", icon: HelpCircle, tag: "General" },
+  { label: "Image", icon: ImagePlus, attach: true },
+  { label: "Note", icon: FileText, tag: "Resources" },
+  { label: "Mind Map", icon: Network, tag: "Study Tips" },
+  { label: "Link", icon: Link2 },
+];
+
 
 export function PostComposer({ onCreated }: { onCreated?: () => void }) {
   const { user } = useAuth();
@@ -65,14 +75,38 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-muted-foreground hover:border-white/20 hover:bg-white/[0.06] transition"
-      >
-        Share something with the campus…
-      </button>
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+        <button
+          onClick={() => setOpen(true)}
+          className="w-full rounded-xl px-2 py-2 text-left text-sm text-muted-foreground hover:text-foreground"
+        >
+          What&apos;s on your mind?
+        </button>
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          {QUICK_TYPES.map((q) => (
+            <button
+              key={q.label}
+              onClick={() => {
+                setTag(q.tag ?? POST_TAGS[0]);
+                setOpen(true);
+                if (q.attach) setTimeout(() => fileRef.current?.click(), 100);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground"
+            >
+              <q.icon className="h-3.5 w-3.5" /> {q.label}
+            </button>
+          ))}
+          <button
+            onClick={() => setOpen(true)}
+            className="ml-auto rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-1.5 text-xs font-semibold text-black"
+          >
+            Post
+          </button>
+        </div>
+      </div>
     );
   }
+
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 space-y-3">

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRole } from "@/lib/use-role";
 import { PostCard } from "@/components/feed/PostCard";
 import { PostComposer } from "@/components/feed/PostComposer";
+import { FeedSidebar } from "@/components/feed/FeedSidebar";
 import { fetchAuthors, sortPosts, type Author, type Post, type SortKey } from "@/lib/feed";
 import { cn } from "@/lib/utils";
 
@@ -23,21 +24,31 @@ export const Route = createFileRoute("/app/feed")({
   component: FeedPage,
 });
 
-const SORTS: { key: SortKey; label: string }[] = [
+type TabKey = SortKey | "following" | "communities" | "saved";
+
+const TABS: { key: TabKey; label: string }[] = [
   { key: "for-you", label: "For You" },
   { key: "latest", label: "Latest" },
   { key: "top", label: "Top" },
   { key: "rising", label: "Rising" },
   { key: "controversial", label: "Controversial" },
+  { key: "following", label: "Following" },
+  { key: "communities", label: "Communities" },
+  { key: "saved", label: "Saved" },
 ];
 
 function FeedPage() {
   const { user } = useAuth();
-  const { isAdmin } = useRole();
+  const { isAdmin, isSuperAdmin } = useRole();
   const [posts, setPosts] = useState<Post[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
   const [votes, setVotes] = useState<Record<string, -1 | 1>>({});
-  const [sort, setSort] = useState<SortKey>("for-you");
+  const [saved, setSaved] = useState<Record<string, true>>({});
+  const [reactions, setReactions] = useState<Record<string, Record<string, number>>>({});
+  const [myReactions, setMyReactions] = useState<Record<string, string>>({});
+  const [friendIds, setFriendIds] = useState<string[]>([]);
+  const [tab, setTab] = useState<TabKey>("for-you");
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -49,20 +60,56 @@ function FeedPage() {
     const list = (data ?? []) as Post[];
     setPosts(list);
     setAuthors(await fetchAuthors(list.map((p) => p.author_id)));
-    if (user && list.length) {
+
+    const ids = list.map((p) => p.id);
+    if (ids.length) {
+      const { data: allReactions } = await (supabase.from("post_reactions") as any)
+        .select("post_id, user_id, emoji")
+        .in("post_id", ids);
+      const counts: Record<string, Record<string, number>> = {};
+      const mine: Record<string, string> = {};
+      (allReactions ?? []).forEach((r: any) => {
+        counts[r.post_id] = counts[r.post_id] ?? {};
+        counts[r.post_id][r.emoji] = (counts[r.post_id][r.emoji] ?? 0) + 1;
+        if (user && r.user_id === user.id) mine[r.post_id] = r.emoji;
+      });
+      setReactions(counts);
+      setMyReactions(mine);
+    }
+
+    if (user && ids.length) {
       const { data: v } = await supabase
         .from("post_votes")
         .select("post_id, value")
         .eq("user_id", user.id)
-        .in("post_id", list.map((p) => p.id));
+        .in("post_id", ids);
       const map: Record<string, -1 | 1> = {};
       (v ?? []).forEach((row: any) => { map[row.post_id] = row.value; });
       setVotes(map);
+
+      const { data: s } = await (supabase.from("post_saves") as any)
+        .select("post_id")
+        .eq("user_id", user.id);
+      const smap: Record<string, true> = {};
+      (s ?? []).forEach((row: any) => { smap[row.post_id] = true; });
+      setSaved(smap);
     }
     setLoading(false);
   }, [user]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    if (!user) { setFriendIds([]); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("friendships")
+        .select("requester_id, addressee_id, status")
+        .eq("status", "accepted")
+        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+      setFriendIds((data ?? []).map((f: any) => (f.requester_id === user.id ? f.addressee_id : f.requester_id)));
+    })();
+  }, [user]);
 
   useEffect(() => {
     const ch = supabase
@@ -96,6 +143,55 @@ function FeedPage() {
     }
   };
 
+  const react = async (postId: string, emoji: string | null) => {
+    if (!user) return;
+    const prevEmoji = myReactions[postId] ?? null;
+    setReactions((prev) => {
+      const counts = { ...(prev[postId] ?? {}) };
+      if (prevEmoji) counts[prevEmoji] = Math.max(0, (counts[prevEmoji] ?? 1) - 1);
+      if (emoji) counts[emoji] = (counts[emoji] ?? 0) + 1;
+      return { ...prev, [postId]: counts };
+    });
+    setMyReactions((prev) => {
+      const next = { ...prev };
+      if (emoji) next[postId] = emoji; else delete next[postId];
+      return next;
+    });
+    if (emoji) {
+      await (supabase.from("post_reactions") as any).upsert(
+        { post_id: postId, user_id: user.id, emoji },
+        { onConflict: "post_id,user_id" },
+      );
+    } else {
+      await (supabase.from("post_reactions") as any).delete().eq("post_id", postId).eq("user_id", user.id);
+    }
+  };
+
+  const toggleSave = async (postId: string) => {
+    if (!user) return;
+    const isSaved = !!saved[postId];
+    setSaved((prev) => {
+      const next = { ...prev };
+      if (isSaved) delete next[postId]; else next[postId] = true;
+      return next;
+    });
+    if (isSaved) {
+      await (supabase.from("post_saves") as any).delete().eq("post_id", postId).eq("user_id", user.id);
+    } else {
+      await (supabase.from("post_saves") as any).insert({ post_id: postId, user_id: user.id });
+    }
+  };
+
+  const togglePin = async (postId: string) => {
+    const target = posts.find((p) => p.id === postId);
+    if (!target || !user) return;
+    const next = !target.pinned;
+    setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, pinned: next } : p)));
+    await (supabase.from("posts") as any)
+      .update({ pinned: next, pinned_at: next ? new Date().toISOString() : null, pinned_by: next ? user.id : null })
+      .eq("id", postId);
+  };
+
   const deletePost = async (postId: string) => {
     const target = posts.find((p) => p.id === postId);
     if (!target) return;
@@ -105,42 +201,89 @@ function FeedPage() {
     load();
   };
 
-  const sorted = useMemo(() => sortPosts(posts, sort), [posts, sort]);
+  const visible = useMemo(() => {
+    let list = posts;
+    if (tagFilter) list = list.filter((p) => p.tag === tagFilter);
+    if (tab === "saved") list = list.filter((p) => saved[p.id]);
+    if (tab === "following") list = list.filter((p) => friendIds.includes(p.author_id));
+    if (tab === "communities") {
+      const tags = new Set(posts.map((p) => p.tag).filter(Boolean) as string[]);
+      list = list.filter((p) => !!p.tag && tags.has(p.tag));
+    }
+    const sortKey: SortKey = (["for-you", "latest", "top", "rising", "controversial"] as string[]).includes(tab)
+      ? (tab as SortKey)
+      : "latest";
+    const sorted = sortPosts(list, sortKey);
+    return [...sorted].sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned));
+  }, [posts, tab, saved, friendIds, tagFilter]);
+
+  const emptyMessage =
+    tab === "saved" ? "No saved posts yet — tap the bookmark icon on a post."
+    : tab === "following" ? "Posts from your friends will show up here."
+    : "No posts yet — be the first to start a discussion.";
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-3 py-4 lg:px-6 lg:py-6 space-y-4">
-      <PostComposer onCreated={load} />
+    <div className="mx-auto flex w-full max-w-6xl gap-6 px-3 py-4 lg:px-6 lg:py-6">
+      <div className="min-w-0 flex-1 space-y-4">
+        <PostComposer onCreated={load} />
 
-      <div className="flex gap-2 overflow-x-auto scrollbar-thin">
-        {SORTS.map((s) => (
-          <button
-            key={s.key}
-            onClick={() => setSort(s.key)}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition",
-              sort === s.key ? "bg-white/15 text-foreground" : "bg-white/5 text-muted-foreground hover:bg-white/10",
-            )}
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <div className="flex items-center gap-2 py-10 justify-center text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading feed…
-        </div>
-      ) : sorted.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-muted-foreground">
-          No posts yet — be the first to start a discussion.
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {sorted.map((p) => (
-            <PostCard key={p.id} post={p} author={authors[p.author_id]} myVote={votes[p.id] ?? 0} onVote={vote} canModerate={isAdmin || p.author_id === user?.id} onDelete={deletePost} />
+        <div className="flex gap-2 overflow-x-auto scrollbar-thin">
+          {TABS.map((s) => (
+            <button
+              key={s.key}
+              onClick={() => setTab(s.key)}
+              className={cn(
+                "shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition",
+                tab === s.key ? "bg-white/15 text-foreground" : "bg-white/5 text-muted-foreground hover:bg-white/10",
+              )}
+            >
+              {s.label}
+            </button>
           ))}
         </div>
-      )}
+
+        {tagFilter && (
+          <button
+            onClick={() => setTagFilter(null)}
+            className="rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200"
+          >
+            #{tagFilter} · clear filter ✕
+          </button>
+        )}
+
+        {loading ? (
+          <div className="flex items-center gap-2 py-10 justify-center text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading feed…
+          </div>
+        ) : visible.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-muted-foreground">
+            {emptyMessage}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {visible.map((p) => (
+              <PostCard
+                key={p.id}
+                post={p}
+                author={authors[p.author_id]}
+                myVote={votes[p.id] ?? 0}
+                onVote={vote}
+                canModerate={isAdmin || p.author_id === user?.id}
+                onDelete={deletePost}
+                saved={!!saved[p.id]}
+                onToggleSave={toggleSave}
+                canPin={isSuperAdmin}
+                onTogglePin={togglePin}
+                reactions={reactions[p.id] ?? {}}
+                myReaction={myReactions[p.id] ?? null}
+                onReact={react}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <FeedSidebar posts={posts} onPickTag={(t) => setTagFilter(t)} />
     </div>
   );
 }

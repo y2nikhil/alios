@@ -17,6 +17,7 @@ export type Post = {
   media_kind: string | null;
   tag: string | null;
   slug?: string | null;
+  pinned?: boolean | null;
   up_count: number;
   down_count: number;
   comment_count: number;

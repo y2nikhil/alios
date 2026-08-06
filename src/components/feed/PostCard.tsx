@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { ExternalLink, MessageSquare, Share2, Trash2 } from "lucide-react";
+import { Bookmark, ExternalLink, MessageSquare, Pin, Share2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
 import { VoteControl } from "@/components/feed/VoteControl";
+import { PostReactions } from "@/components/feed/PostReactions";
 import { ReportButton } from "@/components/ReportButton";
 import { postPath, timeAgo, type Author, type Post } from "@/lib/feed";
+import { cn } from "@/lib/utils";
 
 
 export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
@@ -26,6 +28,8 @@ export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
 
 export function PostCard({
   post, author, myVote, onVote, canModerate, onDelete,
+  saved, onToggleSave, canPin, onTogglePin,
+  reactions = {}, myReaction = null, onReact,
 }: {
   post: Post;
   author?: Author;
@@ -33,12 +37,27 @@ export function PostCard({
   onVote: (postId: string, v: -1 | 1) => void;
   canModerate?: boolean;
   onDelete?: (postId: string) => void;
+  saved?: boolean;
+  onToggleSave?: (postId: string) => void;
+  canPin?: boolean;
+  onTogglePin?: (postId: string) => void;
+  reactions?: Record<string, number>;
+  myReaction?: string | null;
+  onReact?: (postId: string, emoji: string | null) => void;
 }) {
   const name = author?.display_name ?? author?.username ?? "Student";
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${postPath(post)}` : postPath(post);
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/20">
+    <article className={cn(
+      "rounded-2xl border p-4 transition",
+      post.pinned ? "border-amber-400/40 bg-amber-400/[0.06]" : "border-white/10 bg-white/[0.03] hover:border-white/20",
+    )}>
+      {post.pinned && (
+        <p className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-300">
+          <Pin className="h-3 w-3" /> Pinned
+        </p>
+      )}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <AvatarIconRender
           icon={author?.avatar_icon}
@@ -64,6 +83,12 @@ export function PostCard({
       </Link>
       {post.media_url && <PostMedia url={post.media_url} kind={post.media_kind} />}
 
+      {onReact && (
+        <div className="mt-3">
+          <PostReactions counts={reactions} mine={myReaction} onReact={(e) => onReact(post.id, e)} />
+        </div>
+      )}
+
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <VoteControl up={post.up_count} down={post.down_count} mine={myVote} onVote={(v) => onVote(post.id, v)} />
         <Link
@@ -73,6 +98,19 @@ export function PostCard({
         >
           <MessageSquare className="h-3.5 w-3.5" /> {post.comment_count}
         </Link>
+        {onToggleSave && (
+          <button
+            onClick={() => onToggleSave(post.id)}
+            aria-label={saved ? "Remove bookmark" : "Save post"}
+            title={saved ? "Saved" : "Save post"}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition",
+              saved ? "bg-amber-400/20 text-amber-200" : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground",
+            )}
+          >
+            <Bookmark className={cn("h-3.5 w-3.5", saved && "fill-current")} />
+          </button>
+        )}
         <a
           href={postPath(post)}
           target="_blank"
@@ -91,6 +129,19 @@ export function PostCard({
         >
           <Share2 className="h-3.5 w-3.5" /> Share
         </button>
+        {canPin && onTogglePin && (
+          <button
+            onClick={() => onTogglePin(post.id)}
+            aria-label={post.pinned ? "Unpin post" : "Pin post"}
+            title={post.pinned ? "Unpin for everyone" : "Pin for everyone"}
+            className={cn(
+              "rounded-full p-1.5 transition",
+              post.pinned ? "bg-amber-400/20 text-amber-200" : "text-muted-foreground hover:bg-white/10 hover:text-foreground",
+            )}
+          >
+            <Pin className="h-3.5 w-3.5" />
+          </button>
+        )}
         <ReportButton targetType="post" targetId={post.id} targetUserId={post.author_id} size="xs" label="" />
         {canModerate && onDelete && (
           <button
