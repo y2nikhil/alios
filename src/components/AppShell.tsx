@@ -19,6 +19,8 @@ import { PunchPrompt } from "@/components/PunchPrompt";
 import { SectionSwitcher } from "@/components/SectionSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
+import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
+
 
 function OnboardingRedirect() {
   const { user } = useAuth();
