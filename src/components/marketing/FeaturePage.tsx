@@ -195,7 +195,7 @@ export function FeaturePage({ c }: { c: FeaturePageContent }) {
           <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             {c.related.map((r) => (
               <li key={r.to}>
-                <Link to={r.to} className="hover:text-foreground">{r.label}</Link>
+                <Link to={r.to as never} className="hover:text-foreground">{r.label}</Link>
               </li>
             ))}
           </ul>
