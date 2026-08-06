@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Loader2, Phone, KeyRound } from "lucide-react";
+import { Sparkles, Loader2, Phone, KeyRound, Apple } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
