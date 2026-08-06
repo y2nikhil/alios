@@ -41,6 +41,7 @@ import { Route as AppNotificationsRouteImport } from './routes/app.notifications
 import { Route as AppModerationRouteImport } from './routes/app.moderation'
 import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppFriendsRouteImport } from './routes/app.friends'
+import { Route as AppFeedRouteImport } from './routes/app.feed'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
 import { Route as AppAssistantRouteImport } from './routes/app.assistant'
@@ -218,6 +219,11 @@ const AppFriendsRoute = AppFriendsRouteImport.update({
   path: '/friends',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFeedRoute = AppFeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
   id: '/collaborate',
   path: '/collaborate',
@@ -332,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
   '/app/moderation': typeof AppModerationRoute
@@ -381,6 +388,7 @@ export interface FileRoutesByTo {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
   '/app/moderation': typeof AppModerationRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
   '/app/moderation': typeof AppModerationRoute
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/feed'
     | '/app/friends'
     | '/app/live'
     | '/app/moderation'
@@ -533,6 +543,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/feed'
     | '/app/friends'
     | '/app/live'
     | '/app/moderation'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/feed'
     | '/app/friends'
     | '/app/live'
     | '/app/moderation'
@@ -858,6 +870,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFriendsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/feed': {
+      id: '/app/feed'
+      path: '/feed'
+      fullPath: '/app/feed'
+      preLoaderRoute: typeof AppFeedRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/collaborate': {
       id: '/app/collaborate'
       path: '/collaborate'
@@ -979,6 +998,7 @@ interface AppRouteChildren {
   AppAssistantRoute: typeof AppAssistantRoute
   AppCalendarRoute: typeof AppCalendarRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppFeedRoute: typeof AppFeedRoute
   AppFriendsRoute: typeof AppFriendsRoute
   AppLiveRoute: typeof AppLiveRoute
   AppModerationRoute: typeof AppModerationRoute
@@ -1003,6 +1023,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssistantRoute: AppAssistantRoute,
   AppCalendarRoute: AppCalendarRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppFeedRoute: AppFeedRoute,
   AppFriendsRoute: AppFriendsRoute,
   AppLiveRoute: AppLiveRoute,
   AppModerationRoute: AppModerationRoute,
@@ -1055,12 +1076,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
