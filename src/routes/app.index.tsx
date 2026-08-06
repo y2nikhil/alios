@@ -224,13 +224,8 @@ function CommandCenter() {
                   {formatShortDuration(stats.productiveSeconds)} / 8h
                 </p>
               </div>
-              <div className="glass rounded-3xl p-5">
-                <p className="text-xs text-muted-foreground">Upcoming</p>
-                <p className="mt-1 text-lg font-bold leading-tight">CAT Mock Test</p>
-                <p className="mt-1 text-[11px] text-muted-foreground flex items-center gap-1.5">
-                  <CalIcon className="h-3 w-3" /> Today, 06:00 PM
-                </p>
-              </div>
+              <NextEventCard />
+
             </div>
           </div>
 
