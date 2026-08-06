@@ -115,6 +115,7 @@ export function AppearancePanel() {
           <Sparkles className="h-4 w-4 mr-1.5" /> {saving ? "Saving…" : "Save look"}
         </Button>
       </div>
+      )}
     </div>
   );
 }
