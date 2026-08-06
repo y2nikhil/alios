@@ -1095,6 +1095,7 @@ export type Database = {
           avatar_icon: string | null
           avatar_url: string | null
           created_at: string
+          daily_focus_goal_minutes: number
           daily_goal_minutes: number
           display_name: string | null
           id: string
@@ -1111,6 +1112,7 @@ export type Database = {
           avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
+          daily_focus_goal_minutes?: number
           daily_goal_minutes?: number
           display_name?: string | null
           id: string
@@ -1127,6 +1129,7 @@ export type Database = {
           avatar_icon?: string | null
           avatar_url?: string | null
           created_at?: string
+          daily_focus_goal_minutes?: number
           daily_goal_minutes?: number
           display_name?: string | null
           id?: string
