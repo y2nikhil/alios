@@ -2021,6 +2021,59 @@ export type Database = {
         }
         Returns: string
       }
+      public_post_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          author_id: string
+          author_name: string
+          author_username: string
+          body: string
+          comment_count: number
+          created_at: string
+          down_count: number
+          id: string
+          media_kind: string
+          media_url: string
+          slug: string
+          tag: string
+          title: string
+          up_count: number
+        }[]
+      }
+      public_post_comments: {
+        Args: { _post_id: string }
+        Returns: {
+          author_id: string
+          author_name: string
+          author_username: string
+          body: string
+          created_at: string
+          down_count: number
+          id: string
+          parent_id: string
+          post_id: string
+          up_count: number
+        }[]
+      }
+      public_posts: {
+        Args: { _limit?: number; _offset?: number }
+        Returns: {
+          author_id: string
+          author_name: string
+          author_username: string
+          body: string
+          comment_count: number
+          created_at: string
+          down_count: number
+          id: string
+          media_kind: string
+          media_url: string
+          slug: string
+          tag: string
+          title: string
+          up_count: number
+        }[]
+      }
       restore_account: { Args: { _user_id: string }; Returns: undefined }
       revoke_account: { Args: { _user_id: string }; Returns: undefined }
       slugify: { Args: { _txt: string }; Returns: string }
