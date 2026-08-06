@@ -40,6 +40,7 @@ const TABS: { key: TabKey; label: string }[] = [
 function FeedPage() {
   const { user } = useAuth();
   const { isAdmin, isSuperAdmin } = useRole();
+  const search = useSearch({ from: "/app/feed" });
   const [posts, setPosts] = useState<Post[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
   const [votes, setVotes] = useState<Record<string, -1 | 1>>({});
@@ -50,6 +51,12 @@ function FeedPage() {
   const [tab, setTab] = useState<TabKey>("for-you");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (search.compose === "1") {
+      window.dispatchEvent(new CustomEvent("classlab:open-post-composer"));
+    }
+  }, [search.compose]);
 
   const load = useCallback(async () => {
     const { data } = await supabase
