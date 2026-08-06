@@ -74,7 +74,7 @@ export const Route = createFileRoute("/feed")({
             },
             {
               "@type": "ItemList",
-              itemListElement: (loaderData?.posts ?? []).slice(0, 20).map((p, i) => ({
+              itemListElement: ((loaderData?.posts ?? []) as PublicPost[]).slice(0, 20).map((p: PublicPost, i: number) => ({
                 "@type": "ListItem",
                 position: i + 1,
                 name: p.title,
@@ -98,7 +98,7 @@ export const Route = createFileRoute("/feed")({
 });
 
 function PublicFeedPage() {
-  const { posts } = Route.useLoaderData();
+  const { posts } = Route.useLoaderData() as { posts: PublicPost[] };
 
   return (
     <main className="min-h-screen bg-background">

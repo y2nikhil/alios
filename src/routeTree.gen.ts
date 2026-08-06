@@ -20,6 +20,7 @@ import { Route as NotesSharingRouteImport } from './routes/notes-sharing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as ForumsRouteImport } from './routes/forums'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ExamPrepRouteImport } from './routes/exam-prep'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as CommunitiesRouteImport } from './routes/communities'
@@ -113,6 +114,11 @@ const InternshipsRoute = InternshipsRouteImport.update({
 const ForumsRoute = ForumsRouteImport.update({
   id: '/forums',
   path: '/forums',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExamPrepRoute = ExamPrepRouteImport.update({
@@ -323,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/communities': typeof CommunitiesRoute
   '/events': typeof EventsRoute
   '/exam-prep': typeof ExamPrepRoute
+  '/feed': typeof FeedRoute
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
@@ -374,6 +381,7 @@ export interface FileRoutesByTo {
   '/communities': typeof CommunitiesRoute
   '/events': typeof EventsRoute
   '/exam-prep': typeof ExamPrepRoute
+  '/feed': typeof FeedRoute
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
@@ -427,6 +435,7 @@ export interface FileRoutesById {
   '/communities': typeof CommunitiesRoute
   '/events': typeof EventsRoute
   '/exam-prep': typeof ExamPrepRoute
+  '/feed': typeof FeedRoute
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
@@ -481,6 +490,7 @@ export interface FileRouteTypes {
     | '/communities'
     | '/events'
     | '/exam-prep'
+    | '/feed'
     | '/forums'
     | '/internships'
     | '/login'
@@ -532,6 +542,7 @@ export interface FileRouteTypes {
     | '/communities'
     | '/events'
     | '/exam-prep'
+    | '/feed'
     | '/forums'
     | '/internships'
     | '/login'
@@ -584,6 +595,7 @@ export interface FileRouteTypes {
     | '/communities'
     | '/events'
     | '/exam-prep'
+    | '/feed'
     | '/forums'
     | '/internships'
     | '/login'
@@ -637,6 +649,7 @@ export interface RootRouteChildren {
   CommunitiesRoute: typeof CommunitiesRoute
   EventsRoute: typeof EventsRoute
   ExamPrepRoute: typeof ExamPrepRoute
+  FeedRoute: typeof FeedRoute
   ForumsRoute: typeof ForumsRoute
   InternshipsRoute: typeof InternshipsRoute
   LoginRoute: typeof LoginRoute
@@ -733,6 +746,13 @@ declare module '@tanstack/react-router' {
       path: '/forums'
       fullPath: '/forums'
       preLoaderRoute: typeof ForumsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/exam-prep': {
@@ -1076,6 +1096,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunitiesRoute: CommunitiesRoute,
   EventsRoute: EventsRoute,
   ExamPrepRoute: ExamPrepRoute,
+  FeedRoute: FeedRoute,
   ForumsRoute: ForumsRoute,
   InternshipsRoute: InternshipsRoute,
   LoginRoute: LoginRoute,
