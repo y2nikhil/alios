@@ -209,21 +209,7 @@ function CommandCenter() {
 
             {/* Today's Focus + Upcoming */}
             <div className="space-y-5">
-              <div className="glass rounded-3xl p-5">
-                <p className="text-xs text-muted-foreground">Today's Focus</p>
-                <p className="mt-1 text-3xl font-bold text-gradient">{focusPct}%</p>
-                <div className="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${focusPct}%` }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-violet-500 to-cyan-400"
-                  />
-                </div>
-                <p className="mt-2 text-[11px] text-muted-foreground tabular-nums">
-                  {formatShortDuration(stats.productiveSeconds)} / 8h
-                </p>
-              </div>
+              <FocusGoalCard />
               <NextEventCard />
 
             </div>
