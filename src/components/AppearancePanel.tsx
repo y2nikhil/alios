@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { GRADIENTS, ACCENT_TOKENS, ICON_CHOICES, AvatarIconRender } from "@/components/AvatarIcon";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Palette, Sparkles } from "lucide-react";
+import { Palette, Sparkles, ChevronDown } from "lucide-react";
 import * as Icons from "lucide-react";
 
 export function AppearancePanel() {
@@ -13,6 +13,7 @@ export function AppearancePanel() {
   const [gradient, setGradient] = useState<string>("violet");
   const [accent, setAccent] = useState<string>("violet");
   const [saving, setSaving] = useState(false);
+  const [open, setOpen] = useState(false);
   const [initial, setInitial] = useState<string>("?");
 
   useEffect(() => {
@@ -44,23 +45,26 @@ export function AppearancePanel() {
 
   return (
     <div className="glass rounded-2xl p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <Palette className="h-4 w-4 text-violet-400" />
-        <h3 className="font-semibold text-sm">Appearance</h3>
-      </div>
-
-      <div className="flex items-center gap-4 mb-6">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center gap-3 text-left"
+        aria-expanded={open}
+      >
+        <Palette className="h-4 w-4 text-violet-400 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-sm">Appearance</h3>
+          <p className="text-xs text-muted-foreground truncate">Avatar, gradient and accent colour</p>
+        </div>
         <AvatarIconRender
           icon={icon} gradient={gradient} initial={initial}
-          className="h-20 w-20 rounded-2xl grid place-items-center shadow-lg"
+          className="h-9 w-9 rounded-xl grid place-items-center shadow"
         />
-        <div>
-          <p className="text-sm font-medium">Live preview</p>
-          <p className="text-xs text-muted-foreground">Shown everywhere your name appears.</p>
-        </div>
-      </div>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
 
-      <div className="space-y-5">
+      {open && (
+      <div className="mt-5 space-y-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Gradient</p>
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -111,6 +115,7 @@ export function AppearancePanel() {
           <Sparkles className="h-4 w-4 mr-1.5" /> {saving ? "Saving…" : "Save look"}
         </Button>
       </div>
+      )}
     </div>
   );
 }
