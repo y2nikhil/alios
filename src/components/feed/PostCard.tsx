@@ -25,14 +25,18 @@ export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
 }
 
 export function PostCard({
-  post, author, myVote, onVote,
+  post, author, myVote, onVote, canModerate, onDelete,
 }: {
   post: Post;
   author?: Author;
   myVote: -1 | 0 | 1;
   onVote: (postId: string, v: -1 | 1) => void;
+  canModerate?: boolean;
+  onDelete?: (postId: string) => void;
 }) {
   const name = author?.display_name ?? author?.username ?? "Student";
+  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${postPath(post)}` : postPath(post);
+
   return (
     <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/20">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
