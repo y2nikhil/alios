@@ -66,17 +66,40 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
     if (f) uploadFile(f);
   };
 
+  // Keep the composer floating above mobile browser chrome / keyboard
+  const [vvOffset, setVvOffset] = useState(0);
+  useEffect(() => {
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    if (!vv) return;
+    const update = () => {
+      const gap = window.innerHeight - (vv.height + vv.offsetTop);
+      setVvOffset(Math.max(0, Math.round(gap)));
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, []);
 
   return (
+    <>
+    {/* spacer so the last message is never hidden behind the floating bar */}
+    <div className="shrink-0 h-[68px] md:h-0" aria-hidden />
     <div
       className={cn(
-        "sticky bottom-0 z-30 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]",
+        "fixed left-0 right-0 bottom-0 z-40 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]",
+        "md:sticky md:left-auto md:right-auto md:z-30",
         "bg-gradient-to-t from-background via-background/95 to-transparent",
       )}
+      style={{ bottom: vvOffset }}
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
     >
+
       {dragging && (
         <div className="absolute inset-2 rounded-2xl border-2 border-dashed border-primary/60 grid place-items-center pointer-events-none bg-background/80 z-10">
           <p className="text-sm text-primary font-semibold flex items-center gap-2">
@@ -128,7 +151,9 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
       <PollDialog open={pollOpen} onOpenChange={setPollOpen} channelId={channelId} />
       <MindmapPickerDialog open={mindmapOpen} onOpenChange={setMindmapOpen} channelId={channelId} />
     </div>
+    </>
   );
+
 }
 
 function MenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
