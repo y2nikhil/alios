@@ -15,6 +15,7 @@ import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
 import { IdlePrompt } from "@/components/IdlePrompt";
+import { PunchPrompt } from "@/components/PunchPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 
