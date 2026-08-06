@@ -164,6 +164,18 @@ function LoginPage() {
             </form>
           )}
 
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-[11px] uppercase tracking-wide text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <Button type="button" variant="outline" onClick={signInWithApple} disabled={loading} className="w-full gap-2">
+            <Apple className="h-4 w-4" /> Continue with Apple
+          </Button>
+
+
+
           <p className="mt-6 text-center text-sm text-muted-foreground">
             New here?{" "}
             <Link to="/signup" className="text-foreground font-medium hover:underline">
