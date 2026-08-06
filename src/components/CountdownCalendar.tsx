@@ -93,6 +93,21 @@ export function CountdownCalendar() {
     <section className="space-y-4">
       <MonthCalendar cursor={cursor} setCursor={setCursor} highlightDates={highlightDates} activeDate={current?.date} />
 
+      {!current && (
+        <button
+          onClick={() => setEditing({ id: crypto.randomUUID(), label: "", emoji: "🎯", date: defaultDate(1) })}
+          className="w-full rounded-3xl border border-dashed border-white/15 bg-white/[0.02] px-5 py-6 text-center hover:bg-white/5 transition"
+        >
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5">
+            <Plus className="h-4 w-4 text-muted-foreground" />
+          </span>
+          <p className="mt-2 text-sm font-semibold">Add a countdown</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            Track your exam or any big day — see the days left right here.
+          </p>
+        </button>
+      )}
+
       {current && (
         <div
           onMouseEnter={() => (hoverRef.current = true)}
