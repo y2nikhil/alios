@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { CornerDownRight, Loader2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
+import { ReportButton } from "@/components/ReportButton";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { THREAD_COLORS, timeAgo, type Author, type Comment } from "@/lib/feed";
 import { cn } from "@/lib/utils";
@@ -108,6 +109,7 @@ export function CommentThread({
                     >
                       <CornerDownRight className="h-3 w-3" /> Reply
                     </button>
+                    <ReportButton targetType="post_comment" targetId={n.id} targetUserId={n.author_id} size="xs" label="" />
                     {canDelete(n.author_id) && (
                       <button
                         onClick={() => onDelete(n.id)}
