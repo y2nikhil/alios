@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useRole } from "@/lib/use-role";
-import { Loader2, Shield, Check, X, Clock, Ban, VolumeX, AlertTriangle, Flag, Inbox } from "lucide-react";
+import { Loader2, Shield, Check, X, Clock, Ban, VolumeX, AlertTriangle, Flag, Inbox, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
@@ -47,6 +47,12 @@ async function fetchTargetPreviews(reports: Report[]): Promise<Record<string, st
       (data ?? []).forEach((m: any) => { out[m.id] = m.body ?? `[${m.kind}]`; });
     } else if (type === "party_message") {
       const { data } = await supabase.from("watch_party_messages").select("id, body").in("id", uniq);
+      (data ?? []).forEach((m: any) => { out[m.id] = m.body ?? ""; });
+    } else if (type === "post") {
+      const { data } = await supabase.from("posts").select("id, title, body").in("id", uniq);
+      (data ?? []).forEach((m: any) => { out[m.id] = [m.title, m.body].filter(Boolean).join(" — "); });
+    } else if (type === "post_comment") {
+      const { data } = await supabase.from("post_comments").select("id, body").in("id", uniq);
       (data ?? []).forEach((m: any) => { out[m.id] = m.body ?? ""; });
     } else if (type === "note") {
       const { data } = await supabase.from("manager_notes").select("id, body").in("id", uniq);
@@ -109,6 +115,22 @@ function ModerationPage() {
     setBusy(null);
     if (error) { toast.error(error.message); return; }
     load();
+  };
+
+  // Admins & super-admins can remove the reported post or comment outright.
+  const removeContent = async (report: Report) => {
+    if (report.target_type !== "post" && report.target_type !== "post_comment") return;
+    if (!confirm("Delete this content permanently?")) return;
+    setBusy(report.id);
+    const table = report.target_type === "post" ? "posts" : "post_comments";
+    const { error } = await (supabase.from(table) as any).delete().eq("id", report.target_id);
+    if (error) { toast.error(error.message); setBusy(null); return; }
+    await (supabase.from("reports") as any).update({
+      status: "actioned", handled_by: user?.id, handled_at: new Date().toISOString(),
+      handler_note: "content removed",
+    }).eq("id", report.id);
+    toast.success("Content removed");
+    setBusy(null); load();
   };
 
   const sanction = async (report: Report, kind: "warn" | "mute" | "temp_ban" | "perma_ban", hours?: number) => {
@@ -213,6 +235,12 @@ function ModerationPage() {
                   </div>
                   {isAdmin && tab === "open" && (
                     <div className="flex flex-wrap gap-1.5">
+                      {(r.target_type === "post" || r.target_type === "post_comment") && (
+                        <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300"
+                          disabled={busy === r.id} onClick={() => removeContent(r)}>
+                          <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove content
+                        </Button>
+                      )}
                       <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => sanction(r, "warn")}>
                         <AlertTriangle className="h-3.5 w-3.5 mr-1" /> Warn
                       </Button>
