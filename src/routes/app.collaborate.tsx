@@ -318,7 +318,7 @@ function CollaboratePage() {
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 min-h-0 flex flex-col min-w-0 overflow-hidden">
         {active ? (
           <>
             <header className="h-14 border-b border-border flex items-center px-3 sm:px-4 gap-2 shrink-0">
@@ -350,7 +350,7 @@ function CollaboratePage() {
               </div>
             </header>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-3">
+            <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-thin p-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center">
                   <p className="text-sm text-muted-foreground">No messages yet — say hi 👋</p>
