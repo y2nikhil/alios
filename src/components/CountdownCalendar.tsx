@@ -159,7 +159,7 @@ export function CountdownCalendar() {
                 >
                   <Plus className="h-3.5 w-3.5" />
                 </button>
-                {targets.length > 1 && (
+                {targets.length >= 1 && (
                   <button
                     onClick={() => remove(current.id)}
                     className="h-7 w-7 grid place-items-center rounded-full bg-white/60 hover:bg-white text-rose-600"
