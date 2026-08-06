@@ -157,6 +157,18 @@ export function NewPartyDialog({ open, onOpenChange, userId, onCreated }:
     { label: "Just chat", emoji: "💬", sample: "about:blank", titleHint: "Hangout Room" },
   ];
 
+  const [createdId, setCreatedId] = useState<string | null>(null);
+  const inviteLink = createdId ? `${typeof window !== "undefined" ? window.location.origin : ""}/app/hangout/${createdId}` : "";
+
+  const copyInvite = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      toast.success("Invite link copied");
+    } catch {
+      toast.error("Copy failed — select the link manually");
+    }
+  };
+
   const submit = async () => {
     if (!userId || !url.trim()) return;
     setBusy(true);
@@ -173,9 +185,16 @@ export function NewPartyDialog({ open, onOpenChange, userId, onCreated }:
     }).select("id").single();
     setBusy(false);
     if (error || !data) { toast.error(error?.message ?? "Failed to start"); return; }
-    onOpenChange(false);
-    onCreated?.(data.id);
+    if (visibility === "public") {
+      onOpenChange(false);
+      onCreated?.(data.id);
+      return;
+    }
+    // Link-only / private: hand the host a shareable invite link first
+    setCreatedId(data.id);
+    try { await navigator.clipboard.writeText(`${window.location.origin}/app/hangout/${data.id}`); } catch { /* ignore */ }
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
