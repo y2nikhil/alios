@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
   Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
-  MoreVertical, AlertCircle, Calendar as CalIcon,
+  MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -16,6 +16,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
 import { IdlePrompt } from "@/components/IdlePrompt";
 import { PunchPrompt } from "@/components/PunchPrompt";
+import { SectionSwitcher } from "@/components/SectionSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 
@@ -58,6 +59,7 @@ function OnboardingRedirect() {
 
 const BASE_NAV = [
   { to: "/app", label: "Home", icon: LayoutDashboard },
+  { to: "/app/feed", label: "Feed", icon: LayoutList },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
   { to: "/app/calendar", label: "Calendar", icon: CalIcon },
   { to: "/app/assistant", label: "AI Assistant", icon: Sparkles },
@@ -324,6 +326,8 @@ function ShellInner() {
             <ProfileMenu />
           </div>
         </header>
+
+        <SectionSwitcher />
 
         <main className="flex-1 overflow-y-auto scrollbar-thin">
           <motion.div

@@ -54,6 +54,7 @@ import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
 import { Route as ApiAiAskRouteImport } from './routes/api.ai-ask'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
+import { Route as AppPostPostIdRouteImport } from './routes/app.post.$postId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
@@ -284,6 +285,11 @@ const AppUUserIdRoute = AppUUserIdRouteImport.update({
   path: '/u/$userId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPostPostIdRoute = AppPostPostIdRouteImport.update({
+  id: '/post/$postId',
+  path: '/post/$postId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMindmapBoardIdRoute = AppMindmapBoardIdRouteImport.update({
   id: '/mindmap/$boardId',
   path: '/mindmap/$boardId',
@@ -353,6 +359,7 @@ export interface FileRoutesByFullPath {
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
@@ -403,6 +410,7 @@ export interface FileRoutesByTo {
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
+  '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
+    | '/app/post/$postId'
     | '/app/u/$userId'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
@@ -558,6 +568,7 @@ export interface FileRouteTypes {
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
+    | '/app/post/$postId'
     | '/app/u/$userId'
     | '/app/mindmap'
     | '/api/public/hooks/dispatch-push'
@@ -609,6 +620,7 @@ export interface FileRouteTypes {
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
+    | '/app/post/$postId'
     | '/app/u/$userId'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
@@ -961,6 +973,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUUserIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/post/$postId': {
+      id: '/app/post/$postId'
+      path: '/post/$postId'
+      fullPath: '/app/post/$postId'
+      preLoaderRoute: typeof AppPostPostIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/mindmap/$boardId': {
       id: '/app/mindmap/$boardId'
       path: '/mindmap/$boardId'
@@ -1013,6 +1032,7 @@ interface AppRouteChildren {
   AppDmThreadIdRoute: typeof AppDmThreadIdRoute
   AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
+  AppPostPostIdRoute: typeof AppPostPostIdRoute
   AppUUserIdRoute: typeof AppUUserIdRoute
   AppMindmapIndexRoute: typeof AppMindmapIndexRoute
 }
@@ -1038,6 +1058,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDmThreadIdRoute: AppDmThreadIdRoute,
   AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
+  AppPostPostIdRoute: AppPostPostIdRoute,
   AppUUserIdRoute: AppUUserIdRoute,
   AppMindmapIndexRoute: AppMindmapIndexRoute,
 }
