@@ -258,6 +258,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
 
 function ShellInner() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAdmin, isSuperAdmin } = useRole();
   const [mobileOpen, setMobileOpen] = useState(false);
   useFocusMilestones();
@@ -324,13 +325,19 @@ function ShellInner() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <HeaderStatus />
-            <Link
-              to="/app/feed"
+            <button
+              onClick={() => {
+                if (location.pathname.startsWith("/app/feed")) {
+                  window.dispatchEvent(new CustomEvent("classlab:open-post-composer"));
+                } else {
+                  navigate({ to: "/app/feed", search: { compose: "1" } });
+                }
+              }}
               className="lg:hidden h-9 w-9 grid place-items-center rounded-lg bg-amber-400 text-black hover:bg-amber-300 active:scale-95 transition shrink-0"
               aria-label="Create post"
             >
               <Plus className="h-5 w-5" />
-            </Link>
+            </button>
             <NotificationBell />
             <ProfileMenu />
           </div>

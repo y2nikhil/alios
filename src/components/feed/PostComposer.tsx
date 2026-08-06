@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FileText, HelpCircle, ImagePlus, Link2, Loader2, Network, Paperclip, PenLine, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -28,6 +28,12 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("classlab:open-post-composer", handler);
+    return () => window.removeEventListener("classlab:open-post-composer", handler);
+  }, []);
 
   const guessKind = (url: string) => {
     if (!url) return null;
@@ -75,15 +81,15 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
 
   if (!open) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2 sm:p-3">
         <button
           onClick={() => setOpen(true)}
-          className="w-full rounded-xl px-2 py-2 text-left text-sm text-muted-foreground hover:text-foreground"
+          className="w-full rounded-xl px-2 py-1.5 text-left text-xs sm:text-sm text-muted-foreground hover:text-foreground"
         >
           What&apos;s on your mind?
         </button>
 
-        {/* Desktop: wrap naturally. Mobile: locked to two compact rows. */}
+        {/* Desktop: wrap naturally. */}
         <div className="mt-2 hidden sm:flex flex-wrap items-center gap-1.5">
           {QUICK_TYPES.map((q) => (
             <button
@@ -106,7 +112,8 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
           </button>
         </div>
 
-        <div className="mt-2 grid grid-cols-3 gap-1.5 sm:hidden">
+        {/* Mobile: single compact row with Post / Question / Image / Post */}
+        <div className="mt-1.5 flex items-center gap-1.5 sm:hidden">
           {QUICK_TYPES.slice(0, 3).map((q) => (
             <button
               key={q.label}
@@ -115,31 +122,16 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
                 setOpen(true);
                 if (q.attach) setTimeout(() => fileRef.current?.click(), 100);
               }}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground"
+              className="flex-1 inline-flex items-center justify-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground"
             >
-              <q.icon className="h-3.5 w-3.5" /> {q.label}
-            </button>
-          ))}
-        </div>
-        <div className="mt-1.5 grid grid-cols-4 gap-1.5 sm:hidden">
-          {QUICK_TYPES.slice(3).map((q) => (
-            <button
-              key={q.label}
-              onClick={() => {
-                setTag(q.tag ?? POST_TAGS[0]);
-                setOpen(true);
-                if (q.attach) setTimeout(() => fileRef.current?.click(), 100);
-              }}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground"
-            >
-              <q.icon className="h-3.5 w-3.5" /> {q.label}
+              <q.icon className="h-3 w-3" /> {q.label}
             </button>
           ))}
           <button
             onClick={() => setOpen(true)}
-            className="inline-flex items-center justify-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-1.5 text-xs font-semibold text-black"
+            className="shrink-0 inline-flex items-center justify-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 text-[11px] font-semibold text-black"
           >
-            <Send className="h-3.5 w-3.5" /> Post
+            <Send className="h-3 w-3" /> Post
           </button>
         </div>
       </div>
