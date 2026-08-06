@@ -8,6 +8,8 @@ import { AvatarIconRender } from "@/components/AvatarIcon";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostMedia } from "@/components/feed/PostCard";
 import { buildTree, CommentThread } from "@/components/feed/CommentThread";
+import { SuggestedPosts } from "@/components/feed/SuggestedPosts";
+
 import { ReportButton } from "@/components/ReportButton";
 import { fetchAuthors, postPath, timeAgo, type Author, type Comment, type Post } from "@/lib/feed";
 
