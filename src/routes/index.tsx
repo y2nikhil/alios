@@ -362,8 +362,31 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="mx-auto max-w-7xl px-5 pb-20 lg:px-10">
+        <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">Frequently asked questions</h2>
+        <div className="mt-6 divide-y divide-border rounded-[22px] border border-border bg-card">
+          {HOME_FAQS.map((f) => (
+            <details key={f.q} className="px-6 py-5">
+              <summary className="cursor-pointer list-none font-medium marker:hidden">{f.q}</summary>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer className="border-t border-border">
+        <div className="mx-auto max-w-7xl px-5 pt-10 lg:px-10">
+          <h2 className="text-sm font-semibold">Explore ClassLab</h2>
+          <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            {SITE_PAGES.map((p) => (
+              <li key={p.to}>
+                <Link to={p.to as never} className="hover:text-foreground">{p.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-8 text-xs text-muted-foreground lg:flex-row lg:px-10">
           <div className="flex items-center gap-2">
             <BrandMark size={24} />
