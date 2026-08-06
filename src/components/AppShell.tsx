@@ -324,6 +324,13 @@ function ShellInner() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <HeaderStatus />
+            <Link
+              to="/app/feed"
+              className="lg:hidden h-9 w-9 grid place-items-center rounded-lg bg-amber-400 text-black hover:bg-amber-300 active:scale-95 transition shrink-0"
+              aria-label="Create post"
+            >
+              <Plus className="h-5 w-5" />
+            </Link>
             <NotificationBell />
             <ProfileMenu />
           </div>
