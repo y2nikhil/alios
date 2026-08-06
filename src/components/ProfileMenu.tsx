@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, CalendarOff, UserCircle2, Crown, Bell } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useRole } from "@/lib/use-role";
-import { useTheme } from "@/lib/theme";
+
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -143,9 +143,11 @@ export function ProfileMenu() {
               <ShieldCheck className="h-4 w-4 mr-2" /> Apply to be Admin (Client)
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={() => setTimeOffOpen(true)}>
-            <CalendarOff className="h-4 w-4 mr-2" /> Request time off
-          </DropdownMenuItem>
+          {isAdmin && (
+            <DropdownMenuItem onClick={() => setTimeOffOpen(true)}>
+              <CalendarOff className="h-4 w-4 mr-2" /> Request time off
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={async () => {
