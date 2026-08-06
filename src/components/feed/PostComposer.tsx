@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { FileText, HelpCircle, ImagePlus, Link2, Loader2, Network, Paperclip, PenLine, Send, X } from "lucide-react";
+import { FileText, HelpCircle, ImagePlus, Link2, Loader2, Network, Paperclip, PenLine, Plus, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { POST_TAGS, uploadPostMedia } from "@/lib/feed";
