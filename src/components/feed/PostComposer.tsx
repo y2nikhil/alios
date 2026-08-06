@@ -82,7 +82,9 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
         >
           What&apos;s on your mind?
         </button>
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+
+        {/* Desktop: wrap naturally. Mobile: locked to two compact rows. */}
+        <div className="mt-2 hidden sm:flex flex-wrap items-center gap-1.5">
           {QUICK_TYPES.map((q) => (
             <button
               key={q.label}
@@ -101,6 +103,43 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
             className="ml-auto rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-1.5 text-xs font-semibold text-black"
           >
             Post
+          </button>
+        </div>
+
+        <div className="mt-2 grid grid-cols-3 gap-1.5 sm:hidden">
+          {QUICK_TYPES.slice(0, 3).map((q) => (
+            <button
+              key={q.label}
+              onClick={() => {
+                setTag(q.tag ?? POST_TAGS[0]);
+                setOpen(true);
+                if (q.attach) setTimeout(() => fileRef.current?.click(), 100);
+              }}
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground"
+            >
+              <q.icon className="h-3.5 w-3.5" /> {q.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-1.5 grid grid-cols-4 gap-1.5 sm:hidden">
+          {QUICK_TYPES.slice(3).map((q) => (
+            <button
+              key={q.label}
+              onClick={() => {
+                setTag(q.tag ?? POST_TAGS[0]);
+                setOpen(true);
+                if (q.attach) setTimeout(() => fileRef.current?.click(), 100);
+              }}
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground"
+            >
+              <q.icon className="h-3.5 w-3.5" /> {q.label}
+            </button>
+          ))}
+          <button
+            onClick={() => setOpen(true)}
+            className="inline-flex items-center justify-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-1.5 text-xs font-semibold text-black"
+          >
+            <Send className="h-3.5 w-3.5" /> Post
           </button>
         </div>
       </div>
