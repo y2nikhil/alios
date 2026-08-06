@@ -64,7 +64,7 @@ export function PostCard({
       </Link>
       {post.media_url && <PostMedia url={post.media_url} kind={post.media_kind} />}
 
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <VoteControl up={post.up_count} down={post.down_count} mine={myVote} onVote={(v) => onVote(post.id, v)} />
         <Link
           to="/app/post/$postId"
@@ -73,17 +73,36 @@ export function PostCard({
         >
           <MessageSquare className="h-3.5 w-3.5" /> {post.comment_count}
         </Link>
+        <a
+          href={postPath(post)}
+          target="_blank"
+          rel="noreferrer"
+          title="Open public page"
+          className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:bg-white/10 hover:text-foreground"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
         <button
           onClick={() => {
-            const url = `${window.location.origin}/app/post/${post.id}`;
-            if (navigator.share) navigator.share({ title: post.title, url }).catch(() => {});
-            else navigator.clipboard?.writeText(url);
+            if (navigator.share) navigator.share({ title: post.title, url: shareUrl }).catch(() => {});
+            else navigator.clipboard?.writeText(shareUrl);
           }}
           className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:bg-white/10 hover:text-foreground"
         >
           <Share2 className="h-3.5 w-3.5" /> Share
         </button>
+        <ReportButton targetType="post" targetId={post.id} targetUserId={post.author_id} size="xs" label="" />
+        {canModerate && onDelete && (
+          <button
+            onClick={() => onDelete(post.id)}
+            aria-label="Delete post"
+            className="rounded-full p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-400"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
+
     </article>
   );
 }
