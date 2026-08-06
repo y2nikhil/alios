@@ -213,7 +213,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
           </div>
           <div>
             <p className="text-sm font-bold tracking-tight leading-none">ClassLab</p>
-            <p className="text-[10px] text-muted-foreground mt-1">AI Life OS</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Your Study Campus</p>
           </div>
         </Link>
         {onClose && (

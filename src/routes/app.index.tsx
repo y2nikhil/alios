@@ -24,7 +24,7 @@ import { TrophyProgress } from "@/components/TrophyProgress";
 export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
-      { title: "Command Center — ClassLab" },
+      { title: "ClassLab — Command Center" },
       { name: "description", content: "Your personal command center: live status, focus score, AI insights." },
     ],
   }),
@@ -224,13 +224,8 @@ function CommandCenter() {
                   {formatShortDuration(stats.productiveSeconds)} / 8h
                 </p>
               </div>
-              <div className="glass rounded-3xl p-5">
-                <p className="text-xs text-muted-foreground">Upcoming</p>
-                <p className="mt-1 text-lg font-bold leading-tight">CAT Mock Test</p>
-                <p className="mt-1 text-[11px] text-muted-foreground flex items-center gap-1.5">
-                  <CalIcon className="h-3 w-3" /> Today, 06:00 PM
-                </p>
-              </div>
+              <NextEventCard />
+
             </div>
           </div>
 
@@ -345,6 +340,42 @@ function CommandCenter() {
     </div>
   );
 }
+
+function NextEventCard() {
+  const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; time?: string }>>([]);
+  useEffect(() => {
+    try { setEvents(JSON.parse(localStorage.getItem("alios.calendar.events.v1") ?? "[]")); } catch { /* ignore */ }
+  }, []);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const next = events
+    .filter((e) => new Date(e.date + "T00:00:00").getTime() >= today.getTime())
+    .sort((a, b) => (a.date + (a.time ?? "")).localeCompare(b.date + (b.time ?? "")))[0];
+
+  return (
+    <div className="glass rounded-3xl p-5">
+      <p className="text-xs text-muted-foreground">Upcoming</p>
+      {next ? (
+        <>
+          <p className="mt-1 text-lg font-bold leading-tight truncate">{next.title}</p>
+          <p className="mt-1 text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <CalIcon className="h-3 w-3" />
+            {(() => {
+              const d = new Date(next.date + "T00:00:00");
+              const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+              const day = diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+              return next.time ? `${day}, ${next.time}` : day;
+            })()}
+          </p>
+        </>
+      ) : (
+        <Link to="/app/calendar" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-300 hover:text-violet-200">
+          <CalIcon className="h-3 w-3" /> Add your first event
+        </Link>
+      )}
+    </div>
+  );
+}
+
 
 function UpcomingList() {
   const [events, setEvents] = useState<Array<{ id: string; title: string; date: string; time?: string; color?: string }>>([]);
