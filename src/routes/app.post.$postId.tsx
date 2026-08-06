@@ -8,6 +8,8 @@ import { AvatarIconRender } from "@/components/AvatarIcon";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostMedia } from "@/components/feed/PostCard";
 import { buildTree, CommentThread } from "@/components/feed/CommentThread";
+import { SuggestedPosts } from "@/components/feed/SuggestedPosts";
+
 import { ReportButton } from "@/components/ReportButton";
 import { fetchAuthors, postPath, timeAgo, type Author, type Comment, type Post } from "@/lib/feed";
 
@@ -138,12 +140,15 @@ function PostPage() {
   const name = a?.display_name ?? a?.username ?? "Student";
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-3 py-4 lg:px-6 lg:py-6 space-y-4">
+    <div className="mx-auto w-full max-w-7xl px-3 py-4 lg:px-6 lg:py-6">
       <Link to="/app/feed" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to feed
       </Link>
 
+      <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="min-w-0 space-y-4">
       <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <AvatarIconRender
             icon={a?.avatar_icon}
@@ -216,6 +221,15 @@ function PostPage() {
           />
         )}
       </section>
+      </div>
+
+      <div className="min-w-0">
+        <div className="lg:sticky lg:top-4">
+          <SuggestedPosts postId={post.id} tag={post.tag} />
+        </div>
+      </div>
+      </div>
     </div>
+
   );
 }
