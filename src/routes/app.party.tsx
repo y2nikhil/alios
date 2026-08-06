@@ -104,15 +104,21 @@ function PartyLobby() {
             ref={railRef}
             className="flex gap-3 overflow-x-auto scrollbar-thin snap-x snap-mandatory pb-3 -mx-1 px-1 scroll-smooth"
           >
-            {parties.map((p) => (
+            {parties.map((p) => {
+              const thumb = partyThumb(p as any);
+              return (
               <Link
                 key={p.id}
                 to="/app/hangout/$partyId"
                 params={{ partyId: p.id }}
                 className="group snap-start shrink-0 w-[300px] rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.02] hover:border-pink-500/40 hover:from-pink-500/10 hover:-translate-y-0.5 transition p-4"
               >
-                <div className="aspect-video rounded-lg bg-black/50 grid place-items-center mb-3 group-hover:scale-[1.02] transition-transform">
-                  <Tv className="h-8 w-8 text-pink-400/70" />
+                <div className="aspect-video rounded-lg bg-black/50 grid place-items-center mb-3 overflow-hidden group-hover:scale-[1.02] transition-transform">
+                  {thumb ? (
+                    <img src={thumb} alt={`${p.title} thumbnail`} loading="lazy" className="h-full w-full object-cover" />
+                  ) : (
+                    <Tv className="h-8 w-8 text-pink-400/70" />
+                  )}
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-pink-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-pink-400 animate-pulse" /> Live
@@ -123,7 +129,8 @@ function PartyLobby() {
                 <p className="mt-1 font-semibold text-sm truncate">{p.title}</p>
                 <p className="mt-2 text-[11px] text-muted-foreground">{counts[p.id] ?? 0} watching · {p.media_kind}</p>
               </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
