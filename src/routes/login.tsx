@@ -75,6 +75,23 @@ function LoginPage() {
     navigate({ to: "/app" });
   };
 
+  const signInWithApple = async () => {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setLoading(false);
+      return toast.error(result.error.message ?? "Apple sign-in failed");
+    }
+    if (result.redirected) return;
+    setLoading(false);
+    toast.success("Welcome back");
+    navigate({ to: "/app" });
+  };
+
+
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
