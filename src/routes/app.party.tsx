@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Tv, Plus, Globe, Link2, Lock, Sparkles, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Tv, Plus, Globe, Link2, Lock, Sparkles, Loader2, ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -157,6 +157,18 @@ export function NewPartyDialog({ open, onOpenChange, userId, onCreated }:
     { label: "Just chat", emoji: "💬", sample: "about:blank", titleHint: "Hangout Room" },
   ];
 
+  const [createdId, setCreatedId] = useState<string | null>(null);
+  const inviteLink = createdId ? `${typeof window !== "undefined" ? window.location.origin : ""}/app/hangout/${createdId}` : "";
+
+  const copyInvite = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      toast.success("Invite link copied");
+    } catch {
+      toast.error("Copy failed — select the link manually");
+    }
+  };
+
   const submit = async () => {
     if (!userId || !url.trim()) return;
     setBusy(true);
@@ -173,9 +185,51 @@ export function NewPartyDialog({ open, onOpenChange, userId, onCreated }:
     }).select("id").single();
     setBusy(false);
     if (error || !data) { toast.error(error?.message ?? "Failed to start"); return; }
-    onOpenChange(false);
-    onCreated?.(data.id);
+    if (visibility === "public") {
+      onOpenChange(false);
+      onCreated?.(data.id);
+      return;
+    }
+    // Link-only / private: hand the host a shareable invite link first
+    setCreatedId(data.id);
+    try { await navigator.clipboard.writeText(`${window.location.origin}/app/hangout/${data.id}`); } catch { /* ignore */ }
   };
+
+
+  if (createdId) {
+    return (
+      <Dialog open={open} onOpenChange={(v) => { if (!v) { setCreatedId(null); onOpenChange(false); } }}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {visibility === "private" ? <Lock className="h-4 w-4 text-pink-400" /> : <Link2 className="h-4 w-4 text-pink-400" />}
+              Your room is ready
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              {visibility === "private"
+                ? "This room is private — only people you send this link to (and you) can get in."
+                : "Unlisted room — anyone with this link can join, but it won't show in Live."}
+            </p>
+            <div className="flex gap-2">
+              <Input readOnly value={inviteLink} onFocus={(e) => e.currentTarget.select()} className="font-mono text-xs" />
+              <Button onClick={copyInvite} variant="outline"><Copy className="h-3.5 w-3.5 mr-1" />Copy</Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setCreatedId(null); onOpenChange(false); }}>Close</Button>
+            <Button
+              onClick={() => { const id = createdId; setCreatedId(null); onOpenChange(false); onCreated?.(id); }}
+              className="bg-gradient-to-r from-pink-500 to-violet-500"
+            >
+              Enter room
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -202,7 +256,7 @@ export function NewPartyDialog({ open, onOpenChange, userId, onCreated }:
               {([
                 { v: "public", icon: Globe, label: "Public", hint: "Anyone can find it" },
                 { v: "unlisted", icon: Link2, label: "Link only", hint: "Share the link" },
-                { v: "private", icon: Lock, label: "Private", hint: "Only you for now" },
+                { v: "private", icon: Lock, label: "Private", hint: "Invite by link" },
               ] as const).map((opt) => (
                 <button key={opt.v} onClick={() => setVisibility(opt.v)}
                   className={cn(
@@ -220,10 +274,11 @@ export function NewPartyDialog({ open, onOpenChange, userId, onCreated }:
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={submit} disabled={busy || !url.trim()} className="bg-gradient-to-r from-pink-500 to-violet-500">
-            {busy ? "Starting…" : "Go live"}
+            {busy ? "Starting…" : visibility === "public" ? "Go live" : "Create & get link"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
   );
 }
