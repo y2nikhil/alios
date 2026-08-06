@@ -36,49 +36,62 @@ function SettingsPage() {
         <p className="text-sm text-muted-foreground">Tune your profile, statuses, and shortcuts.</p>
       </div>
 
-      <ProfileBlock />
-      <PrepProfileBlock />
-      <NotificationSettings />
-      <AppearancePanel />
-      <AwardsShelf userId={user?.id} />
-      <PrivacyBlock />
+      <SettingsSection title="Your profile" description="Display name & username" icon={AtSign} defaultOpen>
+        <ProfileBlock />
+      </SettingsSection>
 
+      <SettingsSection title="Prep profile" description="Exam, hours, stage & goal" icon={GraduationCap}>
+        <PrepProfileBlock />
+      </SettingsSection>
 
+      <SettingsSection title="Notifications" description="Push alerts & sounds" icon={Bell}>
+        <NotificationSettings />
+      </SettingsSection>
 
+      <SettingsSection title="Appearance" description="Theme & accent colour" icon={Palette}>
+        <AppearancePanel />
+      </SettingsSection>
 
-      <div className="glass rounded-2xl">
-        <div className="flex items-center justify-between p-4 border-b border-white/5">
-          <div>
-            <h3 className="font-semibold">AUX Statuses</h3>
-            <p className="text-xs text-muted-foreground">Customize names, colors, and shortcuts.</p>
+      <SettingsSection title="Trophies" description="Your awards and progress" icon={Trophy}>
+        <AwardsShelf userId={user?.id} />
+      </SettingsSection>
+
+      <SettingsSection title="Timeline privacy" description="Who can see your activity" icon={Lock}>
+        <PrivacyBlock />
+      </SettingsSection>
+
+      <SettingsSection title="AUX statuses" description="Names, colours and shortcuts" icon={ListChecks}>
+        <div className="p-4 space-y-3">
+          <div className="flex justify-end">
+            <Button size="sm" onClick={() => setCreating(true)}>
+              <Plus className="h-3.5 w-3.5 mr-1" /> New
+            </Button>
           </div>
-          <Button size="sm" onClick={() => setCreating(true)}>
-            <Plus className="h-3.5 w-3.5 mr-1" /> New
-          </Button>
-        </div>
-        <div className="divide-y divide-white/5">
-          {statuses.map((s) => (
-            <div key={s.id} className="flex items-center gap-3 p-3">
-              <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{s.name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{s.category} · {s.is_paid ? "paid" : "unpaid"}</p>
+          <div className="divide-y divide-white/5">
+            {statuses.map((s) => (
+              <div key={s.id} className="flex items-center gap-3 py-2">
+                <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{s.category} · {s.is_paid ? "paid" : "unpaid"}</p>
+                </div>
+                {s.shortcut_key && (
+                  <kbd className="hidden sm:inline-flex h-6 min-w-6 items-center justify-center rounded border border-white/10 bg-white/5 px-1.5 text-xs font-mono">
+                    {s.shortcut_key}
+                  </kbd>
+                )}
+                <Button size="icon" variant="ghost" onClick={() => setEditing(s)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="icon" variant="ghost" onClick={() => deleteStatus(s.id)} className="text-destructive hover:text-destructive">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </div>
-              {s.shortcut_key && (
-                <kbd className="hidden sm:inline-flex h-6 min-w-6 items-center justify-center rounded border border-white/10 bg-white/5 px-1.5 text-xs font-mono">
-                  {s.shortcut_key}
-                </kbd>
-              )}
-              <Button size="icon" variant="ghost" onClick={() => setEditing(s)}>
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-              <Button size="icon" variant="ghost" onClick={() => deleteStatus(s.id)} className="text-destructive hover:text-destructive">
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </SettingsSection>
+
 
       {(editing || creating) && (
         <StatusEditor
