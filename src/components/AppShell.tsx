@@ -276,7 +276,7 @@ function ShellInner() {
   ];
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <div className="flex h-[100dvh] max-h-[100dvh] w-full overflow-hidden">
       {/* Persistent desktop sidebar */}
       <aside className="hidden lg:block shrink-0">
         <SidebarPanel NAV={NAV} />
@@ -310,7 +310,7 @@ function ShellInner() {
       </AnimatePresence>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden min-w-0">
         <header className="h-16 flex items-center gap-3 border-b border-white/5 px-3 lg:px-6 bg-background/60 backdrop-blur-xl">
           <button
             onClick={() => setMobileOpen(true)}
@@ -331,7 +331,10 @@ function ShellInner() {
 
         <SectionSwitcher />
 
-        <main className="flex-1 overflow-y-auto scrollbar-thin">
+        <main className={cn(
+          "flex-1 min-h-0 scrollbar-thin",
+          location.pathname.startsWith("/app/collaborate") ? "overflow-hidden" : "overflow-y-auto",
+        )}>
           <motion.div
             key={location.pathname}
             className={cn(location.pathname.startsWith("/app/collaborate") && "h-full min-h-0")}

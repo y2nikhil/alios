@@ -70,7 +70,7 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
     <>
     <div
       className={cn(
-        "relative z-30 shrink-0 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]",
+        "sticky bottom-0 relative z-30 shrink-0 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]",
         "bg-gradient-to-t from-background via-background/95 to-transparent",
       )}
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
