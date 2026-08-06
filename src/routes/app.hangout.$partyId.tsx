@@ -381,6 +381,19 @@ function HangoutRoom() {
               </p>
             </div>
             <Button
+              onClick={async () => {
+                const url = `${window.location.origin}/app/hangout/${party.id}`;
+                try { await navigator.clipboard.writeText(url); toast.success("Invite link copied"); }
+                catch { toast.error("Copy failed"); }
+              }}
+              variant="ghost"
+              size="sm"
+              title="Copy invite link"
+            >
+              <Link2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+
               onClick={toggleFullscreen}
               variant="ghost"
               size="sm"
