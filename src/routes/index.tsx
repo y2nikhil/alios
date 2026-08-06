@@ -18,20 +18,98 @@ import {
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
+const HOME_FAQS = [
+  {
+    q: "What is ClassLab?",
+    a: "ClassLab is a student community platform where college and university students join communities, chat, share notes, run study groups, attend events and prepare for exams together.",
+  },
+  {
+    q: "Is ClassLab free for students?",
+    a: "Yes. Creating an account and using communities, chat, study groups, notes sharing and the AI study assistant is free for students.",
+  },
+  {
+    q: "Which exams does ClassLab support?",
+    a: "ClassLab has dedicated cohorts for CAT, JEE, NEET, SSC/UPSC, Banking and Railways preparation.",
+  },
+  {
+    q: "Can I use ClassLab on mobile?",
+    a: "Yes, ClassLab works in any mobile browser and is fully responsive on phones and tablets.",
+  },
+];
+
+const SITE_PAGES = [
+  { label: "Watch Party", to: "/watch-party" },
+  { label: "Student Chat", to: "/student-chat" },
+  { label: "Study Groups", to: "/study-groups" },
+  { label: "Communities", to: "/communities" },
+  { label: "Notes Sharing", to: "/notes-sharing" },
+  { label: "College Clubs", to: "/college-clubs" },
+  { label: "Events", to: "/events" },
+  { label: "Projects", to: "/projects" },
+  { label: "Resources", to: "/resources" },
+  { label: "Portfolio", to: "/portfolio" },
+  { label: "Coding Rooms", to: "/coding-rooms" },
+  { label: "Internships", to: "/internships" },
+  { label: "Campus Network", to: "/campus-network" },
+  { label: "Discussion Forums", to: "/forums" },
+  { label: "Exam Prep", to: "/exam-prep" },
+  { label: "Career Hub", to: "/career" },
+  { label: "AI Study Assistant", to: "/ai-study-assistant" },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ClassLab — The Digital Campus for Every Student" },
+      { title: "Home | ClassLab — Student Community Platform" },
       {
         name: "description",
         content:
-          "Discover communities, attend events, buy and sell, share notes, find internships and build your network — all inside ClassLab, the digital campus for Indian students.",
+          "Discover the Home feature on ClassLab to help students connect, collaborate and grow — communities, notes, events, study groups and internships in one campus.",
       },
-      { property: "og:title", content: "ClassLab — The Digital Campus for Every Student" },
+      {
+        name: "keywords",
+        content: "student community platform, peer learning, college students, university students, collaboration",
+      },
+      { property: "og:title", content: "Home | ClassLab — Student Community Platform" },
       {
         property: "og:description",
         content:
           "Join 50,000+ students from 500+ Indian colleges on ClassLab — communities, notes, events, internships and more.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://classlab.in/" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Home | ClassLab — Student Community Platform" },
+      {
+        name: "twitter:description",
+        content: "The student community platform for peer learning, collaboration and exam prep.",
+      },
+    ],
+    links: [{ rel: "canonical", href: "https://classlab.in/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              name: "Home | ClassLab",
+              url: "https://classlab.in/",
+              description:
+                "ClassLab is a student community platform for peer learning, collaboration, notes sharing and exam prep.",
+              isPartOf: { "@type": "WebSite", name: "ClassLab", url: "https://classlab.in" },
+            },
+            {
+              "@type": "FAQPage",
+              mainEntity: HOME_FAQS.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ],
+        }),
       },
     ],
   }),
@@ -284,8 +362,31 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="mx-auto max-w-7xl px-5 pb-20 lg:px-10">
+        <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">Frequently asked questions</h2>
+        <div className="mt-6 divide-y divide-border rounded-[22px] border border-border bg-card">
+          {HOME_FAQS.map((f) => (
+            <details key={f.q} className="px-6 py-5">
+              <summary className="cursor-pointer list-none font-medium marker:hidden">{f.q}</summary>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* FOOTER */}
       <footer className="border-t border-border">
+        <div className="mx-auto max-w-7xl px-5 pt-10 lg:px-10">
+          <h2 className="text-sm font-semibold">Explore ClassLab</h2>
+          <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            {SITE_PAGES.map((p) => (
+              <li key={p.to}>
+                <Link to={p.to as never} className="hover:text-foreground">{p.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-8 text-xs text-muted-foreground lg:flex-row lg:px-10">
           <div className="flex items-center gap-2">
             <BrandMark size={24} />

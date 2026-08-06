@@ -9,9 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WatchPartyRouteImport } from './routes/watch-party'
+import { Route as StudyGroupsRouteImport } from './routes/study-groups'
+import { Route as StudentChatRouteImport } from './routes/student-chat'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as NotesSharingRouteImport } from './routes/notes-sharing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as InternshipsRouteImport } from './routes/internships'
+import { Route as ForumsRouteImport } from './routes/forums'
+import { Route as ExamPrepRouteImport } from './routes/exam-prep'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as CommunitiesRouteImport } from './routes/communities'
+import { Route as CollegeClubsRouteImport } from './routes/college-clubs'
+import { Route as CodingRoomsRouteImport } from './routes/coding-rooms'
+import { Route as CareerRouteImport } from './routes/career'
+import { Route as CampusNetworkRouteImport } from './routes/campus-network'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AiStudyAssistantRouteImport } from './routes/ai-study-assistant'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
@@ -41,9 +58,44 @@ import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$par
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
 import { Route as ApiPublicHooksDispatchPushRouteImport } from './routes/api.public.hooks.dispatch-push'
 
+const WatchPartyRoute = WatchPartyRouteImport.update({
+  id: '/watch-party',
+  path: '/watch-party',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudyGroupsRoute = StudyGroupsRouteImport.update({
+  id: '/study-groups',
+  path: '/study-groups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentChatRoute = StudentChatRouteImport.update({
+  id: '/student-chat',
+  path: '/student-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesSharingRoute = NotesSharingRouteImport.update({
+  id: '/notes-sharing',
+  path: '/notes-sharing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -51,9 +103,59 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InternshipsRoute = InternshipsRouteImport.update({
+  id: '/internships',
+  path: '/internships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumsRoute = ForumsRouteImport.update({
+  id: '/forums',
+  path: '/forums',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamPrepRoute = ExamPrepRouteImport.update({
+  id: '/exam-prep',
+  path: '/exam-prep',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunitiesRoute = CommunitiesRouteImport.update({
+  id: '/communities',
+  path: '/communities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollegeClubsRoute = CollegeClubsRouteImport.update({
+  id: '/college-clubs',
+  path: '/college-clubs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CodingRoomsRoute = CodingRoomsRouteImport.update({
+  id: '/coding-rooms',
+  path: '/coding-rooms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareerRoute = CareerRouteImport.update({
+  id: '/career',
+  path: '/career',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampusNetworkRoute = CampusNetworkRouteImport.update({
+  id: '/campus-network',
+  path: '/campus-network',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiStudyAssistantRoute = AiStudyAssistantRouteImport.update({
+  id: '/ai-study-assistant',
+  path: '/ai-study-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -200,9 +302,26 @@ const ApiPublicHooksDispatchPushRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/app': typeof AppRouteWithChildren
+  '/campus-network': typeof CampusNetworkRoute
+  '/career': typeof CareerRoute
+  '/coding-rooms': typeof CodingRoomsRoute
+  '/college-clubs': typeof CollegeClubsRoute
+  '/communities': typeof CommunitiesRoute
+  '/events': typeof EventsRoute
+  '/exam-prep': typeof ExamPrepRoute
+  '/forums': typeof ForumsRoute
+  '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
+  '/notes-sharing': typeof NotesSharingRoute
+  '/portfolio': typeof PortfolioRoute
+  '/projects': typeof ProjectsRoute
+  '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/student-chat': typeof StudentChatRoute
+  '/study-groups': typeof StudyGroupsRoute
+  '/watch-party': typeof WatchPartyRoute
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
@@ -233,8 +352,25 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-study-assistant': typeof AiStudyAssistantRoute
+  '/campus-network': typeof CampusNetworkRoute
+  '/career': typeof CareerRoute
+  '/coding-rooms': typeof CodingRoomsRoute
+  '/college-clubs': typeof CollegeClubsRoute
+  '/communities': typeof CommunitiesRoute
+  '/events': typeof EventsRoute
+  '/exam-prep': typeof ExamPrepRoute
+  '/forums': typeof ForumsRoute
+  '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
+  '/notes-sharing': typeof NotesSharingRoute
+  '/portfolio': typeof PortfolioRoute
+  '/projects': typeof ProjectsRoute
+  '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/student-chat': typeof StudentChatRoute
+  '/study-groups': typeof StudyGroupsRoute
+  '/watch-party': typeof WatchPartyRoute
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
@@ -266,9 +402,26 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/app': typeof AppRouteWithChildren
+  '/campus-network': typeof CampusNetworkRoute
+  '/career': typeof CareerRoute
+  '/coding-rooms': typeof CodingRoomsRoute
+  '/college-clubs': typeof CollegeClubsRoute
+  '/communities': typeof CommunitiesRoute
+  '/events': typeof EventsRoute
+  '/exam-prep': typeof ExamPrepRoute
+  '/forums': typeof ForumsRoute
+  '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
+  '/notes-sharing': typeof NotesSharingRoute
+  '/portfolio': typeof PortfolioRoute
+  '/projects': typeof ProjectsRoute
+  '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/student-chat': typeof StudentChatRoute
+  '/study-groups': typeof StudyGroupsRoute
+  '/watch-party': typeof WatchPartyRoute
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
@@ -301,9 +454,26 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-study-assistant'
     | '/app'
+    | '/campus-network'
+    | '/career'
+    | '/coding-rooms'
+    | '/college-clubs'
+    | '/communities'
+    | '/events'
+    | '/exam-prep'
+    | '/forums'
+    | '/internships'
     | '/login'
+    | '/notes-sharing'
+    | '/portfolio'
+    | '/projects'
+    | '/resources'
     | '/signup'
+    | '/student-chat'
+    | '/study-groups'
+    | '/watch-party'
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
@@ -334,8 +504,25 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-study-assistant'
+    | '/campus-network'
+    | '/career'
+    | '/coding-rooms'
+    | '/college-clubs'
+    | '/communities'
+    | '/events'
+    | '/exam-prep'
+    | '/forums'
+    | '/internships'
     | '/login'
+    | '/notes-sharing'
+    | '/portfolio'
+    | '/projects'
+    | '/resources'
     | '/signup'
+    | '/student-chat'
+    | '/study-groups'
+    | '/watch-party'
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
@@ -366,9 +553,26 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-study-assistant'
     | '/app'
+    | '/campus-network'
+    | '/career'
+    | '/coding-rooms'
+    | '/college-clubs'
+    | '/communities'
+    | '/events'
+    | '/exam-prep'
+    | '/forums'
+    | '/internships'
     | '/login'
+    | '/notes-sharing'
+    | '/portfolio'
+    | '/projects'
+    | '/resources'
     | '/signup'
+    | '/student-chat'
+    | '/study-groups'
+    | '/watch-party'
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
@@ -400,9 +604,26 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiStudyAssistantRoute: typeof AiStudyAssistantRoute
   AppRoute: typeof AppRouteWithChildren
+  CampusNetworkRoute: typeof CampusNetworkRoute
+  CareerRoute: typeof CareerRoute
+  CodingRoomsRoute: typeof CodingRoomsRoute
+  CollegeClubsRoute: typeof CollegeClubsRoute
+  CommunitiesRoute: typeof CommunitiesRoute
+  EventsRoute: typeof EventsRoute
+  ExamPrepRoute: typeof ExamPrepRoute
+  ForumsRoute: typeof ForumsRoute
+  InternshipsRoute: typeof InternshipsRoute
   LoginRoute: typeof LoginRoute
+  NotesSharingRoute: typeof NotesSharingRoute
+  PortfolioRoute: typeof PortfolioRoute
+  ProjectsRoute: typeof ProjectsRoute
+  ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
+  StudentChatRoute: typeof StudentChatRoute
+  StudyGroupsRoute: typeof StudyGroupsRoute
+  WatchPartyRoute: typeof WatchPartyRoute
   ApiAiAskRoute: typeof ApiAiAskRoute
   ApiAiInsightsRoute: typeof ApiAiInsightsRoute
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
@@ -413,11 +634,60 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/watch-party': {
+      id: '/watch-party'
+      path: '/watch-party'
+      fullPath: '/watch-party'
+      preLoaderRoute: typeof WatchPartyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/study-groups': {
+      id: '/study-groups'
+      path: '/study-groups'
+      fullPath: '/study-groups'
+      preLoaderRoute: typeof StudyGroupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student-chat': {
+      id: '/student-chat'
+      path: '/student-chat'
+      fullPath: '/student-chat'
+      preLoaderRoute: typeof StudentChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes-sharing': {
+      id: '/notes-sharing'
+      path: '/notes-sharing'
+      fullPath: '/notes-sharing'
+      preLoaderRoute: typeof NotesSharingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -427,11 +697,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/internships': {
+      id: '/internships'
+      path: '/internships'
+      fullPath: '/internships'
+      preLoaderRoute: typeof InternshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forums': {
+      id: '/forums'
+      path: '/forums'
+      fullPath: '/forums'
+      preLoaderRoute: typeof ForumsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exam-prep': {
+      id: '/exam-prep'
+      path: '/exam-prep'
+      fullPath: '/exam-prep'
+      preLoaderRoute: typeof ExamPrepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/communities': {
+      id: '/communities'
+      path: '/communities'
+      fullPath: '/communities'
+      preLoaderRoute: typeof CommunitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/college-clubs': {
+      id: '/college-clubs'
+      path: '/college-clubs'
+      fullPath: '/college-clubs'
+      preLoaderRoute: typeof CollegeClubsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coding-rooms': {
+      id: '/coding-rooms'
+      path: '/coding-rooms'
+      fullPath: '/coding-rooms'
+      preLoaderRoute: typeof CodingRoomsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/career': {
+      id: '/career'
+      path: '/career'
+      fullPath: '/career'
+      preLoaderRoute: typeof CareerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campus-network': {
+      id: '/campus-network'
+      path: '/campus-network'
+      fullPath: '/campus-network'
+      preLoaderRoute: typeof CampusNetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-study-assistant': {
+      id: '/ai-study-assistant'
+      path: '/ai-study-assistant'
+      fullPath: '/ai-study-assistant'
+      preLoaderRoute: typeof AiStudyAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -685,9 +1025,26 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiStudyAssistantRoute: AiStudyAssistantRoute,
   AppRoute: AppRouteWithChildren,
+  CampusNetworkRoute: CampusNetworkRoute,
+  CareerRoute: CareerRoute,
+  CodingRoomsRoute: CodingRoomsRoute,
+  CollegeClubsRoute: CollegeClubsRoute,
+  CommunitiesRoute: CommunitiesRoute,
+  EventsRoute: EventsRoute,
+  ExamPrepRoute: ExamPrepRoute,
+  ForumsRoute: ForumsRoute,
+  InternshipsRoute: InternshipsRoute,
   LoginRoute: LoginRoute,
+  NotesSharingRoute: NotesSharingRoute,
+  PortfolioRoute: PortfolioRoute,
+  ProjectsRoute: ProjectsRoute,
+  ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
+  StudentChatRoute: StudentChatRoute,
+  StudyGroupsRoute: StudyGroupsRoute,
+  WatchPartyRoute: WatchPartyRoute,
   ApiAiAskRoute: ApiAiAskRoute,
   ApiAiInsightsRoute: ApiAiInsightsRoute,
   ApiAiMindmapRoute: ApiAiMindmapRoute,
