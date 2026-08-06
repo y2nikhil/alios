@@ -314,7 +314,7 @@ function ShellInner() {
           >
             <Menu className="h-4 w-4" />
           </button>
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 min-w-0 flex justify-center">
             <CommandBar />
           </div>
           <div className="flex items-center gap-2 shrink-0">
