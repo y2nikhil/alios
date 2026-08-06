@@ -18,20 +18,98 @@ import {
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
+const HOME_FAQS = [
+  {
+    q: "What is ClassLab?",
+    a: "ClassLab is a student community platform where college and university students join communities, chat, share notes, run study groups, attend events and prepare for exams together.",
+  },
+  {
+    q: "Is ClassLab free for students?",
+    a: "Yes. Creating an account and using communities, chat, study groups, notes sharing and the AI study assistant is free for students.",
+  },
+  {
+    q: "Which exams does ClassLab support?",
+    a: "ClassLab has dedicated cohorts for CAT, JEE, NEET, SSC/UPSC, Banking and Railways preparation.",
+  },
+  {
+    q: "Can I use ClassLab on mobile?",
+    a: "Yes, ClassLab works in any mobile browser and is fully responsive on phones and tablets.",
+  },
+];
+
+const SITE_PAGES = [
+  { label: "Watch Party", to: "/watch-party" },
+  { label: "Student Chat", to: "/student-chat" },
+  { label: "Study Groups", to: "/study-groups" },
+  { label: "Communities", to: "/communities" },
+  { label: "Notes Sharing", to: "/notes-sharing" },
+  { label: "College Clubs", to: "/college-clubs" },
+  { label: "Events", to: "/events" },
+  { label: "Projects", to: "/projects" },
+  { label: "Resources", to: "/resources" },
+  { label: "Portfolio", to: "/portfolio" },
+  { label: "Coding Rooms", to: "/coding-rooms" },
+  { label: "Internships", to: "/internships" },
+  { label: "Campus Network", to: "/campus-network" },
+  { label: "Discussion Forums", to: "/forums" },
+  { label: "Exam Prep", to: "/exam-prep" },
+  { label: "Career Hub", to: "/career" },
+  { label: "AI Study Assistant", to: "/ai-study-assistant" },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ClassLab — The Digital Campus for Every Student" },
+      { title: "Home | ClassLab — Student Community Platform" },
       {
         name: "description",
         content:
-          "Discover communities, attend events, buy and sell, share notes, find internships and build your network — all inside ClassLab, the digital campus for Indian students.",
+          "Discover the Home feature on ClassLab to help students connect, collaborate and grow — communities, notes, events, study groups and internships in one campus.",
       },
-      { property: "og:title", content: "ClassLab — The Digital Campus for Every Student" },
+      {
+        name: "keywords",
+        content: "student community platform, peer learning, college students, university students, collaboration",
+      },
+      { property: "og:title", content: "Home | ClassLab — Student Community Platform" },
       {
         property: "og:description",
         content:
           "Join 50,000+ students from 500+ Indian colleges on ClassLab — communities, notes, events, internships and more.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://classlab.in/" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Home | ClassLab — Student Community Platform" },
+      {
+        name: "twitter:description",
+        content: "The student community platform for peer learning, collaboration and exam prep.",
+      },
+    ],
+    links: [{ rel: "canonical", href: "https://classlab.in/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              name: "Home | ClassLab",
+              url: "https://classlab.in/",
+              description:
+                "ClassLab is a student community platform for peer learning, collaboration, notes sharing and exam prep.",
+              isPartOf: { "@type": "WebSite", name: "ClassLab", url: "https://classlab.in" },
+            },
+            {
+              "@type": "FAQPage",
+              mainEntity: HOME_FAQS.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ],
+        }),
       },
     ],
   }),
