@@ -351,6 +351,8 @@ export function AppShell() {
   return (
     <AuxProvider>
       <OnboardingRedirect />
+      <DisplayNamePrompt />
+
       <ShellInner />
       <IdlePrompt />
       <PunchPrompt />
