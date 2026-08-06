@@ -219,6 +219,15 @@ function PostPage() {
           />
         )}
       </section>
+      </div>
+
+      <div className="min-w-0">
+        <div className="lg:sticky lg:top-4">
+          <SuggestedPosts postId={post.id} tag={post.tag} />
+        </div>
+      </div>
+      </div>
     </div>
+
   );
 }
