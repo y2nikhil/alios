@@ -15,6 +15,7 @@ import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
 import { IdlePrompt } from "@/components/IdlePrompt";
+import { PunchPrompt } from "@/components/PunchPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 
@@ -56,7 +57,7 @@ function OnboardingRedirect() {
 
 
 const BASE_NAV = [
-  { to: "/app", label: "Command", icon: LayoutDashboard },
+  { to: "/app", label: "Home", icon: LayoutDashboard },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
   { to: "/app/calendar", label: "Calendar", icon: CalIcon },
   { to: "/app/assistant", label: "AI Assistant", icon: Sparkles },
@@ -314,7 +315,7 @@ function ShellInner() {
           >
             <Menu className="h-4 w-4" />
           </button>
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 min-w-0 flex justify-center">
             <CommandBar />
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -345,6 +346,7 @@ export function AppShell() {
       <OnboardingRedirect />
       <ShellInner />
       <IdlePrompt />
+      <PunchPrompt />
     </AuxProvider>
   );
 }

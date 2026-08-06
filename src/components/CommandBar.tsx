@@ -24,7 +24,7 @@ type Result =
   | { kind: "person"; person: Person };
 
 const PAGES: Result[] = [
-  { kind: "page", label: "Command center", to: "/app", icon: Sparkles },
+  { kind: "page", label: "Home", to: "/app", icon: Sparkles },
   { kind: "page", label: "Timeline", to: "/app/timeline", icon: BarChart3 },
   { kind: "page", label: "Analytics", to: "/app/analytics", icon: BarChart3 },
   { kind: "page", label: "Mind map", to: "/app/mindmap", icon: Brain },

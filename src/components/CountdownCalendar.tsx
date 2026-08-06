@@ -16,9 +16,7 @@ function defaultDate(offsetMonths = 3) {
   return d.toISOString().slice(0, 10);
 }
 
-const DEFAULTS: Target[] = [
-  { id: "cat", label: "CAT", emoji: "😄", date: defaultDate(3) },
-];
+const DEFAULTS: Target[] = [];
 
 function load(): Target[] {
   if (typeof window === "undefined") return DEFAULTS;
@@ -26,7 +24,7 @@ function load(): Target[] {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const arr = JSON.parse(raw) as Target[];
-      if (Array.isArray(arr) && arr.length) return arr;
+      if (Array.isArray(arr)) return arr;
     }
     // migrate legacy single-target
     const legacy = localStorage.getItem(LEGACY_KEY);
@@ -95,6 +93,21 @@ export function CountdownCalendar() {
     <section className="space-y-4">
       <MonthCalendar cursor={cursor} setCursor={setCursor} highlightDates={highlightDates} activeDate={current?.date} />
 
+      {!current && (
+        <button
+          onClick={() => setEditing({ id: crypto.randomUUID(), label: "", emoji: "🎯", date: defaultDate(1) })}
+          className="w-full rounded-3xl border border-dashed border-white/15 bg-white/[0.02] px-5 py-6 text-center hover:bg-white/5 transition"
+        >
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5">
+            <Plus className="h-4 w-4 text-muted-foreground" />
+          </span>
+          <p className="mt-2 text-sm font-semibold">Add a countdown</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            Track your exam or any big day — see the days left right here.
+          </p>
+        </button>
+      )}
+
       {current && (
         <div
           onMouseEnter={() => (hoverRef.current = true)}
@@ -146,7 +159,7 @@ export function CountdownCalendar() {
                 >
                   <Plus className="h-3.5 w-3.5" />
                 </button>
-                {targets.length > 1 && (
+                {targets.length >= 1 && (
                   <button
                     onClick={() => remove(current.id)}
                     className="h-7 w-7 grid place-items-center rounded-full bg-white/60 hover:bg-white text-rose-600"

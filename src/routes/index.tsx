@@ -439,7 +439,7 @@ function PreviewCard() {
       <div className="grid grid-cols-[140px_1fr] gap-3 p-3">
         {/* sidebar */}
         <aside className="hidden flex-col gap-1 rounded-[14px] border border-border bg-popover p-2 text-xs sm:flex">
-          {["Command", "Timeline", "Communities", "Events", "Notes", "Marketplace", "Internships", "Clubs", "Messages", "Bookmarks", "Settings"].map((s, i) => (
+          {["Home", "Timeline", "Communities", "Events", "Notes", "Marketplace", "Internships", "Clubs", "Messages", "Bookmarks", "Settings"].map((s, i) => (
             <div
               key={s}
               className={`flex items-center gap-2 rounded-lg px-2.5 py-2 ${i === 0 ? "bg-secondary text-foreground" : "text-muted-foreground"}`}

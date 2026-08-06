@@ -21,12 +21,13 @@ import { AISummaryPanel } from "@/components/AISummaryPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
 import { TrophyProgress } from "@/components/TrophyProgress";
 import { FocusGoalCard } from "@/components/FocusGoalCard";
+import { LivePartiesSlider } from "@/components/LivePartiesSlider";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
-      { title: "ClassLab — Command Center" },
-      { name: "description", content: "Your personal command center: live status, focus score, AI insights." },
+      { title: "ClassLab — Home" },
+      { name: "description", content: "Your ClassLab home: live status, focus score, live watch parties and AI insights." },
     ],
   }),
   component: CommandCenter,
@@ -202,6 +203,13 @@ function CommandCenter() {
                       + More
                     </span>
                   )}
+                </div>
+
+                <div className="mt-5">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                    Live right now
+                  </p>
+                  <LivePartiesSlider />
                 </div>
               </div>
             </motion.div>
