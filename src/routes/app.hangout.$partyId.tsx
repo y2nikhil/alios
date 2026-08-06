@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Send, Users, Tv, LogOut, Crown, Loader2, ArrowLeft,
   Maximize2, Minimize2, MessageSquare, MessageSquareOff, PanelRightClose, PanelRightOpen,
-  Play, Pause, Volume2, VolumeX,
+  Play, Pause, Volume2, VolumeX, Link2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
