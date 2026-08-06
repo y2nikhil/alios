@@ -20,6 +20,7 @@ import { MyTasks } from "@/components/MyTasks";
 import { AISummaryPanel } from "@/components/AISummaryPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
 import { TrophyProgress } from "@/components/TrophyProgress";
+import { FocusGoalCard } from "@/components/FocusGoalCard";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -64,8 +65,6 @@ function CommandCenter() {
 
   const streakHours = Math.floor(stats.longestStreak / 3600);
 
-  const focusGoal = 8 * 3600;
-  const focusPct = Math.min(100, Math.round((stats.productiveSeconds / focusGoal) * 100));
 
   const quickActions = [
     { label: "AI Assistant", icon: Sparkles, to: "/app/assistant", color: "from-violet-500 to-fuchsia-500" },
