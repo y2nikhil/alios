@@ -1089,6 +1089,160 @@ export type Database = {
           },
         ]
       }
+      post_comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          down_count: number
+          id: string
+          parent_id: string | null
+          post_id: string
+          up_count: number
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          down_count?: number
+          id?: string
+          parent_id?: string | null
+          post_id: string
+          up_count?: number
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          down_count?: number
+          id?: string
+          parent_id?: string | null
+          post_id?: string
+          up_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_votes: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_votes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          body: string | null
+          comment_count: number
+          created_at: string
+          down_count: number
+          id: string
+          media_kind: string | null
+          media_url: string | null
+          tag: string | null
+          title: string
+          up_count: number
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body?: string | null
+          comment_count?: number
+          created_at?: string
+          down_count?: number
+          id?: string
+          media_kind?: string | null
+          media_url?: string | null
+          tag?: string | null
+          title: string
+          up_count?: number
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string | null
+          comment_count?: number
+          created_at?: string
+          down_count?: number
+          id?: string
+          media_kind?: string | null
+          media_url?: string | null
+          tag?: string | null
+          title?: string
+          up_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_gradient: string
