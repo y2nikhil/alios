@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { MessageSquare, Share2 } from "lucide-react";
+import { ExternalLink, MessageSquare, Share2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
 import { VoteControl } from "@/components/feed/VoteControl";
-import { timeAgo, type Author, type Post } from "@/lib/feed";
+import { ReportButton } from "@/components/ReportButton";
+import { postPath, timeAgo, type Author, type Post } from "@/lib/feed";
+
 
 export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
   if (kind === "video") {
