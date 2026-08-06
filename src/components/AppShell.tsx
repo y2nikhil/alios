@@ -258,6 +258,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
 
 function ShellInner() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAdmin, isSuperAdmin } = useRole();
   const [mobileOpen, setMobileOpen] = useState(false);
   useFocusMilestones();
