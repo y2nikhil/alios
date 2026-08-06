@@ -69,13 +69,16 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
 
   return (
     <div
-      className={cn("sticky bottom-0 z-20 border-t border-border bg-background/95 backdrop-blur-xl p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]", dragging && "bg-primary/10")}
+      className={cn(
+        "sticky bottom-0 z-30 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]",
+        "bg-gradient-to-t from-background via-background/95 to-transparent",
+      )}
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
     >
       {dragging && (
-        <div className="absolute inset-2 rounded-xl border-2 border-dashed border-primary/60 grid place-items-center pointer-events-none bg-background/80 z-10">
+        <div className="absolute inset-2 rounded-2xl border-2 border-dashed border-primary/60 grid place-items-center pointer-events-none bg-background/80 z-10">
           <p className="text-sm text-primary font-semibold flex items-center gap-2">
             <ImageIcon className="h-4 w-4" /> Drop image to share
           </p>
@@ -84,13 +87,16 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
       <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" className="hidden"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.currentTarget.value = ""; }} />
 
-      <div className="flex gap-2 items-end">
-        <div className="relative">
-          <Button size="icon" variant="ghost" onClick={() => setMenuOpen((v) => !v)} disabled={disabled}>
+      <div className={cn(
+        "flex gap-1.5 items-end rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-1.5 shadow-lg shadow-black/30",
+        dragging && "border-primary/60",
+      )}>
+        <div className="relative shrink-0">
+          <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl" onClick={() => setMenuOpen((v) => !v)} disabled={disabled}>
             <Plus className={cn("h-4 w-4 transition-transform", menuOpen && "rotate-45")} />
           </Button>
           {menuOpen && (
-            <div className="absolute bottom-11 left-0 z-20 w-52 rounded-xl border border-border bg-popover shadow-lg p-1 space-y-0.5">
+            <div className="absolute bottom-12 left-0 z-20 w-52 rounded-xl border border-border bg-popover shadow-lg p-1 space-y-0.5">
               <MenuItem icon={<Paperclip className="h-3.5 w-3.5" />} label="Attach file or image"
                 onClick={() => { setMenuOpen(false); fileRef.current?.click(); }} />
               <MenuItem icon={<BarChart3 className="h-3.5 w-3.5 text-emerald-400" />} label="Create poll"
@@ -108,14 +114,16 @@ export function ChatComposer({ channelId, channelName, disabled }: Props) {
             const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/"));
             if (f) { e.preventDefault(); uploadFile(f); }
           }}
-          placeholder={disabled ? "Read-only" : `Message #${channelName} — drop images or use +`} rows={1}
+          placeholder={disabled ? "Read-only" : "Message"} rows={1}
           disabled={disabled}
-          className="flex-1 resize-none rounded-xl bg-accent/40 border border-border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary max-h-32"
+          style={{ caretColor: "var(--primary)" }}
+          className="flex-1 min-w-0 resize-none bg-transparent border-0 px-2 py-2 text-base sm:text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:ring-0 max-h-32"
         />
-        <Button onClick={sendText} disabled={sending || disabled || !body.trim()} size="icon" className="shrink-0">
+        <Button onClick={sendText} disabled={sending || disabled || !body.trim()} size="icon" className="shrink-0 h-9 w-9 rounded-xl">
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>
+
 
       <PollDialog open={pollOpen} onOpenChange={setPollOpen} channelId={channelId} />
       <MindmapPickerDialog open={mindmapOpen} onOpenChange={setMindmapOpen} channelId={channelId} />
