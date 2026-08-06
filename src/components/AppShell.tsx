@@ -345,6 +345,7 @@ export function AppShell() {
       <OnboardingRedirect />
       <ShellInner />
       <IdlePrompt />
+      <PunchPrompt />
     </AuxProvider>
   );
 }
