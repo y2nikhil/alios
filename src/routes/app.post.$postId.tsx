@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Loader2, Send, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Share2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useRole } from "@/lib/use-role";
@@ -8,7 +8,8 @@ import { AvatarIconRender } from "@/components/AvatarIcon";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostMedia } from "@/components/feed/PostCard";
 import { buildTree, CommentThread } from "@/components/feed/CommentThread";
-import { fetchAuthors, timeAgo, type Author, type Comment, type Post } from "@/lib/feed";
+import { ReportButton } from "@/components/ReportButton";
+import { fetchAuthors, postPath, timeAgo, type Author, type Comment, type Post } from "@/lib/feed";
 
 export const Route = createFileRoute("/app/post/$postId")({
   head: () => ({
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/app/post/$postId")({
 function PostPage() {
   const { postId } = Route.useParams();
   const { user } = useAuth();
-  const { isSuperAdmin } = useRole();
+  const { isSuperAdmin, isAdmin } = useRole();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
@@ -120,7 +121,7 @@ function PostPage() {
   };
 
   const tree = useMemo(() => buildTree(comments), [comments]);
-  const canDelete = (authorId: string) => !!user && (user.id === authorId || isSuperAdmin);
+  const canDelete = (authorId: string) => !!user && (user.id === authorId || isSuperAdmin || isAdmin);
 
   if (loading) {
     return <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</div>;
@@ -160,6 +161,17 @@ function PostPage() {
         <div className="mt-3 flex items-center gap-3">
           <VoteControl up={post.up_count} down={post.down_count} mine={postVote} onVote={votePost} />
           <span className="text-xs text-muted-foreground">{post.comment_count} comments</span>
+          <button
+            onClick={() => {
+              const url = `${window.location.origin}${postPath(post)}`;
+              if (navigator.share) navigator.share({ title: post.title, url }).catch(() => {});
+              else navigator.clipboard?.writeText(url);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:bg-white/10 hover:text-foreground"
+          >
+            <Share2 className="h-3.5 w-3.5" /> Share
+          </button>
+          <ReportButton targetType="post" targetId={post.id} targetUserId={post.author_id} size="xs" />
           {canDelete(post.author_id) && (
             <button
               onClick={async () => { await supabase.from("posts").delete().eq("id", post.id); window.history.back(); }}
