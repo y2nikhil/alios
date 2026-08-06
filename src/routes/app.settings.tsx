@@ -6,7 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Pencil, AtSign, Check, Loader2, GraduationCap } from "lucide-react";
+import { Plus, Trash2, Pencil, AtSign, Check, Loader2, GraduationCap, Bell, Palette, Trophy, Lock, ListChecks } from "lucide-react";
+import { SettingsSection } from "@/components/SettingsSection";
+
 import { toast } from "sonner";
 import { AppearancePanel } from "@/components/AppearancePanel";
 import { AwardsShelf } from "@/components/AwardsShelf";
