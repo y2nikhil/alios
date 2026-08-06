@@ -16,9 +16,7 @@ function defaultDate(offsetMonths = 3) {
   return d.toISOString().slice(0, 10);
 }
 
-const DEFAULTS: Target[] = [
-  { id: "cat", label: "CAT", emoji: "😄", date: defaultDate(3) },
-];
+const DEFAULTS: Target[] = [];
 
 function load(): Target[] {
   if (typeof window === "undefined") return DEFAULTS;
@@ -26,7 +24,7 @@ function load(): Target[] {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const arr = JSON.parse(raw) as Target[];
-      if (Array.isArray(arr) && arr.length) return arr;
+      if (Array.isArray(arr)) return arr;
     }
     // migrate legacy single-target
     const legacy = localStorage.getItem(LEGACY_KEY);
