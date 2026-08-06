@@ -1169,6 +1169,61 @@ export type Database = {
           },
         ]
       }
+      post_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_saves: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_saves_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_votes: {
         Row: {
           created_at: string
@@ -1208,6 +1263,9 @@ export type Database = {
           id: string
           media_kind: string | null
           media_url: string | null
+          pinned: boolean
+          pinned_at: string | null
+          pinned_by: string | null
           slug: string | null
           tag: string | null
           title: string
@@ -1223,6 +1281,9 @@ export type Database = {
           id?: string
           media_kind?: string | null
           media_url?: string | null
+          pinned?: boolean
+          pinned_at?: string | null
+          pinned_by?: string | null
           slug?: string | null
           tag?: string | null
           title: string
@@ -1238,6 +1299,9 @@ export type Database = {
           id?: string
           media_kind?: string | null
           media_url?: string | null
+          pinned?: boolean
+          pinned_at?: string | null
+          pinned_by?: string | null
           slug?: string | null
           tag?: string | null
           title?: string
