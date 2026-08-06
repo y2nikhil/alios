@@ -78,20 +78,32 @@ export function LivePartiesPanel() {
           ref={railRef}
           className="flex gap-3 overflow-x-auto scrollbar-thin snap-x snap-mandatory pb-2 -mx-1 px-1 scroll-smooth"
         >
-          {parties.map((p) => (
+          {parties.map((p) => {
+            const thumb = partyThumb(p);
+            return (
             <Link
               key={p.id}
               to="/app/hangout/$partyId"
               params={{ partyId: p.id }}
-              className="group snap-start shrink-0 w-[260px] rounded-xl border border-white/10 bg-gradient-to-br from-pink-500/10 to-violet-500/10 p-3 hover:border-pink-500/40 hover:-translate-y-0.5 transition"
+              className="group snap-start shrink-0 w-[260px] rounded-xl border border-white/10 bg-gradient-to-br from-pink-500/10 to-violet-500/10 overflow-hidden hover:border-pink-500/40 hover:-translate-y-0.5 transition"
             >
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-pink-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-pink-400 animate-pulse" /> Live · {p.media_kind}
+              <div className="h-[130px] w-full bg-white/5">
+                {thumb ? (
+                  <img src={thumb} alt={`${p.title} watch party thumbnail`} loading="lazy" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full grid place-items-center"><Tv className="h-6 w-6 text-muted-foreground" /></div>
+                )}
               </div>
-              <p className="mt-1 font-semibold text-sm truncate">{p.title}</p>
-              <p className="mt-2 text-[11px] text-muted-foreground">{counts[p.id] ?? 0} watching</p>
+              <div className="p-3">
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-pink-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-pink-400 animate-pulse" /> Live · {p.media_kind}
+                </div>
+                <p className="mt-1 font-semibold text-sm truncate">{p.title}</p>
+                <p className="mt-2 text-[11px] text-muted-foreground">{counts[p.id] ?? 0} watching</p>
+              </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </section>
