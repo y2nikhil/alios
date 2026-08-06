@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { GRADIENTS, ACCENT_TOKENS, ICON_CHOICES, AvatarIconRender } from "@/components/AvatarIcon";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Palette, Sparkles } from "lucide-react";
+import { Palette, Sparkles, ChevronDown } from "lucide-react";
 import * as Icons from "lucide-react";
 
 export function AppearancePanel() {
@@ -13,6 +13,7 @@ export function AppearancePanel() {
   const [gradient, setGradient] = useState<string>("violet");
   const [accent, setAccent] = useState<string>("violet");
   const [saving, setSaving] = useState(false);
+  const [open, setOpen] = useState(false);
   const [initial, setInitial] = useState<string>("?");
 
   useEffect(() => {
