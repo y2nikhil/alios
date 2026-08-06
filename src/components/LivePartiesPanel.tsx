@@ -3,8 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { Tv, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { partyThumb } from "@/components/LivePartiesSlider";
 
-type Party = { id: string; title: string; media_kind: string; host_id: string; started_at: string };
+type Party = { id: string; title: string; media_kind: string; host_id: string; started_at: string; media_id: string | null; poster_url: string | null };
 
 export function LivePartiesPanel() {
   const [parties, setParties] = useState<Party[]>([]);
@@ -14,7 +15,7 @@ export function LivePartiesPanel() {
   useEffect(() => {
     const load = async () => {
       const { data } = await (supabase.from("watch_parties") as any)
-        .select("id,title,media_kind,host_id,started_at,visibility")
+        .select("id,title,media_kind,media_id,poster_url,host_id,started_at,visibility")
         .is("ended_at", null)
         .eq("visibility", "public")
         .order("started_at", { ascending: false })
