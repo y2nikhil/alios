@@ -56,7 +56,7 @@ function OnboardingRedirect() {
 
 
 const BASE_NAV = [
-  { to: "/app", label: "Command", icon: LayoutDashboard },
+  { to: "/app", label: "Home", icon: LayoutDashboard },
   { to: "/app/timeline", label: "Timeline", icon: Activity },
   { to: "/app/calendar", label: "Calendar", icon: CalIcon },
   { to: "/app/assistant", label: "AI Assistant", icon: Sparkles },
