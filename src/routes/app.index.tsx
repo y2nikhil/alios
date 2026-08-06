@@ -25,8 +25,8 @@ import { FocusGoalCard } from "@/components/FocusGoalCard";
 export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
-      { title: "ClassLab — Command Center" },
-      { name: "description", content: "Your personal command center: live status, focus score, AI insights." },
+      { title: "ClassLab — Home" },
+      { name: "description", content: "Your ClassLab home: live status, focus score, live watch parties and AI insights." },
     ],
   }),
   component: CommandCenter,
