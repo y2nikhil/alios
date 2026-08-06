@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { ImagePlus, Loader2, Send, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { ImagePlus, Loader2, Paperclip, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { POST_TAGS } from "@/lib/feed";
+import { POST_TAGS, uploadPostMedia } from "@/lib/feed";
 import { cn } from "@/lib/utils";
 
 export function PostComposer({ onCreated }: { onCreated?: () => void }) {
@@ -11,9 +11,13 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaKind, setMediaKind] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [tag, setTag] = useState(POST_TAGS[0]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const guessKind = (url: string) => {
     if (!url) return null;
@@ -21,6 +25,25 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
     if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return "video";
     return "link";
   };
+
+  const pickFile = async (file?: File | null) => {
+    if (!file || !user) return;
+    if (file.size > 50 * 1024 * 1024) { setError("File must be under 50 MB"); return; }
+    setError(null);
+    setUploading(true);
+    try {
+      const { url, kind } = await uploadPostMedia(user.id, file);
+      setMediaUrl(url);
+      setMediaKind(kind);
+      setFileName(file.name);
+    } catch (e: any) {
+      setError(e?.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const clearMedia = () => { setMediaUrl(""); setMediaKind(null); setFileName(null); };
 
   const submit = async () => {
     if (!user || !title.trim()) return;
@@ -31,12 +54,12 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
       title: title.trim(),
       body: body.trim() || null,
       media_url: mediaUrl.trim() || null,
-      media_kind: guessKind(mediaUrl.trim()),
+      media_kind: mediaKind ?? guessKind(mediaUrl.trim()),
       tag,
     } as any);
     setSaving(false);
     if (error) { setError(error.message); return; }
-    setTitle(""); setBody(""); setMediaUrl(""); setOpen(false);
+    setTitle(""); setBody(""); clearMedia(); setOpen(false);
     onCreated?.();
   };
 
@@ -72,15 +95,50 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
         placeholder="Text (optional)"
         className="w-full resize-y rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-white/25"
       />
-      <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-        <ImagePlus className="h-4 w-4 shrink-0 text-muted-foreground" />
+
+      <div className="flex flex-wrap items-center gap-2">
         <input
-          value={mediaUrl}
-          onChange={(e) => setMediaUrl(e.target.value)}
-          placeholder="Image / video / link URL (optional)"
-          className="flex-1 min-w-0 bg-transparent text-sm outline-none"
+          ref={fileRef}
+          type="file"
+          accept="image/*,video/*"
+          className="hidden"
+          onChange={(e) => { pickFile(e.target.files?.[0]); e.target.value = ""; }}
         />
+        <button
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 hover:text-foreground disabled:opacity-50"
+        >
+          {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
+          {uploading ? "Uploading…" : "Attach photo / video"}
+        </button>
+        {fileName && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-3 py-1.5 text-xs text-emerald-300">
+            {fileName}
+            <button onClick={clearMedia} aria-label="Remove attachment"><X className="h-3 w-3" /></button>
+          </span>
+        )}
       </div>
+
+      {mediaUrl && mediaKind === "image" && (
+        <img src={mediaUrl} alt="Attachment preview" className="max-h-64 w-full rounded-xl border border-white/10 object-cover" />
+      )}
+      {mediaUrl && mediaKind === "video" && (
+        <video src={mediaUrl} controls className="max-h-64 w-full rounded-xl border border-white/10 bg-black" />
+      )}
+
+      {!fileName && (
+        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+          <ImagePlus className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <input
+            value={mediaUrl}
+            onChange={(e) => { setMediaUrl(e.target.value); setMediaKind(guessKind(e.target.value)); }}
+            placeholder="…or paste an image / video / link URL"
+            className="flex-1 min-w-0 bg-transparent text-sm outline-none"
+          />
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-1.5">
         {POST_TAGS.map((t) => (
           <button
@@ -98,7 +156,7 @@ export function PostComposer({ onCreated }: { onCreated?: () => void }) {
       {error && <p className="text-xs text-red-400">{error}</p>}
       <button
         onClick={submit}
-        disabled={!title.trim() || saving}
+        disabled={!title.trim() || saving || uploading}
         className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
       >
         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Post

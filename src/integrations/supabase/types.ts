@@ -1208,6 +1208,7 @@ export type Database = {
           id: string
           media_kind: string | null
           media_url: string | null
+          slug: string | null
           tag: string | null
           title: string
           up_count: number
@@ -1222,6 +1223,7 @@ export type Database = {
           id?: string
           media_kind?: string | null
           media_url?: string | null
+          slug?: string | null
           tag?: string | null
           title: string
           up_count?: number
@@ -1236,6 +1238,7 @@ export type Database = {
           id?: string
           media_kind?: string | null
           media_url?: string | null
+          slug?: string | null
           tag?: string | null
           title?: string
           up_count?: number
@@ -2018,8 +2021,62 @@ export type Database = {
         }
         Returns: string
       }
+      public_post_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          author_id: string
+          author_name: string
+          author_username: string
+          body: string
+          comment_count: number
+          created_at: string
+          down_count: number
+          id: string
+          media_kind: string
+          media_url: string
+          slug: string
+          tag: string
+          title: string
+          up_count: number
+        }[]
+      }
+      public_post_comments: {
+        Args: { _post_id: string }
+        Returns: {
+          author_id: string
+          author_name: string
+          author_username: string
+          body: string
+          created_at: string
+          down_count: number
+          id: string
+          parent_id: string
+          post_id: string
+          up_count: number
+        }[]
+      }
+      public_posts: {
+        Args: { _limit?: number; _offset?: number }
+        Returns: {
+          author_id: string
+          author_name: string
+          author_username: string
+          body: string
+          comment_count: number
+          created_at: string
+          down_count: number
+          id: string
+          media_kind: string
+          media_url: string
+          slug: string
+          tag: string
+          title: string
+          up_count: number
+        }[]
+      }
       restore_account: { Args: { _user_id: string }; Returns: undefined }
       revoke_account: { Args: { _user_id: string }; Returns: undefined }
+      slugify: { Args: { _txt: string }; Returns: string }
       username_available: { Args: { _username: string }; Returns: boolean }
       write_audit: {
         Args: {
@@ -2075,6 +2132,8 @@ export type Database = {
         | "user"
         | "party_message"
         | "note"
+        | "post"
+        | "post_comment"
       request_status: "pending" | "approved" | "rejected"
       sanction_kind: "warn" | "mute" | "temp_ban" | "perma_ban"
       task_status:
@@ -2256,6 +2315,8 @@ export const Constants = {
         "user",
         "party_message",
         "note",
+        "post",
+        "post_comment",
       ],
       request_status: ["pending", "approved", "rejected"],
       sanction_kind: ["warn", "mute", "temp_ban", "perma_ban"],

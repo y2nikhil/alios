@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useRole } from "@/lib/use-role";
 import { PostCard } from "@/components/feed/PostCard";
 import { PostComposer } from "@/components/feed/PostComposer";
 import { fetchAuthors, sortPosts, type Author, type Post, type SortKey } from "@/lib/feed";
@@ -32,6 +33,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 function FeedPage() {
   const { user } = useAuth();
+  const { isAdmin } = useRole();
   const [posts, setPosts] = useState<Post[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
   const [votes, setVotes] = useState<Record<string, -1 | 1>>({});
@@ -94,6 +96,15 @@ function FeedPage() {
     }
   };
 
+  const deletePost = async (postId: string) => {
+    const target = posts.find((p) => p.id === postId);
+    if (!target) return;
+    if (!confirm("Delete this post permanently?")) return;
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+    await supabase.from("posts").delete().eq("id", postId);
+    load();
+  };
+
   const sorted = useMemo(() => sortPosts(posts, sort), [posts, sort]);
 
   return (
@@ -126,7 +137,7 @@ function FeedPage() {
       ) : (
         <div className="space-y-3">
           {sorted.map((p) => (
-            <PostCard key={p.id} post={p} author={authors[p.author_id]} myVote={votes[p.id] ?? 0} onVote={vote} />
+            <PostCard key={p.id} post={p} author={authors[p.author_id]} myVote={votes[p.id] ?? 0} onVote={vote} canModerate={isAdmin || p.author_id === user?.id} onDelete={deletePost} />
           ))}
         </div>
       )}

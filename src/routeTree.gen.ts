@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchPartyRouteImport } from './routes/watch-party'
 import { Route as StudyGroupsRouteImport } from './routes/study-groups'
 import { Route as StudentChatRouteImport } from './routes/student-chat'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProjectsRouteImport } from './routes/projects'
@@ -20,6 +21,7 @@ import { Route as NotesSharingRouteImport } from './routes/notes-sharing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as ForumsRouteImport } from './routes/forums'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ExamPrepRouteImport } from './routes/exam-prep'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as CommunitiesRouteImport } from './routes/communities'
@@ -31,6 +33,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AiStudyAssistantRouteImport } from './routes/ai-study-assistant'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as PostSlugRouteImport } from './routes/post.$slug'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -75,6 +78,11 @@ const StudentChatRoute = StudentChatRouteImport.update({
   path: '/student-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -113,6 +121,11 @@ const InternshipsRoute = InternshipsRouteImport.update({
 const ForumsRoute = ForumsRouteImport.update({
   id: '/forums',
   path: '/forums',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExamPrepRoute = ExamPrepRouteImport.update({
@@ -169,6 +182,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const PostSlugRoute = PostSlugRouteImport.update({
+  id: '/post/$slug',
+  path: '/post/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppTimelineRoute = AppTimelineRouteImport.update({
   id: '/timeline',
@@ -323,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/communities': typeof CommunitiesRoute
   '/events': typeof EventsRoute
   '/exam-prep': typeof ExamPrepRoute
+  '/feed': typeof FeedRoute
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
@@ -331,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
@@ -355,6 +375,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/post/$slug': typeof PostSlugRoute
   '/app/': typeof AppIndexRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -374,6 +395,7 @@ export interface FileRoutesByTo {
   '/communities': typeof CommunitiesRoute
   '/events': typeof EventsRoute
   '/exam-prep': typeof ExamPrepRoute
+  '/feed': typeof FeedRoute
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
@@ -382,6 +404,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
@@ -406,6 +429,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/post/$slug': typeof PostSlugRoute
   '/app': typeof AppIndexRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -427,6 +451,7 @@ export interface FileRoutesById {
   '/communities': typeof CommunitiesRoute
   '/events': typeof EventsRoute
   '/exam-prep': typeof ExamPrepRoute
+  '/feed': typeof FeedRoute
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
@@ -435,6 +460,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
@@ -459,6 +485,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/post/$slug': typeof PostSlugRoute
   '/app/': typeof AppIndexRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -481,6 +508,7 @@ export interface FileRouteTypes {
     | '/communities'
     | '/events'
     | '/exam-prep'
+    | '/feed'
     | '/forums'
     | '/internships'
     | '/login'
@@ -489,6 +517,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resources'
     | '/signup'
+    | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
@@ -513,6 +542,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/post/$slug'
     | '/app/'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -532,6 +562,7 @@ export interface FileRouteTypes {
     | '/communities'
     | '/events'
     | '/exam-prep'
+    | '/feed'
     | '/forums'
     | '/internships'
     | '/login'
@@ -540,6 +571,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resources'
     | '/signup'
+    | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
@@ -564,6 +596,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/post/$slug'
     | '/app'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -584,6 +617,7 @@ export interface FileRouteTypes {
     | '/communities'
     | '/events'
     | '/exam-prep'
+    | '/feed'
     | '/forums'
     | '/internships'
     | '/login'
@@ -592,6 +626,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resources'
     | '/signup'
+    | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
@@ -616,6 +651,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/post/$slug'
     | '/app/'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -637,6 +673,7 @@ export interface RootRouteChildren {
   CommunitiesRoute: typeof CommunitiesRoute
   EventsRoute: typeof EventsRoute
   ExamPrepRoute: typeof ExamPrepRoute
+  FeedRoute: typeof FeedRoute
   ForumsRoute: typeof ForumsRoute
   InternshipsRoute: typeof InternshipsRoute
   LoginRoute: typeof LoginRoute
@@ -645,6 +682,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRoute
   ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudentChatRoute: typeof StudentChatRoute
   StudyGroupsRoute: typeof StudyGroupsRoute
   WatchPartyRoute: typeof WatchPartyRoute
@@ -653,6 +691,7 @@ export interface RootRouteChildren {
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
   ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
+  PostSlugRoute: typeof PostSlugRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
 }
 
@@ -677,6 +716,13 @@ declare module '@tanstack/react-router' {
       path: '/student-chat'
       fullPath: '/student-chat'
       preLoaderRoute: typeof StudentChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -733,6 +779,13 @@ declare module '@tanstack/react-router' {
       path: '/forums'
       fullPath: '/forums'
       preLoaderRoute: typeof ForumsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/exam-prep': {
@@ -811,6 +864,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/post/$slug': {
+      id: '/post/$slug'
+      path: '/post/$slug'
+      fullPath: '/post/$slug'
+      preLoaderRoute: typeof PostSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/timeline': {
       id: '/app/timeline'
@@ -1076,6 +1136,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunitiesRoute: CommunitiesRoute,
   EventsRoute: EventsRoute,
   ExamPrepRoute: ExamPrepRoute,
+  FeedRoute: FeedRoute,
   ForumsRoute: ForumsRoute,
   InternshipsRoute: InternshipsRoute,
   LoginRoute: LoginRoute,
@@ -1084,6 +1145,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRoute,
   ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudentChatRoute: StudentChatRoute,
   StudyGroupsRoute: StudyGroupsRoute,
   WatchPartyRoute: WatchPartyRoute,
@@ -1092,6 +1154,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiMindmapRoute: ApiAiMindmapRoute,
   ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
+  PostSlugRoute: PostSlugRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
 }
 export const routeTree = rootRouteImport
