@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchPartyRouteImport } from './routes/watch-party'
 import { Route as StudyGroupsRouteImport } from './routes/study-groups'
 import { Route as StudentChatRouteImport } from './routes/student-chat'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProjectsRouteImport } from './routes/projects'
@@ -75,6 +76,11 @@ const StudyGroupsRoute = StudyGroupsRouteImport.update({
 const StudentChatRoute = StudentChatRouteImport.update({
   id: '/student-chat',
   path: '/student-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -344,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
@@ -397,6 +404,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
@@ -452,6 +460,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resources'
     | '/signup'
+    | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resources'
     | '/signup'
+    | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
@@ -615,6 +626,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/resources'
     | '/signup'
+    | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
@@ -670,6 +682,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRoute
   ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudentChatRoute: typeof StudentChatRoute
   StudyGroupsRoute: typeof StudyGroupsRoute
   WatchPartyRoute: typeof WatchPartyRoute
@@ -703,6 +716,13 @@ declare module '@tanstack/react-router' {
       path: '/student-chat'
       fullPath: '/student-chat'
       preLoaderRoute: typeof StudentChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -1125,6 +1145,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRoute,
   ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudentChatRoute: StudentChatRoute,
   StudyGroupsRoute: StudyGroupsRoute,
   WatchPartyRoute: WatchPartyRoute,
