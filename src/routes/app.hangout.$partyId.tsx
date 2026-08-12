@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Send, Users, Tv, LogOut, Crown, Loader2, ArrowLeft,
   Maximize2, Minimize2, MessageSquare, MessageSquareOff, PanelRightClose, PanelRightOpen,
-  Play, Pause, Volume2, VolumeX, Link2,
+  Play, Pause, Volume2, VolumeX, Link2, RefreshCw,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -83,6 +83,8 @@ function HangoutRoom() {
   const [curTime, setCurTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [scrubbing, setScrubbing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [reloadTick, setReloadTick] = useState(0);
 
   const toggleFullscreen = async () => {
     const el = rootRef.current;
@@ -160,24 +162,25 @@ function HangoutRoom() {
   };
 
 
+  const loadParty = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await supabase.from("watch_parties").select("*").eq("id", partyId).single();
+    if (error || !data) {
+      toast.error("Party not found");
+      navigate({ to: "/app/collaborate" });
+      return;
+    }
+    setParty(data as Party);
+    await supabase.from("watch_party_participants").upsert(
+      { party_id: partyId, user_id: user.id, left_at: null },
+      { onConflict: "party_id,user_id" },
+    );
+    setLoading(false);
+  }, [partyId, user, navigate]);
+
   useEffect(() => {
     if (!user) return;
-    (async () => {
-      const { data, error } = await supabase.from("watch_parties").select("*").eq("id", partyId).single();
-      if (error || !data) {
-        toast.error("Party not found");
-        navigate({ to: "/app/collaborate" });
-        return;
-      }
-      setParty(data as Party);
-
-      await supabase.from("watch_party_participants").upsert(
-        { party_id: partyId, user_id: user.id, left_at: null },
-        { onConflict: "party_id,user_id" },
-      );
-
-      setLoading(false);
-    })();
+    loadParty();
     return () => {
       if (user) {
         supabase
@@ -188,7 +191,7 @@ function HangoutRoom() {
           .then(() => {});
       }
     };
-  }, [partyId, user, navigate]);
+  }, [partyId, user, loadParty]);
 
   const loadParticipants = useCallback(async () => {
     const { data, error } = await supabase
@@ -228,13 +231,13 @@ function HangoutRoom() {
     setTimeout(() => chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight }), 50);
   }, [partyId]);
 
-  useEffect(() => {
-    if (!partyId) return;
-    loadParticipants();
-    loadMessages();
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
+  const subscribe = useCallback(() => {
+    if (!partyId) return;
+    if (channelRef.current) { supabase.removeChannel(channelRef.current); channelRef.current = null; }
     const ch = supabase
-      .channel(`hangout-${partyId}`)
+      .channel(`hangout-${partyId}-${Date.now()}`)
       .on("postgres_changes",
         { event: "UPDATE", schema: "public", table: "watch_parties", filter: `id=eq.${partyId}` },
         (payload) => {
@@ -258,9 +261,19 @@ function HangoutRoom() {
           setMessages((prev) => prev.some((item) => item.id === m.id) ? prev : [...prev, m]);
           setTimeout(() => chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" }), 50);
         })
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR") toast.error("Watch party connection error. Try the reload button.");
+      });
+    channelRef.current = ch;
   }, [partyId, loadParticipants, loadMessages, navigate]);
+
+  useEffect(() => {
+    if (!partyId) return;
+    loadParticipants();
+    loadMessages();
+    subscribe();
+    return () => { if (channelRef.current) supabase.removeChannel(channelRef.current); };
+  }, [partyId, loadParticipants, loadMessages, subscribe]);
 
   const pushState = useCallback(async (state: { current_time_sec?: number; is_playing?: boolean }) => {
     if (!isHost) return;
@@ -336,7 +349,7 @@ function HangoutRoom() {
     (async () => {
       const YT = await ensureAPI();
       if (cancelled) return;
-      ytPlayerRef.current = new YT.Player(`yt-${partyId}`, {
+      ytPlayerRef.current = new YT.Player(`yt-${partyId}-${reloadTick}`, {
         videoId: mediaId,
         host: "https://www.youtube-nocookie.com",
         playerVars: {
@@ -377,7 +390,7 @@ function HangoutRoom() {
       try { ytPlayerRef.current?.destroy?.(); } catch {}
       ytPlayerRef.current = null;
     };
-  }, [mediaKind, mediaId, partyId, savePos, savedPos]);
+  }, [mediaKind, mediaId, partyId, savePos, savedPos, reloadTick]);
 
   useEffect(() => {
     if (!isHost || !party) return;
@@ -432,10 +445,32 @@ function HangoutRoom() {
     navigate({ to: "/app/collaborate" });
   };
 
+  const handleReload = async () => {
+    setRefreshing(true);
+    toast.info("Reconnecting watch party…");
+    try {
+      await loadParty();
+      await Promise.all([loadParticipants(), loadMessages()]);
+      subscribe();
+      setReloadTick((t) => t + 1);
+      toast.success("Reconnected");
+    } catch {
+      toast.error("Soft reconnect failed — reloading page");
+      window.location.reload();
+    } finally {
+      setTimeout(() => setRefreshing(false), 800);
+    }
+  };
+
   if (loading || !party) {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Button onClick={handleReload} disabled={refreshing} variant="outline" size="sm">
+            <RefreshCw className={cn("h-4 w-4 mr-1.5", refreshing && "animate-spin")} /> Reload
+          </Button>
+        </div>
       </div>
     );
   }
@@ -478,7 +513,15 @@ function HangoutRoom() {
               <Link2 className="h-3.5 w-3.5" />
             </Button>
             <Button
-
+              onClick={handleReload}
+              disabled={refreshing}
+              variant="ghost"
+              size="sm"
+              title="Reload player & reconnect"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
+            </Button>
+            <Button
               onClick={toggleFullscreen}
               variant="ghost"
               size="sm"
@@ -536,7 +579,7 @@ function HangoutRoom() {
                   className="w-full h-full object-contain"
                 />
               ) : party.media_kind === "youtube" ? (
-                <div id={`yt-${partyId}`} className="w-full h-full" />
+                <div key={reloadTick} id={`yt-${partyId}-${reloadTick}`} className="w-full h-full" />
               ) : (
                 <iframe
                   src={party.media_url}
