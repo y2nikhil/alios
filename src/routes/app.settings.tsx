@@ -150,14 +150,10 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
               ))}
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={isPaid} onChange={(e) => setIsPaid(e.target.checked)} className="accent-primary" />
-            Paid time
-          </label>
         </div>
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-          <Button size="sm" onClick={() => onSave({ name, color, category, is_paid: isPaid, shortcut_key: shortcut || null })}>
+          <Button size="sm" onClick={() => onSave({ name, color, category, is_paid: true, shortcut_key: shortcut || null })}>
             Save
           </Button>
         </div>
