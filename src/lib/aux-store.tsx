@@ -261,13 +261,22 @@ export function AuxProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", handler);
   }, [statuses, switchTo]);
 
-  // Auto-close on sign-out
+  // Auto-close on sign-out (and allow a fresh auto-Available punch on next login)
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") { void endActiveSession(); }
+      if (event === "SIGNED_OUT") {
+        if (typeof window !== "undefined") {
+          Object.keys(sessionStorage)
+            .filter((k) => k.startsWith("classlab.auxBoot."))
+            .forEach((k) => sessionStorage.removeItem(k));
+        }
+        bootedFor.current = null;
+        void endActiveSession();
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [endActiveSession]);
+
 
   // Auto-close on tab close: best-effort with sendBeacon-style REST call
   useEffect(() => {
