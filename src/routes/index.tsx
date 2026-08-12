@@ -375,6 +375,11 @@ function LandingPage() {
           </motion.div>
         </section>
 
+        {/* PUBLIC PREVIEW: FEED + LIVE ROOMS */}
+        <PublicPreview />
+
+
+
         {/* FEATURE PILLARS */}
         <section id="features" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 lg:px-10 lg:py-24">
           <div className="max-w-2xl">
