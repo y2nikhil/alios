@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
   Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
-  MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList, Plus, Pencil,
+  MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList, Plus, Pencil, Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -21,6 +21,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
 import { BrandLogo } from "@/components/BrandLogo";
+import { trackEvent, installClickTracking } from "@/lib/activity";
+
 
 
 function PresenceHeartbeat() {
@@ -284,6 +286,9 @@ function ShellInner() {
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
+  useEffect(() => { trackEvent("page_view", document.title || null, {}, location.pathname); }, [location.pathname]);
+  useEffect(() => installClickTracking(), []);
+
   const NAV = [
     ...BASE_NAV,
     ...(isAdmin ? [
@@ -291,8 +296,12 @@ function ShellInner() {
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
       { to: "/app/moderation" as const, label: "Moderation", icon: Shield },
     ] : []),
-    ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
+    ...(isSuperAdmin ? [
+      { to: "/app/super" as const, label: "Super", icon: Crown },
+      { to: "/app/overwatch" as const, label: "Overwatch", icon: Eye },
+    ] : []),
   ];
+
 
   return (
     <div className="flex h-[100dvh] max-h-[100dvh] w-full overflow-hidden">
