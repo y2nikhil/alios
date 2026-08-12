@@ -156,9 +156,20 @@ function PunchStatusList({ onItem }: { onItem?: () => void }) {
 
   return (
     <div className="px-3 py-2 space-y-0.5">
-      <p className="px-2 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-        Punch Status
-      </p>
+      <div className="flex items-center justify-between px-2 pb-2 pt-1">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+          Punch Status
+        </p>
+        <Link
+          to="/app/settings"
+          onClick={() => onItem?.()}
+          aria-label="Edit AUX statuses"
+          title="Edit AUX statuses"
+          className="grid h-5 w-5 place-items-center rounded-md text-muted-foreground hover:bg-white/10 hover:text-foreground transition"
+        >
+          <Pencil className="h-3 w-3" />
+        </Link>
+      </div>
       {statuses.map((s) => {
         const active = activeSession?.status_id === s.id;
         const count = countByStatus.get(s.id) ?? 0;
