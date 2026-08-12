@@ -513,7 +513,15 @@ function HangoutRoom() {
               <Link2 className="h-3.5 w-3.5" />
             </Button>
             <Button
-
+              onClick={handleReload}
+              disabled={refreshing}
+              variant="ghost"
+              size="sm"
+              title="Reload player & reconnect"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
+            </Button>
+            <Button
               onClick={toggleFullscreen}
               variant="ghost"
               size="sm"
