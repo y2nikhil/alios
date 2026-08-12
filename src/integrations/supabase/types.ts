@@ -41,6 +41,36 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          label: string | null
+          metadata: Json
+          path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string | null
+          metadata?: Json
+          path?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string | null
+          metadata?: Json
+          path?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_requests: {
         Row: {
           created_at: string
