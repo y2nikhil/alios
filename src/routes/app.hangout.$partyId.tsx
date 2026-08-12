@@ -349,7 +349,7 @@ function HangoutRoom() {
     (async () => {
       const YT = await ensureAPI();
       if (cancelled) return;
-      ytPlayerRef.current = new YT.Player(`yt-${partyId}`, {
+      ytPlayerRef.current = new YT.Player(`yt-${partyId}-${reloadTick}`, {
         videoId: mediaId,
         host: "https://www.youtube-nocookie.com",
         playerVars: {
