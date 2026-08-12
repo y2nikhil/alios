@@ -231,13 +231,13 @@ function HangoutRoom() {
     setTimeout(() => chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight }), 50);
   }, [partyId]);
 
-  useEffect(() => {
-    if (!partyId) return;
-    loadParticipants();
-    loadMessages();
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
+  const subscribe = useCallback(() => {
+    if (!partyId) return;
+    if (channelRef.current) { supabase.removeChannel(channelRef.current); channelRef.current = null; }
     const ch = supabase
-      .channel(`hangout-${partyId}`)
+      .channel(`hangout-${partyId}-${Date.now()}`)
       .on("postgres_changes",
         { event: "UPDATE", schema: "public", table: "watch_parties", filter: `id=eq.${partyId}` },
         (payload) => {
@@ -261,9 +261,19 @@ function HangoutRoom() {
           setMessages((prev) => prev.some((item) => item.id === m.id) ? prev : [...prev, m]);
           setTimeout(() => chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" }), 50);
         })
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR") toast.error("Watch party connection error. Try the reload button.");
+      });
+    channelRef.current = ch;
   }, [partyId, loadParticipants, loadMessages, navigate]);
+
+  useEffect(() => {
+    if (!partyId) return;
+    loadParticipants();
+    loadMessages();
+    subscribe();
+    return () => { if (channelRef.current) supabase.removeChannel(channelRef.current); };
+  }, [partyId, loadParticipants, loadMessages, subscribe]);
 
   const pushState = useCallback(async (state: { current_time_sec?: number; is_playing?: boolean }) => {
     if (!isHost) return;
