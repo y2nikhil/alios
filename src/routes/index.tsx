@@ -250,7 +250,7 @@ function BrandMark({ size = 36 }: { size?: number }) {
 
 /* Public, no-login preview of the live feed and public watch parties */
 function PublicPreview() {
-  const { posts, parties } = Route.useLoaderData();
+  const { posts, parties } = Route.useLoaderData() as { posts: PublicHomePost[]; parties: LiveParty[] };
 
   return (
     <section id="live" className="border-y border-border bg-card/40">
