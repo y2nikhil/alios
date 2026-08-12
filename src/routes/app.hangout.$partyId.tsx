@@ -275,47 +275,95 @@ function HangoutRoom() {
     }
   }, [party, isHost]);
 
+  // Keep latest values in refs so the player is NEVER rebuilt (rebuilding restarts the video)
+  const isHostRef = useRef(false);
+  const pushStateRef = useRef<typeof pushState | null>(null);
+  const partyRef = useRef<Party | null>(null);
+  useEffect(() => { isHostRef.current = isHost; }, [isHost]);
+  useEffect(() => { pushStateRef.current = pushState; }, [pushState]);
+  useEffect(() => { partyRef.current = party; }, [party]);
+
+  const posKey = `wp-pos-${partyId}`;
+  const savePos = useCallback((t: number) => {
+    try { if (t > 1) sessionStorage.setItem(posKey, JSON.stringify({ t, at: Date.now() })); } catch {}
+  }, [posKey]);
+  const savedPos = useCallback(() => {
+    try {
+      const raw = sessionStorage.getItem(posKey);
+      if (!raw) return 0;
+      const { t, at } = JSON.parse(raw);
+      if (Date.now() - at > 6 * 60 * 60 * 1000) return 0;
+      return Number(t) || 0;
+    } catch { return 0; }
+  }, [posKey]);
+
+  const mediaKind = party?.media_kind;
+  const mediaId = party?.media_id;
+
   useEffect(() => {
-    if (!party || party.media_kind !== "youtube" || !party.media_id) return;
+    if (mediaKind !== "youtube" || !mediaId) return;
     let cancelled = false;
     const ensureAPI = () =>
       new Promise<any>((resolve) => {
         const w = window as any;
         if (w.YT?.Player) return resolve(w.YT);
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-        w.onYouTubeIframeAPIReady = () => resolve(w.YT);
+        const existing = document.getElementById("yt-iframe-api");
+        if (!existing) {
+          const tag = document.createElement("script");
+          tag.id = "yt-iframe-api";
+          tag.src = "https://www.youtube.com/iframe_api";
+          document.head.appendChild(tag);
+        }
+        const prev = w.onYouTubeIframeAPIReady;
+        w.onYouTubeIframeAPIReady = () => { prev?.(); resolve(w.YT); };
+        const poll = setInterval(() => { if (w.YT?.Player) { clearInterval(poll); resolve(w.YT); } }, 120);
+        setTimeout(() => clearInterval(poll), 15000);
       });
     (async () => {
       const YT = await ensureAPI();
       if (cancelled) return;
       ytPlayerRef.current = new YT.Player(`yt-${partyId}`, {
-        videoId: party.media_id,
+        videoId: mediaId,
         host: "https://www.youtube-nocookie.com",
-        playerVars: { playsinline: 1, modestbranding: 1, rel: 0, origin: window.location.origin },
+        playerVars: {
+          playsinline: 1, modestbranding: 1, rel: 0, iv_load_policy: 3,
+          origin: window.location.origin,
+        },
         events: {
           onReady: () => {
             try {
-              ytPlayerRef.current.seekTo(party.current_time_sec, true);
-              if (party.is_playing) ytPlayerRef.current.playVideo();
+              const p = partyRef.current;
+              const resume = isHostRef.current
+                ? Math.max(savedPos(), p?.current_time_sec ?? 0)
+                : (p?.current_time_sec ?? 0);
+              if (resume > 1) ytPlayerRef.current.seekTo(resume, true);
+              setDuration(ytPlayerRef.current.getDuration?.() ?? 0);
+              if (p?.is_playing) ytPlayerRef.current.playVideo();
             } catch {}
           },
           onStateChange: (e: any) => {
-            if (!isHost) return;
+            try {
+              const t = ytPlayerRef.current?.getCurrentTime?.() ?? 0;
+              savePos(t);
+              const d = ytPlayerRef.current?.getDuration?.() ?? 0;
+              if (d) setDuration(d);
+            } catch {}
+            if (!isHostRef.current) return;
+            if (e.data !== YT.PlayerState.PLAYING && e.data !== YT.PlayerState.PAUSED) return;
             const playing = e.data === YT.PlayerState.PLAYING;
-            const t = ytPlayerRef.current.getCurrentTime?.() ?? 0;
-            pushState({ current_time_sec: t, is_playing: playing });
+            const t = ytPlayerRef.current?.getCurrentTime?.() ?? 0;
+            pushStateRef.current?.({ current_time_sec: t, is_playing: playing });
           },
         },
       });
     })();
     return () => {
       cancelled = true;
+      try { savePos(ytPlayerRef.current?.getCurrentTime?.() ?? 0); } catch {}
       try { ytPlayerRef.current?.destroy?.(); } catch {}
       ytPlayerRef.current = null;
     };
-  }, [party?.media_kind, party?.media_id, partyId, isHost]);
+  }, [mediaKind, mediaId, partyId, savePos, savedPos]);
 
   useEffect(() => {
     if (!isHost || !party) return;
