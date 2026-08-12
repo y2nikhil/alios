@@ -199,9 +199,34 @@ function CommandCenter() {
                     );
                   })}
                   {statuses.length > 5 && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                      + More
-                    </span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-white/10 transition">
+                          + More
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent align="start" className="w-56 p-1.5">
+                        <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                          Punch another status
+                        </p>
+                        {statuses.slice(5).map((s) => (
+                          <button
+                            key={s.id}
+                            onClick={() => switchTo(s.id)}
+                            className="w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-white/10 transition"
+                          >
+                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
+                            <span className="flex-1 text-left truncate">{s.name}</span>
+                          </button>
+                        ))}
+                        <Link
+                          to="/app/settings"
+                          className="mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:bg-white/10 transition"
+                        >
+                          <Pencil className="h-3 w-3" /> Edit AUX statuses
+                        </Link>
+                      </PopoverContent>
+                    </Popover>
                   )}
                 </div>
 
