@@ -11,6 +11,9 @@ import { fetchAuthors, sortPosts, type Author, type Post, type SortKey } from "@
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/feed")({
+  validateSearch: (s: Record<string, unknown>): { compose?: string } => ({
+    compose: typeof s.compose === "string" ? s.compose : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Feed — ClassLab" },
@@ -43,6 +46,7 @@ function FeedPage() {
   const search = useSearch({ from: "/app/feed" });
   const [posts, setPosts] = useState<Post[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
+  const [onlineIds, setOnlineIds] = useState<Record<string, true>>({});
   const [votes, setVotes] = useState<Record<string, -1 | 1>>({});
   const [saved, setSaved] = useState<Record<string, true>>({});
   const [reactions, setReactions] = useState<Record<string, Record<string, number>>>({});
@@ -67,6 +71,13 @@ function FeedPage() {
     const list = (data ?? []) as Post[];
     setPosts(list);
     setAuthors(await fetchAuthors(list.map((p) => p.author_id)));
+    const authorIds = [...new Set(list.map((p) => p.author_id))];
+    if (authorIds.length) {
+      const { data: pres } = await (supabase as any).rpc("public_presence", { _ids: authorIds });
+      const map: Record<string, true> = {};
+      (pres ?? []).forEach((r: { id: string; online: boolean }) => { if (r.online) map[r.id] = true; });
+      setOnlineIds(map);
+    }
 
     const ids = list.map((p) => p.id);
     if (ids.length) {
@@ -273,6 +284,7 @@ function FeedPage() {
                 key={p.id}
                 post={p}
                 author={authors[p.author_id]}
+                online={!!onlineIds[p.author_id]}
                 myVote={votes[p.id] ?? 0}
                 onVote={vote}
                 canModerate={isAdmin || p.author_id === user?.id}

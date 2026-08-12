@@ -20,7 +20,20 @@ import { SectionSwitcher } from "@/components/SectionSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
+import { BrandLogo } from "@/components/BrandLogo";
 
+
+function PresenceHeartbeat() {
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) return;
+    const beat = () => { (supabase as any).rpc("touch_presence"); };
+    beat();
+    const id = setInterval(beat, 60_000);
+    return () => clearInterval(id);
+  }, [user]);
+  return null;
+}
 
 function OnboardingRedirect() {
   const { user } = useAuth();
@@ -213,13 +226,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
     <div className="flex h-full w-60 flex-col border-r border-white/5 bg-[oklch(0.05_0.012_265)]/95 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between gap-2 px-4">
         <Link to="/" className="flex items-center gap-2.5" onClick={onClose}>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 shadow-lg shadow-violet-500/30">
-            <Sparkles className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-bold tracking-tight leading-none">ClassLab</p>
-            <p className="text-[10px] text-muted-foreground mt-1">Your Study Campus</p>
-          </div>
+          <BrandLogo size={36} tagline="Your Study Campus" />
         </Link>
         {onClose && (
           <button
@@ -368,6 +375,7 @@ export function AppShell() {
   return (
     <AuxProvider>
       <OnboardingRedirect />
+      <PresenceHeartbeat />
       <DisplayNamePrompt />
 
       <ShellInner />

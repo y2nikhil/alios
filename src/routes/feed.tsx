@@ -137,7 +137,13 @@ function PublicFeedPage() {
             return (
               <li key={p.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/20">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{p.author_name ?? p.author_username ?? "Student"}</span>
+                  {p.author_username ? (
+            <Link to="/u/$username" params={{ username: p.author_username }} className="font-medium text-foreground hover:underline">
+              {p.author_name ?? p.author_username}
+            </Link>
+          ) : (
+            <span className="font-medium text-foreground">{p.author_name ?? "Student"}</span>
+          )}
                   <span>· {timeAgo(p.created_at)}</span>
                   <span>· {readingTime(p.body)} min read</span>
                   {p.tag && <span className="ml-auto rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{p.tag}</span>}

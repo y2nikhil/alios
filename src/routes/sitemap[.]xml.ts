@@ -49,6 +49,15 @@ export const Route = createFileRoute("/sitemap.xml")({
           // posts unavailable — still serve the static sitemap
         }
 
+        try {
+          const { data } = await (supabase as any).rpc("public_usernames", { _limit: 1000 });
+          (data ?? []).forEach((u: { username: string | null }) => {
+            if (u.username) entries.push({ path: `/u/${u.username}`, changefreq: "weekly", priority: "0.5" });
+          });
+        } catch {
+          // profiles unavailable — still serve the rest of the sitemap
+        }
+
         const urls = entries.map((e) =>
           [
             `  <url>`,
