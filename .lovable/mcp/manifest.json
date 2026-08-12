@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://qpixarrajdoozxnmebqa.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "classlab",
+      "version": "0.1.0",
+      "title": "ClassLab"
+    },
+    "tools": [
+      {
+        "name": "list_tasks",
+        "title": "List tasks",
+        "description": "List the signed-in student's ClassLab tasks, newest first, optionally filtered by status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Only return tasks with this status.",
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "done",
+                "cancelled",
+                "pending",
+                "overdue"
+              ]
+            },
+            "limit": {
+              "default": 20,
+              "description": "Maximum number of tasks to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_task",
+        "title": "Create task",
+        "description": "Create a new study task for the signed-in student in ClassLab.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Short task title."
+            },
+            "description": {
+              "description": "Optional task details.",
+              "type": "string",
+              "maxLength": 2000
+            },
+            "due_at": {
+              "description": "Optional ISO 8601 due date/time.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "priority": {
+              "description": "Priority, 0 = lowest.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            }
+          },
+          "required": [
+            "title"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_task_status",
+        "title": "Update task status",
+        "description": "Change the status of one of the signed-in student's ClassLab tasks (e.g. mark it done).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "The task id."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "todo",
+                "in_progress",
+                "done",
+                "cancelled",
+                "pending",
+                "overdue"
+              ],
+              "description": "New status for the task."
+            }
+          },
+          "required": [
+            "task_id",
+            "status"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_feed_posts",
+        "title": "Search feed posts",
+        "description": "Search recent ClassLab community feed posts by keyword or tag.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Keyword to match in post titles and bodies.",
+              "type": "string",
+              "maxLength": 120
+            },
+            "tag": {
+              "description": "Only return posts with this tag.",
+              "type": "string",
+              "maxLength": 60
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum number of posts to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_focus_summary",
+        "title": "Get focus summary",
+        "description": "Summarise the signed-in student's tracked focus sessions over a recent number of days.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "days": {
+              "default": 7,
+              "description": "How many days back to summarise.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
