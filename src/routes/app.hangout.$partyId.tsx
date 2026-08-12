@@ -390,7 +390,7 @@ function HangoutRoom() {
       try { ytPlayerRef.current?.destroy?.(); } catch {}
       ytPlayerRef.current = null;
     };
-  }, [mediaKind, mediaId, partyId, savePos, savedPos]);
+  }, [mediaKind, mediaId, partyId, savePos, savedPos, reloadTick]);
 
   useEffect(() => {
     if (!isHost || !party) return;
