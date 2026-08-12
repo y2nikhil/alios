@@ -11,6 +11,9 @@ import { fetchAuthors, sortPosts, type Author, type Post, type SortKey } from "@
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/feed")({
+  validateSearch: (s: Record<string, unknown>): { compose?: string } => ({
+    compose: typeof s.compose === "string" ? s.compose : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Feed — ClassLab" },
