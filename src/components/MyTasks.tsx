@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { YouTubeChecklist } from "@/components/YouTubeChecklist";
+import { YouTubeChecklist, isFloatingPlayerTarget } from "@/components/YouTubeChecklist";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -194,7 +194,12 @@ export function MyTasks() {
       )}
 
       <Dialog open={!!openTask} onOpenChange={(v) => !v && setOpenTask(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-thin">
+        <DialogContent
+          className="max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-thin"
+          onPointerDownOutside={(e) => { if (isFloatingPlayerTarget(e.target)) e.preventDefault(); }}
+          onInteractOutside={(e) => { if (isFloatingPlayerTarget(e.target)) e.preventDefault(); }}
+          onFocusOutside={(e) => { if (isFloatingPlayerTarget(e.target)) e.preventDefault(); }}
+        >
           {openTask && <TaskDetail task={openTask} onStatusChange={(s) => setStatus(openTask, s)} />}
         </DialogContent>
       </Dialog>
