@@ -34,13 +34,21 @@ type AuxContextType = {
   createStatus: (s: Partial<AuxStatus>) => Promise<void>;
   updateStatus: (id: string, s: Partial<AuxStatus>) => Promise<void>;
   deleteStatus: (id: string) => Promise<void>;
-  endActiveSession: () => Promise<void>;
+  endActiveSession: (atMs?: number) => Promise<void>;
   markNotResponding: () => Promise<void>;
 };
 
 const AuxContext = createContext<AuxContextType | null>(null);
 
-const RESUME_WINDOW_MS = 4 * 60 * 60 * 1000; // 4 hours
+/** Dangling sessions (crash / lost tab) are capped so away-time is never billed. */
+const DANGLING_CAP_MS = 30 * 60 * 1000;
+
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 
 export function AuxProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
