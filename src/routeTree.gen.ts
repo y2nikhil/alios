@@ -18,6 +18,7 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as NotesSharingRouteImport } from './routes/notes-sharing'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as ForumsRouteImport } from './routes/forums'
@@ -56,12 +57,16 @@ import { Route as ApiSearchPeopleRouteImport } from './routes/api.search-people'
 import { Route as ApiAiMindmapRouteImport } from './routes/api.ai-mindmap'
 import { Route as ApiAiInsightsRouteImport } from './routes/api.ai-insights'
 import { Route as ApiAiAskRouteImport } from './routes/api.ai-ask'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppPostPostIdRouteImport } from './routes/app.post.$postId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -110,6 +115,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const NotesSharingRoute = NotesSharingRouteImport.update({
   id: '/notes-sharing',
   path: '/notes-sharing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -302,6 +312,18 @@ const ApiAiAskRoute = ApiAiAskRouteImport.update({
   path: '/api/ai-ask',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppMindmapIndexRoute = AppMindmapIndexRouteImport.update({
   id: '/mindmap/',
   path: '/mindmap/',
@@ -331,6 +353,17 @@ const AppDmThreadIdRoute = AppDmThreadIdRouteImport.update({
   id: '/dm/$threadId',
   path: '/dm/$threadId',
   getParentRoute: () => AppRoute,
+} as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
@@ -370,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/notes-sharing': typeof NotesSharingRoute
   '/portfolio': typeof PortfolioRoute
   '/projects': typeof ProjectsRoute
@@ -379,6 +413,8 @@ export interface FileRoutesByFullPath {
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
@@ -403,6 +439,8 @@ export interface FileRoutesByFullPath {
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -428,6 +466,7 @@ export interface FileRoutesByTo {
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/notes-sharing': typeof NotesSharingRoute
   '/portfolio': typeof PortfolioRoute
   '/projects': typeof ProjectsRoute
@@ -437,6 +476,8 @@ export interface FileRoutesByTo {
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
@@ -461,6 +502,8 @@ export interface FileRoutesByTo {
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app': typeof AppIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -488,6 +531,7 @@ export interface FileRoutesById {
   '/forums': typeof ForumsRoute
   '/internships': typeof InternshipsRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/notes-sharing': typeof NotesSharingRoute
   '/portfolio': typeof PortfolioRoute
   '/projects': typeof ProjectsRoute
@@ -497,6 +541,8 @@ export interface FileRoutesById {
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
   '/watch-party': typeof WatchPartyRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/ai-ask': typeof ApiAiAskRoute
   '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/ai-mindmap': typeof ApiAiMindmapRoute
@@ -521,6 +567,8 @@ export interface FileRoutesById {
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
@@ -549,6 +597,7 @@ export interface FileRouteTypes {
     | '/forums'
     | '/internships'
     | '/login'
+    | '/mcp'
     | '/notes-sharing'
     | '/portfolio'
     | '/projects'
@@ -558,6 +607,8 @@ export interface FileRouteTypes {
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
@@ -582,6 +633,8 @@ export interface FileRouteTypes {
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -607,6 +660,7 @@ export interface FileRouteTypes {
     | '/forums'
     | '/internships'
     | '/login'
+    | '/mcp'
     | '/notes-sharing'
     | '/portfolio'
     | '/projects'
@@ -616,6 +670,8 @@ export interface FileRouteTypes {
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
@@ -640,6 +696,8 @@ export interface FileRouteTypes {
     | '/post/$slug'
     | '/u/$username'
     | '/app'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -666,6 +724,7 @@ export interface FileRouteTypes {
     | '/forums'
     | '/internships'
     | '/login'
+    | '/mcp'
     | '/notes-sharing'
     | '/portfolio'
     | '/projects'
@@ -675,6 +734,8 @@ export interface FileRouteTypes {
     | '/student-chat'
     | '/study-groups'
     | '/watch-party'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/api/ai-ask'
     | '/api/ai-insights'
     | '/api/ai-mindmap'
@@ -699,6 +760,8 @@ export interface FileRouteTypes {
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
@@ -726,6 +789,7 @@ export interface RootRouteChildren {
   ForumsRoute: typeof ForumsRoute
   InternshipsRoute: typeof InternshipsRoute
   LoginRoute: typeof LoginRoute
+  McpRoute: typeof McpRoute
   NotesSharingRoute: typeof NotesSharingRoute
   PortfolioRoute: typeof PortfolioRoute
   ProjectsRoute: typeof ProjectsRoute
@@ -735,6 +799,8 @@ export interface RootRouteChildren {
   StudentChatRoute: typeof StudentChatRoute
   StudyGroupsRoute: typeof StudyGroupsRoute
   WatchPartyRoute: typeof WatchPartyRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiAiAskRoute: typeof ApiAiAskRoute
   ApiAiInsightsRoute: typeof ApiAiInsightsRoute
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
@@ -742,6 +808,8 @@ export interface RootRouteChildren {
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
   PostSlugRoute: typeof PostSlugRoute
   UUsernameRoute: typeof UUsernameRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -811,6 +879,13 @@ declare module '@tanstack/react-router' {
       path: '/notes-sharing'
       fullPath: '/notes-sharing'
       preLoaderRoute: typeof NotesSharingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1079,6 +1154,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiAskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/mindmap/': {
       id: '/app/mindmap/'
       path: '/mindmap'
@@ -1120,6 +1209,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/dm/$threadId'
       preLoaderRoute: typeof AppDmThreadIdRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -1221,6 +1324,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForumsRoute: ForumsRoute,
   InternshipsRoute: InternshipsRoute,
   LoginRoute: LoginRoute,
+  McpRoute: McpRoute,
   NotesSharingRoute: NotesSharingRoute,
   PortfolioRoute: PortfolioRoute,
   ProjectsRoute: ProjectsRoute,
@@ -1230,6 +1334,9 @@ const rootRouteChildren: RootRouteChildren = {
   StudentChatRoute: StudentChatRoute,
   StudyGroupsRoute: StudyGroupsRoute,
   WatchPartyRoute: WatchPartyRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiAiAskRoute: ApiAiAskRoute,
   ApiAiInsightsRoute: ApiAiInsightsRoute,
   ApiAiMindmapRoute: ApiAiMindmapRoute,
@@ -1237,6 +1344,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
   PostSlugRoute: PostSlugRoute,
   UUsernameRoute: UUsernameRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
