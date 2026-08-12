@@ -59,14 +59,17 @@ export function IdlePrompt() {
   useEffect(() => {
     if (!prompting) return;
     const started = Date.now();
+    const idleSince = lastActivity.current;
     const tick = setInterval(() => {
       const left = Math.max(0, Math.ceil((RESPONSE_WINDOW_MS - (Date.now() - started)) / 1000));
       setCountdown(left);
+      if (left === 30 || left === 10) beep();
       if (left <= 0) {
         clearInterval(tick);
         setPrompting(false);
-        void endActiveSession();
-        toast.warning("Idle — you've been punched out");
+        // Stop the timer at the moment activity stopped — idle time is not counted.
+        void endActiveSession(idleSince);
+        toast.warning("No response — your timer was stopped (idle time not counted)");
       }
     }, 250);
     return () => clearInterval(tick);
@@ -79,9 +82,12 @@ export function IdlePrompt() {
   };
 
   const punchOut = async () => {
+    const idleSince = lastActivity.current;
     setPrompting(false);
-    await endActiveSession();
+    await endActiveSession(idleSince);
   };
+
+  const pct = Math.max(0, Math.min(100, (countdown / (RESPONSE_WINDOW_MS / 1000)) * 100));
 
   return (
     <AlertDialog open={prompting} onOpenChange={(o) => { if (!o) stillWorking(); }}>
@@ -89,14 +95,22 @@ export function IdlePrompt() {
         <AlertDialogHeader>
           <AlertDialogTitle>Still working? 👀</AlertDialogTitle>
           <AlertDialogDescription>
-            No activity for 30 minutes. You'll be punched out in <strong>{countdown}s</strong> if you don't respond.
+            No activity for 30 minutes. Your timer will stop automatically in{" "}
+            <strong className="text-primary tabular-nums">{countdown}s</strong> — the idle time won't be counted.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-primary transition-[width] duration-200 ease-linear"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={punchOut}>Punch me out</AlertDialogCancel>
+          <AlertDialogCancel onClick={punchOut}>Stop my timer</AlertDialogCancel>
           <AlertDialogAction onClick={stillWorking}>Yes, still working</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 }
+

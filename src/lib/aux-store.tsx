@@ -34,13 +34,21 @@ type AuxContextType = {
   createStatus: (s: Partial<AuxStatus>) => Promise<void>;
   updateStatus: (id: string, s: Partial<AuxStatus>) => Promise<void>;
   deleteStatus: (id: string) => Promise<void>;
-  endActiveSession: () => Promise<void>;
+  endActiveSession: (atMs?: number) => Promise<void>;
   markNotResponding: () => Promise<void>;
 };
 
 const AuxContext = createContext<AuxContextType | null>(null);
 
-const RESUME_WINDOW_MS = 4 * 60 * 60 * 1000; // 4 hours
+/** Dangling sessions (crash / lost tab) are capped so away-time is never billed. */
+const DANGLING_CAP_MS = 30 * 60 * 1000;
+
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 
 export function AuxProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -75,18 +83,20 @@ export function AuxProvider({ children }: { children: ReactNode }) {
     }
   }, [user, refresh]);
 
-  const endActiveSession = useCallback(async () => {
+  const endActiveSession = useCallback(async (atMs?: number) => {
     const cur = activeSessionRef.current;
     if (!cur) return;
-    const dur = Math.floor((Date.now() - new Date(cur.started_at).getTime()) / 1000);
+    const startMs = new Date(cur.started_at).getTime();
+    const endMs = Math.max(startMs, atMs ?? Date.now());
+    const dur = Math.floor((endMs - startMs) / 1000);
     await supabase.from("aux_sessions")
-      .update({ ended_at: new Date().toISOString(), duration_seconds: dur })
+      .update({ ended_at: new Date(endMs).toISOString(), duration_seconds: dur })
       .eq("id", cur.id).is("ended_at", null);
     setActiveSession(null);
     refresh();
   }, [refresh]);
 
-  const startNewSession = useCallback(async (statusId: string) => {
+  const startNewSession = useCallback(async (statusId: string, silent = false) => {
     if (!user) return;
     const now = new Date().toISOString();
     const cur = activeSessionRef.current;
@@ -100,10 +110,15 @@ export function AuxProvider({ children }: { children: ReactNode }) {
     if (error) { toast.error("Failed to switch status"); return; }
     setActiveSession(data as AuxSession);
     const target = statuses.find((s) => s.id === statusId);
-    if (target) toast.success(`Switched to ${target.name}`);
+    if (target && !silent) toast.success(`Switched to ${target.name}`);
     refresh();
   }, [user, statuses, refresh]);
 
+  /**
+   * Resume a previously-stopped timer *from where it stopped*: we re-open the row
+   * and back-date started_at by the already-accumulated duration, so time spent
+   * away (logged out / window closed) is never counted.
+   */
   const resumeExisting = useCallback(async (sessionId: string) => {
     if (!user) return;
     const cur = activeSessionRef.current;
@@ -111,13 +126,17 @@ export function AuxProvider({ children }: { children: ReactNode }) {
       const dur = Math.floor((Date.now() - new Date(cur.started_at).getTime()) / 1000);
       await supabase.from("aux_sessions").update({ ended_at: new Date().toISOString(), duration_seconds: dur }).eq("id", cur.id);
     }
+    const prev = todaySessions.find((s) => s.id === sessionId);
+    const accumulated = prev?.duration_seconds
+      ?? (prev?.ended_at ? Math.floor((new Date(prev.ended_at).getTime() - new Date(prev.started_at).getTime()) / 1000) : 0);
+    const newStart = new Date(Date.now() - accumulated * 1000).toISOString();
     const { data, error } = await supabase.from("aux_sessions")
-      .update({ ended_at: null, duration_seconds: null }).eq("id", sessionId).select().single();
+      .update({ ended_at: null, duration_seconds: null, started_at: newStart }).eq("id", sessionId).select().single();
     if (error) { toast.error("Could not resume session"); return; }
     setActiveSession(data as AuxSession);
     toast.success("Resumed previous timer");
     refresh();
-  }, [user, refresh]);
+  }, [user, todaySessions, refresh]);
 
   const switchTo = useCallback(
     async (statusId: string) => {
@@ -127,10 +146,10 @@ export function AuxProvider({ children }: { children: ReactNode }) {
         toast.info(`Already in ${target?.name ?? "this status"}`);
         return;
       }
-      // Look for a recently-ended session of the same status
-      const cutoff = Date.now() - RESUME_WINDOW_MS;
+      // Only today's sessions can be resumed — the day resets at midnight.
+      const dayStart = startOfToday().getTime();
       const recent = [...todaySessions]
-        .filter((s) => s.status_id === statusId && s.ended_at && new Date(s.ended_at).getTime() >= cutoff)
+        .filter((s) => s.status_id === statusId && s.ended_at && new Date(s.started_at).getTime() >= dayStart)
         .sort((a, b) => new Date(b.ended_at!).getTime() - new Date(a.ended_at!).getTime())[0];
       const target = statuses.find((s) => s.id === statusId);
       if (recent && target) {
@@ -141,6 +160,57 @@ export function AuxProvider({ children }: { children: ReactNode }) {
     },
     [user, activeSession, statuses, todaySessions, startNewSession],
   );
+
+  /** On each login: close any dangling session (capped) and punch into Available. */
+  const bootedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!user || loading || statuses.length === 0) return;
+    if (bootedFor.current === user.id) return;
+    const key = `classlab.auxBoot.${user.id}`;
+    if (typeof window !== "undefined" && sessionStorage.getItem(key) === "1") {
+      bootedFor.current = user.id;
+      return;
+    }
+    bootedFor.current = user.id;
+    if (typeof window !== "undefined") sessionStorage.setItem(key, "1");
+
+    (async () => {
+      // Close every still-open session from a previous visit.
+      const { data: open } = await supabase.from("aux_sessions")
+        .select("*").eq("user_id", user.id).is("ended_at", null);
+      for (const row of (open ?? []) as AuxSession[]) {
+        const startMs = new Date(row.started_at).getTime();
+        const endMs = Math.min(Date.now(), startMs + DANGLING_CAP_MS);
+        await supabase.from("aux_sessions").update({
+          ended_at: new Date(endMs).toISOString(),
+          duration_seconds: Math.floor((endMs - startMs) / 1000),
+        }).eq("id", row.id);
+      }
+      setActiveSession(null);
+      activeSessionRef.current = null;
+      const available = statuses.find((s) => s.name.toLowerCase() === "available") ?? statuses[0];
+      if (available) await startNewSession(available.id, true);
+      else await refresh();
+    })();
+  }, [user, loading, statuses, startNewSession, refresh]);
+
+  /** Midnight rollover: stop yesterday's timer and start a fresh Available day. */
+  useEffect(() => {
+    if (!user) return;
+    const tick = setInterval(() => {
+      const cur = activeSessionRef.current;
+      if (!cur) return;
+      const dayStart = startOfToday().getTime();
+      if (new Date(cur.started_at).getTime() >= dayStart) return;
+      void (async () => {
+        await endActiveSession(dayStart - 1000);
+        const available = statuses.find((s) => s.name.toLowerCase() === "available");
+        if (available) await startNewSession(available.id, true);
+      })();
+    }, 60_000);
+    return () => clearInterval(tick);
+  }, [user, statuses, endActiveSession, startNewSession]);
+
 
   const markNotResponding = useCallback(async () => {
     const cur = activeSessionRef.current;
@@ -191,13 +261,22 @@ export function AuxProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", handler);
   }, [statuses, switchTo]);
 
-  // Auto-close on sign-out
+  // Auto-close on sign-out (and allow a fresh auto-Available punch on next login)
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") { void endActiveSession(); }
+      if (event === "SIGNED_OUT") {
+        if (typeof window !== "undefined") {
+          Object.keys(sessionStorage)
+            .filter((k) => k.startsWith("classlab.auxBoot."))
+            .forEach((k) => sessionStorage.removeItem(k));
+        }
+        bootedFor.current = null;
+        void endActiveSession();
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [endActiveSession]);
+
 
   // Auto-close on tab close: best-effort with sendBeacon-style REST call
   useEffect(() => {

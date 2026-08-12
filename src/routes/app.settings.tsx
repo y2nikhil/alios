@@ -75,7 +75,7 @@ function SettingsPage() {
                 <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{s.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{s.category} · {s.is_paid ? "paid" : "unpaid"}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{s.category}</p>
                 </div>
                 {s.shortcut_key && (
                   <kbd className="hidden sm:inline-flex h-6 min-w-6 items-center justify-center rounded border border-white/10 bg-white/5 px-1.5 text-xs font-mono">
@@ -114,7 +114,7 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
   const [name, setName] = useState(status?.name ?? "");
   const [color, setColor] = useState(status?.color ?? "#10b981");
   const [category, setCategory] = useState(status?.category ?? "neutral");
-  const [isPaid, setIsPaid] = useState(status?.is_paid ?? true);
+  
   const [shortcut, setShortcut] = useState(status?.shortcut_key ?? "");
 
   return (
@@ -150,14 +150,10 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
               ))}
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={isPaid} onChange={(e) => setIsPaid(e.target.checked)} className="accent-primary" />
-            Paid time
-          </label>
         </div>
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-          <Button size="sm" onClick={() => onSave({ name, color, category, is_paid: isPaid, shortcut_key: shortcut || null })}>
+          <Button size="sm" onClick={() => onSave({ name, color, category, is_paid: true, shortcut_key: shortcut || null })}>
             Save
           </Button>
         </div>
