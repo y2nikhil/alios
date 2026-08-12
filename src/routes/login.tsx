@@ -8,7 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Sparkles, Loader2, Apple } from "lucide-react";
 import { toast } from "sonner";
 
+function safeNext(next: string | undefined) {
+  return next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s["next"] === "string" ? s["next"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — ClassLab" },
@@ -20,6 +27,18 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const nextPath = safeNext(next);
+  const afterAuth = () => {
+    if (nextPath) {
+      window.location.href = nextPath;
+      return;
+    }
+    navigate({ to: "/app" });
+  };
+  const oauthRedirect = nextPath
+    ? `${window.location.origin}${nextPath}`
+    : window.location.origin;
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,13 +61,13 @@ function LoginPage() {
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back");
-    navigate({ to: "/app" });
+    afterAuth();
   };
 
   const signInWithApple = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("apple", {
-      redirect_uri: window.location.origin,
+      redirect_uri: oauthRedirect,
     });
     if (result.error) {
       setLoading(false);
@@ -57,13 +76,13 @@ function LoginPage() {
     if (result.redirected) return;
     setLoading(false);
     toast.success("Welcome back");
-    navigate({ to: "/app" });
+    afterAuth();
   };
 
   const signInWithGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: oauthRedirect,
     });
     if (result.error) {
       setLoading(false);
@@ -72,7 +91,7 @@ function LoginPage() {
     if (result.redirected) return;
     setLoading(false);
     toast.success("Welcome back");
-    navigate({ to: "/app" });
+    afterAuth();
   };
 
 
