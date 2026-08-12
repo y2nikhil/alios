@@ -83,6 +83,8 @@ function HangoutRoom() {
   const [curTime, setCurTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [scrubbing, setScrubbing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [reloadTick, setReloadTick] = useState(0);
 
   const toggleFullscreen = async () => {
     const el = rootRef.current;
