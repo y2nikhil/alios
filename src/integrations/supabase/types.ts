@@ -1320,6 +1320,7 @@ export type Database = {
           daily_goal_minutes: number
           display_name: string | null
           id: string
+          last_seen_at: string | null
           notification_prefs: Json
           theme: string
           theme_accent: string
@@ -1337,6 +1338,7 @@ export type Database = {
           daily_goal_minutes?: number
           display_name?: string | null
           id: string
+          last_seen_at?: string | null
           notification_prefs?: Json
           theme?: string
           theme_accent?: string
@@ -1354,6 +1356,7 @@ export type Database = {
           daily_goal_minutes?: number
           display_name?: string | null
           id?: string
+          last_seen_at?: string | null
           notification_prefs?: Json
           theme?: string
           theme_accent?: string
@@ -2138,9 +2141,68 @@ export type Database = {
           up_count: number
         }[]
       }
+      public_presence: {
+        Args: { _ids: string[] }
+        Returns: {
+          id: string
+          online: boolean
+        }[]
+      }
+      public_user_comments: {
+        Args: { _limit?: number; _user: string }
+        Returns: {
+          body: string
+          created_at: string
+          down_count: number
+          id: string
+          post_id: string
+          post_slug: string
+          post_title: string
+          up_count: number
+        }[]
+      }
+      public_user_posts: {
+        Args: { _limit?: number; _user: string }
+        Returns: {
+          body: string
+          comment_count: number
+          created_at: string
+          down_count: number
+          id: string
+          media_kind: string
+          media_url: string
+          slug: string
+          tag: string
+          title: string
+          up_count: number
+        }[]
+      }
+      public_user_profile: {
+        Args: { _username: string }
+        Returns: {
+          avatar_gradient: string
+          avatar_icon: string
+          comment_count: number
+          comment_karma: number
+          created_at: string
+          display_name: string
+          id: string
+          online: boolean
+          post_count: number
+          post_karma: number
+          username: string
+        }[]
+      }
+      public_usernames: {
+        Args: { _limit?: number }
+        Returns: {
+          username: string
+        }[]
+      }
       restore_account: { Args: { _user_id: string }; Returns: undefined }
       revoke_account: { Args: { _user_id: string }; Returns: undefined }
       slugify: { Args: { _txt: string }; Returns: string }
+      touch_presence: { Args: never; Returns: undefined }
       username_available: { Args: { _username: string }; Returns: boolean }
       write_audit: {
         Args: {
