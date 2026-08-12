@@ -510,6 +510,15 @@ function HangoutRoom() {
                   src={party.media_url}
                   controls={isHost}
                   playsInline
+                  preload="auto"
+                  onLoadedMetadata={() => {
+                    const v = videoRef.current;
+                    if (!v) return;
+                    setDuration(isFinite(v.duration) ? v.duration : 0);
+                    const resume = isHost ? Math.max(savedPos(), party.current_time_sec) : party.current_time_sec;
+                    if (resume > 1 && Math.abs(v.currentTime - resume) > 1) v.currentTime = resume;
+                    if (party.is_playing) v.play().catch(() => {});
+                  }}
                   onPlay={() => pushState({ is_playing: true, current_time_sec: videoRef.current?.currentTime ?? 0 })}
                   onPause={() => pushState({ is_playing: false, current_time_sec: videoRef.current?.currentTime ?? 0 })}
                   onSeeked={() => pushState({ current_time_sec: videoRef.current?.currentTime ?? 0 })}
