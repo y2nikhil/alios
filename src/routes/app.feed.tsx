@@ -71,9 +71,9 @@ function FeedPage() {
     const list = (data ?? []) as Post[];
     setPosts(list);
     setAuthors(await fetchAuthors(list.map((p) => p.author_id)));
-    const ids = [...new Set(list.map((p) => p.author_id))];
-    if (ids.length) {
-      const { data: pres } = await (supabase as any).rpc("public_presence", { _ids: ids });
+    const authorIds = [...new Set(list.map((p) => p.author_id))];
+    if (authorIds.length) {
+      const { data: pres } = await (supabase as any).rpc("public_presence", { _ids: authorIds });
       const map: Record<string, true> = {};
       (pres ?? []).forEach((r: { id: string; online: boolean }) => { if (r.online) map[r.id] = true; });
       setOnlineIds(map);
