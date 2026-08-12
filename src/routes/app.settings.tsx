@@ -75,7 +75,7 @@ function SettingsPage() {
                 <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium">{s.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{s.category} · {s.is_paid ? "paid" : "unpaid"}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{s.category}</p>
                 </div>
                 {s.shortcut_key && (
                   <kbd className="hidden sm:inline-flex h-6 min-w-6 items-center justify-center rounded border border-white/10 bg-white/5 px-1.5 text-xs font-mono">
