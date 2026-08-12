@@ -46,6 +46,7 @@ function FeedPage() {
   const search = useSearch({ from: "/app/feed" });
   const [posts, setPosts] = useState<Post[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
+  const [onlineIds, setOnlineIds] = useState<Record<string, true>>({});
   const [votes, setVotes] = useState<Record<string, -1 | 1>>({});
   const [saved, setSaved] = useState<Record<string, true>>({});
   const [reactions, setReactions] = useState<Record<string, Record<string, number>>>({});
@@ -70,6 +71,13 @@ function FeedPage() {
     const list = (data ?? []) as Post[];
     setPosts(list);
     setAuthors(await fetchAuthors(list.map((p) => p.author_id)));
+    const ids = [...new Set(list.map((p) => p.author_id))];
+    if (ids.length) {
+      const { data: pres } = await (supabase as any).rpc("public_presence", { _ids: ids });
+      const map: Record<string, true> = {};
+      (pres ?? []).forEach((r: { id: string; online: boolean }) => { if (r.online) map[r.id] = true; });
+      setOnlineIds(map);
+    }
 
     const ids = list.map((p) => p.id);
     if (ids.length) {
@@ -276,6 +284,7 @@ function FeedPage() {
                 key={p.id}
                 post={p}
                 author={authors[p.author_id]}
+                online={!!onlineIds[p.author_id]}
                 myVote={votes[p.id] ?? 0}
                 onVote={vote}
                 canModerate={isAdmin || p.author_id === user?.id}
