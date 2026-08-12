@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Bookmark, ExternalLink, MessageSquare, Pin, Share2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
+import { OnlineDot } from "@/components/BrandLogo";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostReactions } from "@/components/feed/PostReactions";
 import { ReportButton } from "@/components/ReportButton";
@@ -29,7 +30,7 @@ export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
 export function PostCard({
   post, author, myVote, onVote, canModerate, onDelete,
   saved, onToggleSave, canPin, onTogglePin,
-  reactions = {}, myReaction = null, onReact,
+  reactions = {}, myReaction = null, onReact, online,
 }: {
   post: Post;
   author?: Author;
@@ -44,6 +45,7 @@ export function PostCard({
   reactions?: Record<string, number>;
   myReaction?: string | null;
   onReact?: (postId: string, emoji: string | null) => void;
+  online?: boolean;
 }) {
   const name = author?.display_name ?? author?.username ?? "Student";
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${postPath(post)}` : postPath(post);
@@ -59,12 +61,15 @@ export function PostCard({
         </p>
       )}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <AvatarIconRender
-          icon={author?.avatar_icon}
-          gradient={author?.avatar_gradient}
-          initial={name[0]}
-          className="h-6 w-6 shrink-0 rounded-full grid place-items-center text-[10px] font-bold text-white"
-        />
+        <span className="relative shrink-0">
+          <AvatarIconRender
+            icon={author?.avatar_icon}
+            gradient={author?.avatar_gradient}
+            initial={name[0]}
+            className="h-6 w-6 shrink-0 rounded-full grid place-items-center text-[10px] font-bold text-white"
+          />
+          {online && <OnlineDot online className="absolute -bottom-0.5 -right-0.5 h-2 w-2" />}
+        </span>
         <Link to="/app/u/$userId" params={{ userId: post.author_id }} className="font-medium text-foreground hover:underline truncate">
           {name}
         </Link>
