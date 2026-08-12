@@ -31,7 +31,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "alios"
+const SITE_NAME = "ClassLab"
 const SENDER_DOMAIN = "notify.classlab.in"
 const ROOT_DOMAIN = "classlab.in"
 const FROM_DOMAIN = "notify.classlab.in"
