@@ -309,6 +309,7 @@ function FloatingPlayer({
   const dragRef = useRef<{ ox: number; oy: number; sx: number; sy: number } | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [muted, setMuted] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     try { localStorage.setItem("alios-floating-player", JSON.stringify({ x: pos.x, y: pos.y })); } catch {}
@@ -321,8 +322,11 @@ function FloatingPlayer({
 
   const onPointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest("button")) return;
+    e.preventDefault();
+    e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = { ox: pos.x, oy: pos.y, sx: e.clientX, sy: e.clientY };
+    setIsDragging(true);
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragRef.current) return;
@@ -335,6 +339,7 @@ function FloatingPlayer({
   };
   const onPointerUp = (e: React.PointerEvent) => {
     dragRef.current = null;
+    setIsDragging(false);
     try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
   };
 
@@ -346,7 +351,7 @@ function FloatingPlayer({
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
-      className="fixed z-[60] glass rounded-xl overflow-hidden shadow-2xl flex flex-col"
+      className="pointer-events-auto fixed z-[100] glass rounded-xl overflow-hidden shadow-2xl flex flex-col"
       style={{
         left: pos.x,
         top: pos.y,
@@ -361,7 +366,10 @@ function FloatingPlayer({
       }}
     >
       <div
-        className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card/80 cursor-move select-none touch-none"
+        className={cn(
+          "flex items-center gap-2 px-3 py-2 border-b border-border bg-card/80 cursor-grab select-none touch-none",
+          isDragging && "cursor-grabbing",
+        )}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -392,12 +400,12 @@ function FloatingPlayer({
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
-      <div className="flex-1 bg-black relative min-h-0">
+      <div className="pointer-events-auto flex-1 bg-black relative min-h-0">
         <iframe
           key={videoId}
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1&enablejsapi=1`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&autoplay=1&fs=1&playsinline=1&controls=1&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`}
           title={title}
-          className="absolute inset-0 w-full h-full"
+          className="pointer-events-auto absolute inset-0 w-full h-full"
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         />
