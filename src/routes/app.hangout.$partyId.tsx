@@ -579,7 +579,7 @@ function HangoutRoom() {
                   className="w-full h-full object-contain"
                 />
               ) : party.media_kind === "youtube" ? (
-                <div id={`yt-${partyId}`} className="w-full h-full" />
+                <div key={reloadTick} id={`yt-${partyId}-${reloadTick}`} className="w-full h-full" />
               ) : (
                 <iframe
                   src={party.media_url}
