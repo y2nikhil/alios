@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play, Trash2, Plus, CheckCircle2, Circle, Youtube, X, Move } from "lucide-react";
+import { Play, Pause, Trash2, Plus, CheckCircle2, Circle, Youtube, X, Move, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,11 @@ type Progress = {
   completed: boolean;
   watched_seconds: number;
 };
+
+export function isFloatingPlayerTarget(target: EventTarget | null) {
+  const el = target as HTMLElement | null;
+  return !!(el && typeof el.closest === "function" && el.closest("[data-floating-player]"));
+}
 
 export function YouTubeChecklist({
   taskId,

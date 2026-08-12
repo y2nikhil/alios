@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { YouTubeChecklist } from "@/components/YouTubeChecklist";
+import { YouTubeChecklist, isFloatingPlayerTarget } from "@/components/YouTubeChecklist";
 import { NewTaskDialog } from "@/components/MyTasks";
 
 export const Route = createFileRoute("/app/playlists")({
@@ -138,7 +138,7 @@ function PlaylistsPage() {
           </div>
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Playlist Center</h1>
-            <p className="text-sm text-muted-foreground">Dedicated space for YouTube training tasks, progress tracking, and playback.</p>
+            <p className="text-sm text-muted-foreground">Turn any YouTube video or playlist into a checklist: play it in a floating window you can drag anywhere, keep working, then tick it off.</p>
           </div>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
@@ -166,7 +166,7 @@ function PlaylistsPage() {
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <h2 className="text-sm font-semibold">Your playlists</h2>
-              <p className="text-xs text-muted-foreground">Open any playlist to play videos and update your checklist progress.</p>
+              <p className="text-xs text-muted-foreground">Open a playlist, hit play, drag the floating player where you like, and mark each video complete as you finish.</p>
             </div>
             <Badge variant="outline" className="text-[11px]">{tasks.length} total</Badge>
           </div>
@@ -225,7 +225,12 @@ function PlaylistsPage() {
 
 
       <Dialog open={!!openTask} onOpenChange={(open) => !open && setOpenTask(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin">
+        <DialogContent
+          className="max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin"
+          onPointerDownOutside={(e) => { if (isFloatingPlayerTarget(e.target)) e.preventDefault(); }}
+          onInteractOutside={(e) => { if (isFloatingPlayerTarget(e.target)) e.preventDefault(); }}
+          onFocusOutside={(e) => { if (isFloatingPlayerTarget(e.target)) e.preventDefault(); }}
+        >
           {openTask && (
             <>
               <DialogHeader>
@@ -235,6 +240,13 @@ function PlaylistsPage() {
                 </DialogTitle>
               </DialogHeader>
               {openTask.description && <p className="text-sm text-muted-foreground">{openTask.description}</p>}
+              <div className="rounded-xl border border-border bg-accent/20 p-3 text-xs text-muted-foreground space-y-1">
+                <p className="font-medium text-foreground">How to use this playlist</p>
+                <p>1. Click a video title (or the play icon) — it opens in a floating window that stays on top.</p>
+                <p>2. Drag it by its title bar, resize from the bottom-right corner, and use play / pause / mute in the bar. This page stays open behind it.</p>
+                <p>3. When you're done, hit <span className="text-foreground">Mark complete</span> in the player, or the circle next to the video. Your progress bar updates instantly.</p>
+                <p>4. Use <span className="text-foreground">Next →</span> to roll straight into the next unwatched video.</p>
+              </div>
               <YouTubeChecklist taskId={openTask.id} canEdit={user?.id === openTask.assigned_by} />
               <div className="flex justify-end">
                 <Button variant="outline" onClick={() => setOpenTask(null)}>
