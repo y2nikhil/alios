@@ -435,7 +435,7 @@ function HangoutRoom() {
     <div
       ref={rootRef}
       className={cn(
-        "flex flex-col lg:flex-row bg-background overflow-hidden",
+        "flex flex-col md:flex-row bg-background overflow-hidden",
         isFull ? "h-screen" : "h-full min-h-0",
       )}
     >
@@ -479,7 +479,7 @@ function HangoutRoom() {
               onClick={() => setShowChat((v) => !v)}
               variant="ghost"
               size="sm"
-              className="hidden lg:inline-flex"
+              className="hidden md:inline-flex"
               title={showChat ? "Hide chat" : "Show chat"}
             >
               {showChat ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
@@ -546,7 +546,7 @@ function HangoutRoom() {
                 value={[Math.min(curTime, duration || 0)]}
                 max={Math.max(duration, 1)}
                 step={0.5}
-                disabled={!isHost || !duration}
+                disabled={!duration}
                 onValueChange={(v) => { setScrubbing(true); setCurTime(v[0]); }}
                 onValueCommit={(v) => { setScrubbing(false); seekTo(v[0]); }}
                 className="flex-1"
@@ -576,8 +576,8 @@ function HangoutRoom() {
 
       {(showChat || chatOnly) && (
         <aside className={cn(
-          "shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-background/70 backdrop-blur-xl flex flex-col",
-          chatOnly ? "flex-1 w-full max-h-none" : "lg:w-80 max-h-[45vh] lg:max-h-none",
+          "shrink-0 border-t md:border-t-0 md:border-l border-border bg-background/70 backdrop-blur-xl flex flex-col",
+          chatOnly ? "flex-1 w-full max-h-none" : "md:w-80 md:h-full min-h-0 max-h-[45vh] md:max-h-none",
         )}>
           <div className="p-3 border-b border-border flex items-center gap-2">
             <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 flex-1">
