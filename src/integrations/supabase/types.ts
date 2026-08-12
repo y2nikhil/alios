@@ -2183,6 +2183,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_active_watch_party_participant: {
+        Args: { _party_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_banned: { Args: { _user: string }; Returns: boolean }
       is_dm_participant: {
         Args: { _thread: string; _user: string }
