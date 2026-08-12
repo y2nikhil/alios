@@ -36,9 +36,8 @@ function LoginPage() {
     }
     navigate({ to: "/app" });
   };
-  const oauthRedirect = nextPath
-    ? `${window.location.origin}${nextPath}`
-    : window.location.origin;
+  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const oauthRedirect = nextPath ? `${origin}${nextPath}` : origin;
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
