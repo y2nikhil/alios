@@ -23,6 +23,32 @@ import {
 import { useAuth } from "@/lib/auth";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { upvotePct, timeAgo } from "@/lib/feed";
+
+type PublicHomePost = {
+  id: string;
+  slug: string | null;
+  title: string;
+  body: string | null;
+  tag: string | null;
+  up_count: number;
+  down_count: number;
+  comment_count: number;
+  created_at: string;
+  author_name: string | null;
+};
+
+type LiveParty = {
+  id: string;
+  title: string | null;
+  poster_url: string | null;
+  media_kind: string | null;
+  visibility: string;
+  started_at: string | null;
+  is_playing: boolean | null;
+};
+
 
 const HOME_FAQS = [
   {
@@ -128,8 +154,25 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: async () => {
+    const [postsRes, partiesRes] = await Promise.all([
+      (supabase as any).rpc("public_posts", { _limit: 6, _offset: 0 }),
+      supabase
+        .from("watch_parties")
+        .select("id,title,poster_url,media_kind,visibility,started_at,is_playing")
+        .eq("visibility", "public")
+        .is("ended_at", null)
+        .order("started_at", { ascending: false })
+        .limit(6),
+    ]);
+    return {
+      posts: ((postsRes?.data ?? []) as PublicHomePost[]).slice(0, 6),
+      parties: ((partiesRes?.data ?? []) as LiveParty[]) ?? [],
+    };
+  },
   component: LandingPage,
 });
+
 
 const PILLARS = [
   {
