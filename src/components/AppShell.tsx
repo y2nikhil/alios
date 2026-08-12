@@ -20,7 +20,20 @@ import { SectionSwitcher } from "@/components/SectionSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
+import { BrandLogo } from "@/components/BrandLogo";
 
+
+function PresenceHeartbeat() {
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) return;
+    const beat = () => { (supabase as any).rpc("touch_presence"); };
+    beat();
+    const id = setInterval(beat, 60_000);
+    return () => clearInterval(id);
+  }, [user]);
+  return null;
+}
 
 function OnboardingRedirect() {
   const { user } = useAuth();
@@ -362,6 +375,7 @@ export function AppShell() {
   return (
     <AuxProvider>
       <OnboardingRedirect />
+      <PresenceHeartbeat />
       <DisplayNamePrompt />
 
       <ShellInner />

@@ -16,6 +16,7 @@ import {
   Circle,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 
 const HOME_FAQS = [
@@ -148,15 +149,7 @@ const NAV = [
 ];
 
 function BrandMark({ size = 36 }: { size?: number }) {
-  return (
-    <div
-      className="grid place-items-center rounded-[10px] bg-primary text-primary-foreground font-display font-bold"
-      style={{ width: size, height: size, fontSize: size * 0.5 }}
-      aria-label="ClassLab"
-    >
-      C
-    </div>
-  );
+  return <BrandLogo size={size} showText={false} />;
 }
 
 function LandingPage() {
