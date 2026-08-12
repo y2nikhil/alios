@@ -23,6 +23,32 @@ import {
 import { useAuth } from "@/lib/auth";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { upvotePct, timeAgo } from "@/lib/feed";
+
+type PublicHomePost = {
+  id: string;
+  slug: string | null;
+  title: string;
+  body: string | null;
+  tag: string | null;
+  up_count: number;
+  down_count: number;
+  comment_count: number;
+  created_at: string;
+  author_name: string | null;
+};
+
+type LiveParty = {
+  id: string;
+  title: string | null;
+  poster_url: string | null;
+  media_kind: string | null;
+  visibility: string;
+  started_at: string | null;
+  is_playing: boolean | null;
+};
+
 
 const HOME_FAQS = [
   {
@@ -128,8 +154,25 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: async () => {
+    const [postsRes, partiesRes] = await Promise.all([
+      (supabase as any).rpc("public_posts", { _limit: 6, _offset: 0 }),
+      supabase
+        .from("watch_parties")
+        .select("id,title,poster_url,media_kind,visibility,started_at,is_playing")
+        .eq("visibility", "public")
+        .is("ended_at", null)
+        .order("started_at", { ascending: false })
+        .limit(6),
+    ]);
+    return {
+      posts: ((postsRes?.data ?? []) as PublicHomePost[]).slice(0, 6),
+      parties: (partiesRes?.data ?? []) as LiveParty[],
+    };
+  },
   component: LandingPage,
 });
+
 
 const PILLARS = [
   {
@@ -205,6 +248,153 @@ function BrandMark({ size = 36 }: { size?: number }) {
   return <BrandLogo size={size} showText={false} />;
 }
 
+/* Public, no-login preview of the live feed and public watch parties */
+function PublicPreview() {
+  const { posts, parties } = Route.useLoaderData() as { posts: PublicHomePost[]; parties: LiveParty[] };
+
+  return (
+    <section id="live" className="border-y border-border bg-card/40">
+      <div className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 lg:px-10 lg:py-20">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-2xl">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-primary">
+              Open to everyone
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              Look around before you sign up.
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              The student feed and public watch parties are readable without an account. Sign in only
+              when you want to post, comment, vote or join a room.
+            </p>
+          </div>
+          <Link to="/feed">
+            <Button variant="outline" className="h-11 rounded-full border-border bg-transparent px-5 hover:bg-secondary">
+              Open the full feed
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+
+        <div className="mt-10 grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          {/* Feed */}
+          <div className="rounded-[22px] border border-border bg-background p-5">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              <h3 className="font-display text-lg font-bold tracking-tight">From the student feed</h3>
+            </div>
+
+            {posts.length === 0 ? (
+              <p className="mt-4 text-sm text-muted-foreground">
+                No public posts yet — be the first to start a discussion.
+              </p>
+            ) : (
+              <ul className="mt-4 divide-y divide-border">
+                {posts.map((p) => (
+                  <li key={p.id} className="py-3 first:pt-0 last:pb-0">
+                    <Link
+                      to="/post/$slug"
+                      params={{ slug: p.slug ?? p.id }}
+                      className="group block"
+                    >
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                        {p.tag ? (
+                          <span className="rounded-full border border-border bg-secondary px-2 py-0.5">{p.tag}</span>
+                        ) : null}
+                        <span>{p.author_name ?? "Student"}</span>
+                        <span aria-hidden>·</span>
+                        <span>{timeAgo(p.created_at)}</span>
+                      </div>
+                      <p className="mt-1.5 font-medium leading-snug group-hover:text-primary">{p.title}</p>
+                      {p.body ? (
+                        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.body}</p>
+                      ) : null}
+                      <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
+                        {p.up_count + p.down_count > 0 ? (
+                          <span>{upvotePct(p.up_count, p.down_count)}% helpful</span>
+                        ) : null}
+                        <span>{p.comment_count} comments</span>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3">
+              <p className="flex-1 text-xs text-muted-foreground">
+                Reading is free. Sign in to comment, upvote and post.
+              </p>
+              <Link to="/signup">
+                <Button size="sm" className="rounded-full bg-primary px-4 text-primary-foreground hover:bg-primary/90">
+                  Sign in to interact
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Live public rooms */}
+          <div className="rounded-[22px] border border-border bg-background p-5">
+            <div className="flex items-center gap-2">
+              <PlayCircle className="h-4 w-4 text-primary" />
+              <h3 className="font-display text-lg font-bold tracking-tight">Public watch parties</h3>
+              {parties.length > 0 ? (
+                <span className="ml-auto flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[color:var(--chart-2)]" />
+                  {parties.length} live
+                </span>
+              ) : null}
+            </div>
+
+            {parties.length === 0 ? (
+              <p className="mt-4 text-sm text-muted-foreground">
+                No public rooms are live right now. Rooms show up here the moment someone goes live —
+                anyone can browse them, signing in is only needed to join the chat.
+              </p>
+            ) : (
+              <ul className="mt-4 space-y-3">
+                {parties.map((r) => (
+                  <li key={r.id} className="flex gap-3 rounded-xl border border-border bg-card p-3">
+                    <div className="h-14 w-24 shrink-0 overflow-hidden rounded-lg bg-secondary">
+                      {r.poster_url ? (
+                        <img
+                          src={r.poster_url}
+                          alt={r.title ?? "Watch party"}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="grid h-full w-full place-items-center">
+                          <PlayCircle className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{r.title ?? "Untitled room"}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {r.is_playing ? "Playing now" : "Paused"} · Public room
+                      </p>
+                      <Link to="/signup" className="mt-1.5 inline-block text-xs font-medium text-primary">
+                        Sign in to join →
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <Link to="/watch-party" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+              How watch parties work
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 function LandingPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -237,7 +427,7 @@ function LandingPage() {
               </div>
             </Link>
 
-            <nav className="hidden items-center gap-1 lg:flex">
+            <nav className="hidden items-center gap-1 md:flex">
               {NAV.map((n) => (
                 <Link
                   key={n.label}
@@ -331,6 +521,11 @@ function LandingPage() {
             <PreviewCard />
           </motion.div>
         </section>
+
+        {/* PUBLIC PREVIEW: FEED + LIVE ROOMS */}
+        <PublicPreview />
+
+
 
         {/* FEATURE PILLARS */}
         <section id="features" className="mx-auto max-w-7xl scroll-mt-24 px-5 py-16 lg:px-10 lg:py-24">
