@@ -445,10 +445,32 @@ function HangoutRoom() {
     navigate({ to: "/app/collaborate" });
   };
 
+  const handleReload = async () => {
+    setRefreshing(true);
+    toast.info("Reconnecting watch party…");
+    try {
+      await loadParty();
+      await Promise.all([loadParticipants(), loadMessages()]);
+      subscribe();
+      setReloadTick((t) => t + 1);
+      toast.success("Reconnected");
+    } catch {
+      toast.error("Soft reconnect failed — reloading page");
+      window.location.reload();
+    } finally {
+      setTimeout(() => setRefreshing(false), 800);
+    }
+  };
+
   if (loading || !party) {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Button onClick={handleReload} disabled={refreshing} variant="outline" size="sm">
+            <RefreshCw className={cn("h-4 w-4 mr-1.5", refreshing && "animate-spin")} /> Reload
+          </Button>
+        </div>
       </div>
     );
   }
