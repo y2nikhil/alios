@@ -62,6 +62,7 @@ import { Route as AppPostPostIdRouteImport } from './routes/app.post.$postId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicHooksDispatchPushRouteImport } from './routes/api.public.hooks.dispatch-push'
 
 const WatchPartyRoute = WatchPartyRouteImport.update({
@@ -329,6 +330,12 @@ const AppDmThreadIdRoute = AppDmThreadIdRouteImport.update({
   path: '/dm/$threadId',
   getParentRoute: () => AppRoute,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksDispatchPushRoute =
   ApiPublicHooksDispatchPushRouteImport.update({
     id: '/api/public/hooks/dispatch-push',
@@ -391,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -446,6 +454,7 @@ export interface FileRoutesByTo {
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -503,6 +512,7 @@ export interface FileRoutesById {
   '/app/u/$userId': typeof AppUUserIdRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -561,6 +571,7 @@ export interface FileRouteTypes {
     | '/app/u/$userId'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -616,6 +627,7 @@ export interface FileRouteTypes {
     | '/app/u/$userId'
     | '/app/mindmap'
     | '/api/public/hooks/dispatch-push'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -672,6 +684,7 @@ export interface FileRouteTypes {
     | '/app/u/$userId'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -706,6 +719,7 @@ export interface RootRouteChildren {
   PostSlugRoute: typeof PostSlugRoute
   UUsernameRoute: typeof UUsernameRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1081,6 +1095,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDmThreadIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/dispatch-push': {
       id: '/api/public/hooks/dispatch-push'
       path: '/api/public/hooks/dispatch-push'
@@ -1177,6 +1198,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostSlugRoute: PostSlugRoute,
   UUsernameRoute: UUsernameRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
