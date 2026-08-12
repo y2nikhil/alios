@@ -365,11 +365,13 @@ function ShellInner() {
 
         <main className={cn(
           "flex-1 min-h-0 scrollbar-thin",
-          location.pathname.startsWith("/app/collaborate") ? "overflow-hidden" : "overflow-y-auto",
+          location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/") ? "overflow-hidden" : "overflow-y-auto",
         )}>
           <motion.div
             key={location.pathname}
-            className={cn(location.pathname.startsWith("/app/collaborate") && "h-full min-h-0")}
+            className={cn(
+              (location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && "h-full min-h-0",
+            )}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}

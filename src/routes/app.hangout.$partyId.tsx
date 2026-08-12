@@ -58,6 +58,7 @@ function HangoutRoom() {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [draft, setDraft] = useState("");
+  const [sending, setSending] = useState(false);
   const [showChat, setShowChat] = useState(true);
   const [chatOnly, setChatOnly] = useState(false);
   const [isFull, setIsFull] = useState(false);
@@ -176,11 +177,15 @@ function HangoutRoom() {
   }, [partyId, user, navigate]);
 
   const loadParticipants = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("watch_party_participants")
       .select("*")
       .eq("party_id", partyId)
       .order("joined_at");
+    if (error) {
+      toast.error("Could not load room members");
+      return;
+    }
     const rows = (data ?? []) as Participant[];
     await Promise.all(rows.map(async (p) => {
       const { data: e } = await supabase.rpc("get_user_email", { _user_id: p.user_id });
@@ -190,12 +195,16 @@ function HangoutRoom() {
   }, [partyId]);
 
   const loadMessages = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("watch_party_messages")
       .select("*")
       .eq("party_id", partyId)
       .order("created_at")
       .limit(200);
+    if (error) {
+      toast.error("Could not load watch-party chat");
+      return;
+    }
     const rows = (data ?? []) as ChatMsg[];
     await Promise.all(rows.map(async (m) => {
       const { data: e } = await supabase.rpc("get_user_email", { _user_id: m.user_id });
@@ -232,7 +241,7 @@ function HangoutRoom() {
           const m = payload.new as ChatMsg;
           const { data: e } = await supabase.rpc("get_user_email", { _user_id: m.user_id });
           m.email = (e as string) ?? undefined;
-          setMessages((prev) => [...prev, m]);
+          setMessages((prev) => prev.some((item) => item.id === m.id) ? prev : [...prev, m]);
           setTimeout(() => chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" }), 50);
         })
       .subscribe();
@@ -326,16 +335,26 @@ function HangoutRoom() {
   }, [isHost, party, pushState]);
 
   const sendMsg = async () => {
-    if (!user || !draft.trim()) return;
+    if (!user || !draft.trim() || sending) return;
     const text = draft.trim();
     setDraft("");
-    const { error } = await supabase.from("watch_party_messages").insert({
-      party_id: partyId, user_id: user.id, body: text,
-    });
+    setSending(true);
+    const { data, error } = await supabase
+      .from("watch_party_messages")
+      .insert({ party_id: partyId, user_id: user.id, body: text })
+      .select("id, party_id, user_id, body, created_at")
+      .single();
     if (error) {
       setDraft(text);
       toast.error(error.message || "Could not send message");
+      setSending(false);
+      return;
     }
+    const sent = data as ChatMsg;
+    sent.email = user.email ?? undefined;
+    setMessages((prev) => prev.some((item) => item.id === sent.id) ? prev : [...prev, sent]);
+    setSending(false);
+    requestAnimationFrame(() => chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" }));
   };
 
   const endParty = async () => {
@@ -366,7 +385,7 @@ function HangoutRoom() {
       ref={rootRef}
       className={cn(
         "flex flex-col lg:flex-row bg-background overflow-hidden",
-        isFull ? "h-screen" : "h-[calc(100vh-3.5rem)]",
+        isFull ? "h-screen" : "h-full min-h-0",
       )}
     >
       {!chatOnly && (
@@ -553,11 +572,14 @@ function HangoutRoom() {
             <input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") sendMsg(); }}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
               placeholder="Type a message…"
+              disabled={sending}
               className="flex-1 rounded-lg bg-accent/40 border border-border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
             />
-            <Button onClick={sendMsg} size="icon" className="shrink-0 h-8 w-8"><Send className="h-3.5 w-3.5" /></Button>
+            <Button onClick={sendMsg} size="icon" disabled={sending || !draft.trim()} className="shrink-0 h-8 w-8">
+              {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+            </Button>
           </div>
         </aside>
       )}
