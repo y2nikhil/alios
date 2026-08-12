@@ -114,7 +114,7 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
   const [name, setName] = useState(status?.name ?? "");
   const [color, setColor] = useState(status?.color ?? "#10b981");
   const [category, setCategory] = useState(status?.category ?? "neutral");
-  const [isPaid, setIsPaid] = useState(status?.is_paid ?? true);
+  
   const [shortcut, setShortcut] = useState(status?.shortcut_key ?? "");
 
   return (
