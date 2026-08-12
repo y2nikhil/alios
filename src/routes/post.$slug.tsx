@@ -148,7 +148,13 @@ function PublicPostPage() {
 
       <article className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">{post.author_name ?? post.author_username ?? "Student"}</span>
+          {post.author_username ? (
+            <Link to="/u/$username" params={{ username: post.author_username }} className="font-medium text-foreground hover:underline">
+              {post.author_name ?? post.author_username}
+            </Link>
+          ) : (
+            <span className="font-medium text-foreground">{post.author_name ?? "Student"}</span>
+          )}
           <span>· {timeAgo(post.created_at)}</span>
           <span>· {readingTime(post.body)} min read</span>
           {post.tag && <span className="ml-auto rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{post.tag}</span>}
