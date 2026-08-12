@@ -37,6 +37,7 @@ export const Route = createRootRoute({
       { property: "og:title", content: "ClassLab — The Digital Campus for Every Student" },
       { property: "og:description", content: "Join 50,000+ students across 500+ Indian colleges. Communities, notes, events, internships and more — all inside ClassLab." },
       { property: "og:type", content: "website" },
+      { name: "google-site-verification", content: "26TVRoFjCOD6olJNi9OyxJoI1xeXY0nJsOsUcLAKA9o" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "ClassLab — The Digital Campus for Every Student" },
       { name: "twitter:description", content: "The digital campus for every Indian student — communities, notes, events, internships and more." },
