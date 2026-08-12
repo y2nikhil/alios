@@ -162,24 +162,25 @@ function HangoutRoom() {
   };
 
 
+  const loadParty = useCallback(async () => {
+    if (!user) return;
+    const { data, error } = await supabase.from("watch_parties").select("*").eq("id", partyId).single();
+    if (error || !data) {
+      toast.error("Party not found");
+      navigate({ to: "/app/collaborate" });
+      return;
+    }
+    setParty(data as Party);
+    await supabase.from("watch_party_participants").upsert(
+      { party_id: partyId, user_id: user.id, left_at: null },
+      { onConflict: "party_id,user_id" },
+    );
+    setLoading(false);
+  }, [partyId, user, navigate]);
+
   useEffect(() => {
     if (!user) return;
-    (async () => {
-      const { data, error } = await supabase.from("watch_parties").select("*").eq("id", partyId).single();
-      if (error || !data) {
-        toast.error("Party not found");
-        navigate({ to: "/app/collaborate" });
-        return;
-      }
-      setParty(data as Party);
-
-      await supabase.from("watch_party_participants").upsert(
-        { party_id: partyId, user_id: user.id, left_at: null },
-        { onConflict: "party_id,user_id" },
-      );
-
-      setLoading(false);
-    })();
+    loadParty();
     return () => {
       if (user) {
         supabase
@@ -190,7 +191,7 @@ function HangoutRoom() {
           .then(() => {});
       }
     };
-  }, [partyId, user, navigate]);
+  }, [partyId, user, loadParty]);
 
   const loadParticipants = useCallback(async () => {
     const { data, error } = await supabase
