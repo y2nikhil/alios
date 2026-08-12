@@ -21,6 +21,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
 import { BrandLogo } from "@/components/BrandLogo";
+import { trackEvent, installClickTracking } from "@/lib/activity";
+
 
 
 function PresenceHeartbeat() {
