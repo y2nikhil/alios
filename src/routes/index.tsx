@@ -276,7 +276,7 @@ function PublicPreview() {
           </Link>
         </div>
 
-        <div className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="mt-10 grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           {/* Feed */}
           <div className="rounded-[22px] border border-border bg-background p-5">
             <div className="flex items-center gap-2">
@@ -310,7 +310,9 @@ function PublicPreview() {
                         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.body}</p>
                       ) : null}
                       <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>{upvotePct(p.up_count, p.down_count)}% helpful</span>
+                        {p.up_count + p.down_count > 0 ? (
+                          <span>{upvotePct(p.up_count, p.down_count)}% helpful</span>
+                        ) : null}
                         <span>{p.comment_count} comments</span>
                       </div>
                     </Link>
