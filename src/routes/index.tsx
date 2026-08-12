@@ -167,7 +167,7 @@ export const Route = createFileRoute("/")({
     ]);
     return {
       posts: ((postsRes?.data ?? []) as PublicHomePost[]).slice(0, 6),
-      parties: ((partiesRes?.data ?? []) as LiveParty[]) ?? [],
+      parties: (partiesRes?.data ?? []) as LiveParty[],
     };
   },
   component: LandingPage,
@@ -280,7 +280,7 @@ function LandingPage() {
               </div>
             </Link>
 
-            <nav className="hidden items-center gap-1 lg:flex">
+            <nav className="hidden items-center gap-1 md:flex">
               {NAV.map((n) => (
                 <Link
                   key={n.label}
