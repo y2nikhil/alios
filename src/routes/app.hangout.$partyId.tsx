@@ -98,11 +98,14 @@ function HangoutRoom() {
         const v = videoRef.current;
         if (isFinite(v.duration)) setDuration(v.duration);
         setCurTime(v.currentTime);
+        try { if (v.currentTime > 1) sessionStorage.setItem(`wp-pos-${partyId}`, JSON.stringify({ t: v.currentTime, at: Date.now() })); } catch {}
       } else if (party.media_kind === "youtube" && ytPlayerRef.current?.getCurrentTime) {
         try {
           const d = ytPlayerRef.current.getDuration?.() ?? 0;
           if (d) setDuration(d);
-          setCurTime(ytPlayerRef.current.getCurrentTime());
+          const t = ytPlayerRef.current.getCurrentTime();
+          setCurTime(t);
+          if (t > 1) sessionStorage.setItem(`wp-pos-${partyId}`, JSON.stringify({ t, at: Date.now() }));
         } catch {}
       }
     }, 500);
