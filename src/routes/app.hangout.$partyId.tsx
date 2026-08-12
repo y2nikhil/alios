@@ -18,7 +18,18 @@ export const Route = createFileRoute("/app/hangout/$partyId")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Hangout — ClassLab" }] }),
+  head: () => ({
+    meta: [
+      { title: "Hangout — ClassLab" },
+      { name: "description", content: "Watch and study together in a live ClassLab watch party." },
+    ],
+    links: [
+      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
+      { rel: "preconnect", href: "https://www.youtube.com" },
+      { rel: "preconnect", href: "https://i.ytimg.com" },
+      { rel: "preconnect", href: "https://rr1---sn-npoeenl6.googlevideo.com", crossOrigin: "anonymous" },
+    ],
+  }),
   component: HangoutRoom,
 });
 
@@ -98,11 +109,14 @@ function HangoutRoom() {
         const v = videoRef.current;
         if (isFinite(v.duration)) setDuration(v.duration);
         setCurTime(v.currentTime);
+        try { if (v.currentTime > 1) sessionStorage.setItem(`wp-pos-${partyId}`, JSON.stringify({ t: v.currentTime, at: Date.now() })); } catch {}
       } else if (party.media_kind === "youtube" && ytPlayerRef.current?.getCurrentTime) {
         try {
           const d = ytPlayerRef.current.getDuration?.() ?? 0;
           if (d) setDuration(d);
-          setCurTime(ytPlayerRef.current.getCurrentTime());
+          const t = ytPlayerRef.current.getCurrentTime();
+          setCurTime(t);
+          if (t > 1) sessionStorage.setItem(`wp-pos-${partyId}`, JSON.stringify({ t, at: Date.now() }));
         } catch {}
       }
     }, 500);
@@ -275,47 +289,95 @@ function HangoutRoom() {
     }
   }, [party, isHost]);
 
+  // Keep latest values in refs so the player is NEVER rebuilt (rebuilding restarts the video)
+  const isHostRef = useRef(false);
+  const pushStateRef = useRef<typeof pushState | null>(null);
+  const partyRef = useRef<Party | null>(null);
+  useEffect(() => { isHostRef.current = isHost; }, [isHost]);
+  useEffect(() => { pushStateRef.current = pushState; }, [pushState]);
+  useEffect(() => { partyRef.current = party; }, [party]);
+
+  const posKey = `wp-pos-${partyId}`;
+  const savePos = useCallback((t: number) => {
+    try { if (t > 1) sessionStorage.setItem(posKey, JSON.stringify({ t, at: Date.now() })); } catch {}
+  }, [posKey]);
+  const savedPos = useCallback(() => {
+    try {
+      const raw = sessionStorage.getItem(posKey);
+      if (!raw) return 0;
+      const { t, at } = JSON.parse(raw);
+      if (Date.now() - at > 6 * 60 * 60 * 1000) return 0;
+      return Number(t) || 0;
+    } catch { return 0; }
+  }, [posKey]);
+
+  const mediaKind = party?.media_kind;
+  const mediaId = party?.media_id;
+
   useEffect(() => {
-    if (!party || party.media_kind !== "youtube" || !party.media_id) return;
+    if (mediaKind !== "youtube" || !mediaId) return;
     let cancelled = false;
     const ensureAPI = () =>
       new Promise<any>((resolve) => {
         const w = window as any;
         if (w.YT?.Player) return resolve(w.YT);
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-        w.onYouTubeIframeAPIReady = () => resolve(w.YT);
+        const existing = document.getElementById("yt-iframe-api");
+        if (!existing) {
+          const tag = document.createElement("script");
+          tag.id = "yt-iframe-api";
+          tag.src = "https://www.youtube.com/iframe_api";
+          document.head.appendChild(tag);
+        }
+        const prev = w.onYouTubeIframeAPIReady;
+        w.onYouTubeIframeAPIReady = () => { prev?.(); resolve(w.YT); };
+        const poll = setInterval(() => { if (w.YT?.Player) { clearInterval(poll); resolve(w.YT); } }, 120);
+        setTimeout(() => clearInterval(poll), 15000);
       });
     (async () => {
       const YT = await ensureAPI();
       if (cancelled) return;
       ytPlayerRef.current = new YT.Player(`yt-${partyId}`, {
-        videoId: party.media_id,
+        videoId: mediaId,
         host: "https://www.youtube-nocookie.com",
-        playerVars: { playsinline: 1, modestbranding: 1, rel: 0, origin: window.location.origin },
+        playerVars: {
+          playsinline: 1, modestbranding: 1, rel: 0, iv_load_policy: 3,
+          origin: window.location.origin,
+        },
         events: {
           onReady: () => {
             try {
-              ytPlayerRef.current.seekTo(party.current_time_sec, true);
-              if (party.is_playing) ytPlayerRef.current.playVideo();
+              const p = partyRef.current;
+              const resume = isHostRef.current
+                ? Math.max(savedPos(), p?.current_time_sec ?? 0)
+                : (p?.current_time_sec ?? 0);
+              if (resume > 1) ytPlayerRef.current.seekTo(resume, true);
+              setDuration(ytPlayerRef.current.getDuration?.() ?? 0);
+              if (p?.is_playing) ytPlayerRef.current.playVideo();
             } catch {}
           },
           onStateChange: (e: any) => {
-            if (!isHost) return;
+            try {
+              const t = ytPlayerRef.current?.getCurrentTime?.() ?? 0;
+              savePos(t);
+              const d = ytPlayerRef.current?.getDuration?.() ?? 0;
+              if (d) setDuration(d);
+            } catch {}
+            if (!isHostRef.current) return;
+            if (e.data !== YT.PlayerState.PLAYING && e.data !== YT.PlayerState.PAUSED) return;
             const playing = e.data === YT.PlayerState.PLAYING;
-            const t = ytPlayerRef.current.getCurrentTime?.() ?? 0;
-            pushState({ current_time_sec: t, is_playing: playing });
+            const t = ytPlayerRef.current?.getCurrentTime?.() ?? 0;
+            pushStateRef.current?.({ current_time_sec: t, is_playing: playing });
           },
         },
       });
     })();
     return () => {
       cancelled = true;
+      try { savePos(ytPlayerRef.current?.getCurrentTime?.() ?? 0); } catch {}
       try { ytPlayerRef.current?.destroy?.(); } catch {}
       ytPlayerRef.current = null;
     };
-  }, [party?.media_kind, party?.media_id, partyId, isHost]);
+  }, [mediaKind, mediaId, partyId, savePos, savedPos]);
 
   useEffect(() => {
     if (!isHost || !party) return;
@@ -384,7 +446,7 @@ function HangoutRoom() {
     <div
       ref={rootRef}
       className={cn(
-        "flex flex-col lg:flex-row bg-background overflow-hidden",
+        "flex flex-col md:flex-row bg-background overflow-hidden",
         isFull ? "h-screen" : "h-full min-h-0",
       )}
     >
@@ -428,7 +490,7 @@ function HangoutRoom() {
               onClick={() => setShowChat((v) => !v)}
               variant="ghost"
               size="sm"
-              className="hidden lg:inline-flex"
+              className="hidden md:inline-flex"
               title={showChat ? "Hide chat" : "Show chat"}
             >
               {showChat ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
@@ -459,6 +521,15 @@ function HangoutRoom() {
                   src={party.media_url}
                   controls={isHost}
                   playsInline
+                  preload="auto"
+                  onLoadedMetadata={() => {
+                    const v = videoRef.current;
+                    if (!v) return;
+                    setDuration(isFinite(v.duration) ? v.duration : 0);
+                    const resume = isHost ? Math.max(savedPos(), party.current_time_sec) : party.current_time_sec;
+                    if (resume > 1 && Math.abs(v.currentTime - resume) > 1) v.currentTime = resume;
+                    if (party.is_playing) v.play().catch(() => {});
+                  }}
                   onPlay={() => pushState({ is_playing: true, current_time_sec: videoRef.current?.currentTime ?? 0 })}
                   onPause={() => pushState({ is_playing: false, current_time_sec: videoRef.current?.currentTime ?? 0 })}
                   onSeeked={() => pushState({ current_time_sec: videoRef.current?.currentTime ?? 0 })}
@@ -495,7 +566,7 @@ function HangoutRoom() {
                 value={[Math.min(curTime, duration || 0)]}
                 max={Math.max(duration, 1)}
                 step={0.5}
-                disabled={!isHost || !duration}
+                disabled={!duration}
                 onValueChange={(v) => { setScrubbing(true); setCurTime(v[0]); }}
                 onValueCommit={(v) => { setScrubbing(false); seekTo(v[0]); }}
                 className="flex-1"
@@ -525,8 +596,8 @@ function HangoutRoom() {
 
       {(showChat || chatOnly) && (
         <aside className={cn(
-          "shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-background/70 backdrop-blur-xl flex flex-col",
-          chatOnly ? "flex-1 w-full max-h-none" : "lg:w-80 max-h-[45vh] lg:max-h-none",
+          "shrink-0 border-t md:border-t-0 md:border-l border-border bg-background/70 backdrop-blur-xl flex flex-col",
+          chatOnly ? "flex-1 w-full max-h-none" : "md:w-80 md:h-full min-h-0 max-h-[45vh] md:max-h-none",
         )}>
           <div className="p-3 border-b border-border flex items-center gap-2">
             <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5 flex-1">
