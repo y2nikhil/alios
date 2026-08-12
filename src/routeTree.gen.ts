@@ -33,6 +33,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AiStudyAssistantRouteImport } from './routes/ai-study-assistant'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as PostSlugRouteImport } from './routes/post.$slug'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
@@ -182,6 +183,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const UUsernameRoute = UUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PostSlugRoute = PostSlugRouteImport.update({
   id: '/post/$slug',
@@ -376,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/post/$slug': typeof PostSlugRoute
+  '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -430,6 +437,7 @@ export interface FileRoutesByTo {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/post/$slug': typeof PostSlugRoute
+  '/u/$username': typeof UUsernameRoute
   '/app': typeof AppIndexRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -486,6 +494,7 @@ export interface FileRoutesById {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/post/$slug': typeof PostSlugRoute
+  '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/post/$slug'
+    | '/u/$username'
     | '/app/'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -597,6 +607,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/post/$slug'
+    | '/u/$username'
     | '/app'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -652,6 +663,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/post/$slug'
+    | '/u/$username'
     | '/app/'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -692,6 +704,7 @@ export interface RootRouteChildren {
   ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
   PostSlugRoute: typeof PostSlugRoute
+  UUsernameRoute: typeof UUsernameRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
 }
 
@@ -864,6 +877,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/u/$username': {
+      id: '/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof UUsernameRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/post/$slug': {
       id: '/post/$slug'
@@ -1155,6 +1175,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
   PostSlugRoute: PostSlugRoute,
+  UUsernameRoute: UUsernameRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
 }
 export const routeTree = rootRouteImport

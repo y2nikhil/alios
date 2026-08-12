@@ -99,7 +99,10 @@ function Stat({ value, label }: { value: number; label: string }) {
 }
 
 function PublicProfilePage() {
-  const { profile, posts, comments } = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  const profile = data.profile as PublicProfile;
+  const posts = data.posts as ProfilePost[];
+  const comments = data.comments as ProfileComment[];
   const [tab, setTab] = useState<"posts" | "comments" | "about">("posts");
   const name = profile.display_name ?? profile.username ?? "Student";
 
