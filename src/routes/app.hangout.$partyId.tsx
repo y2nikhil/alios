@@ -329,9 +329,13 @@ function HangoutRoom() {
     if (!user || !draft.trim()) return;
     const text = draft.trim();
     setDraft("");
-    await supabase.from("watch_party_messages").insert({
+    const { error } = await supabase.from("watch_party_messages").insert({
       party_id: partyId, user_id: user.id, body: text,
     });
+    if (error) {
+      setDraft(text);
+      toast.error(error.message || "Could not send message");
+    }
   };
 
   const endParty = async () => {
