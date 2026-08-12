@@ -303,14 +303,20 @@ function FloatingPlayer({
   });
   const dragRef = useRef<{ ox: number; oy: number; sx: number; sy: number } | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     try { localStorage.setItem("alios-floating-player", JSON.stringify({ x: pos.x, y: pos.y })); } catch {}
   }, [pos.x, pos.y]);
 
+  const post = (func: string) => {
+    const win = containerRef.current?.querySelector("iframe")?.contentWindow;
+    win?.postMessage(JSON.stringify({ event: "command", func, args: [] }), "*");
+  };
+
   const onPointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest("button")) return;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = { ox: pos.x, oy: pos.y, sx: e.clientX, sy: e.clientY };
   };
   const onPointerMove = (e: React.PointerEvent) => {
@@ -324,13 +330,17 @@ function FloatingPlayer({
   };
   const onPointerUp = (e: React.PointerEvent) => {
     dragRef.current = null;
-    try { (e.target as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
   };
 
   if (typeof document === "undefined") return null;
   return createPortal(
     <div
       ref={containerRef}
+      data-floating-player=""
+      onPointerDown={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
       className="fixed z-[60] glass rounded-xl overflow-hidden shadow-2xl flex flex-col"
       style={{
         left: pos.x,
@@ -346,14 +356,29 @@ function FloatingPlayer({
       }}
     >
       <div
-        className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card/80 cursor-move select-none"
+        className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card/80 cursor-move select-none touch-none"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
+        <Move className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         <Youtube className="h-3.5 w-3.5 text-rose-500 shrink-0" />
         <p className="text-xs font-semibold truncate flex-1">{title}</p>
+        <span className="hidden sm:inline text-[10px] text-muted-foreground shrink-0">drag me · resize from the corner</span>
+        <button onClick={() => post("playVideo")} className="rounded p-1 hover:bg-accent/60" title="Play">
+          <Play className="h-3.5 w-3.5" />
+        </button>
+        <button onClick={() => post("pauseVideo")} className="rounded p-1 hover:bg-accent/60" title="Pause">
+          <Pause className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={() => { post(muted ? "unMute" : "mute"); setMuted((m) => !m); }}
+          className="rounded p-1 hover:bg-accent/60"
+          title={muted ? "Unmute" : "Mute"}
+        >
+          {muted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+        </button>
         <button
           onClick={onClose}
           className="rounded p-1 hover:bg-accent/60"
@@ -365,13 +390,14 @@ function FloatingPlayer({
       <div className="flex-1 bg-black relative min-h-0">
         <iframe
           key={videoId}
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&autoplay=1&fs=1&enablejsapi=1`}
           title={title}
           className="absolute inset-0 w-full h-full"
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         />
       </div>
+
       <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-border bg-card/80">
         <button
           onClick={onToggleComplete}
