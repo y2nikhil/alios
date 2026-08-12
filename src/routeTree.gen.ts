@@ -41,6 +41,7 @@ import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppPlaylistsRouteImport } from './routes/app.playlists'
 import { Route as AppPartyRouteImport } from './routes/app.party'
+import { Route as AppOverwatchRouteImport } from './routes/app.overwatch'
 import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppModerationRouteImport } from './routes/app.moderation'
@@ -230,6 +231,11 @@ const AppPlaylistsRoute = AppPlaylistsRouteImport.update({
 const AppPartyRoute = AppPartyRouteImport.update({
   id: '/party',
   path: '/party',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOverwatchRoute = AppOverwatchRouteImport.update({
+  id: '/overwatch',
+  path: '/overwatch',
   getParentRoute: () => AppRoute,
 } as any)
 const AppOnboardingRoute = AppOnboardingRouteImport.update({
@@ -431,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/onboarding': typeof AppOnboardingRoute
+  '/app/overwatch': typeof AppOverwatchRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -494,6 +501,7 @@ export interface FileRoutesByTo {
   '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/onboarding': typeof AppOnboardingRoute
+  '/app/overwatch': typeof AppOverwatchRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -559,6 +567,7 @@ export interface FileRoutesById {
   '/app/moderation': typeof AppModerationRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/onboarding': typeof AppOnboardingRoute
+  '/app/overwatch': typeof AppOverwatchRoute
   '/app/party': typeof AppPartyRoute
   '/app/playlists': typeof AppPlaylistsRoute
   '/app/settings': typeof AppSettingsRoute
@@ -625,6 +634,7 @@ export interface FileRouteTypes {
     | '/app/moderation'
     | '/app/notifications'
     | '/app/onboarding'
+    | '/app/overwatch'
     | '/app/party'
     | '/app/playlists'
     | '/app/settings'
@@ -688,6 +698,7 @@ export interface FileRouteTypes {
     | '/app/moderation'
     | '/app/notifications'
     | '/app/onboarding'
+    | '/app/overwatch'
     | '/app/party'
     | '/app/playlists'
     | '/app/settings'
@@ -752,6 +763,7 @@ export interface FileRouteTypes {
     | '/app/moderation'
     | '/app/notifications'
     | '/app/onboarding'
+    | '/app/overwatch'
     | '/app/party'
     | '/app/playlists'
     | '/app/settings'
@@ -1042,6 +1054,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPartyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/overwatch': {
+      id: '/app/overwatch'
+      path: '/overwatch'
+      fullPath: '/app/overwatch'
+      preLoaderRoute: typeof AppOverwatchRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/onboarding': {
       id: '/app/onboarding'
       path: '/onboarding'
@@ -1267,6 +1286,7 @@ interface AppRouteChildren {
   AppModerationRoute: typeof AppModerationRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppOnboardingRoute: typeof AppOnboardingRoute
+  AppOverwatchRoute: typeof AppOverwatchRoute
   AppPartyRoute: typeof AppPartyRoute
   AppPlaylistsRoute: typeof AppPlaylistsRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -1293,6 +1313,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppModerationRoute: AppModerationRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppOnboardingRoute: AppOnboardingRoute,
+  AppOverwatchRoute: AppOverwatchRoute,
   AppPartyRoute: AppPartyRoute,
   AppPlaylistsRoute: AppPlaylistsRoute,
   AppSettingsRoute: AppSettingsRoute,
