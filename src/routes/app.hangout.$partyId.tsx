@@ -18,7 +18,18 @@ export const Route = createFileRoute("/app/hangout/$partyId")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Hangout — ClassLab" }] }),
+  head: () => ({
+    meta: [
+      { title: "Hangout — ClassLab" },
+      { name: "description", content: "Watch and study together in a live ClassLab watch party." },
+    ],
+    links: [
+      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
+      { rel: "preconnect", href: "https://www.youtube.com" },
+      { rel: "preconnect", href: "https://i.ytimg.com" },
+      { rel: "preconnect", href: "https://rr1---sn-npoeenl6.googlevideo.com", crossOrigin: "anonymous" },
+    ],
+  }),
   component: HangoutRoom,
 });
 
