@@ -286,6 +286,9 @@ function ShellInner() {
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
+  useEffect(() => { trackEvent("page_view", document.title || null, {}, location.pathname); }, [location.pathname]);
+  useEffect(() => installClickTracking(), []);
+
   const NAV = [
     ...BASE_NAV,
     ...(isAdmin ? [
@@ -293,8 +296,12 @@ function ShellInner() {
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
       { to: "/app/moderation" as const, label: "Moderation", icon: Shield },
     ] : []),
-    ...(isSuperAdmin ? [{ to: "/app/super" as const, label: "Super", icon: Crown }] : []),
+    ...(isSuperAdmin ? [
+      { to: "/app/super" as const, label: "Super", icon: Crown },
+      { to: "/app/overwatch" as const, label: "Overwatch", icon: Eye },
+    ] : []),
   ];
+
 
   return (
     <div className="flex h-[100dvh] max-h-[100dvh] w-full overflow-hidden">
