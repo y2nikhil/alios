@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
-  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
+  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users, Mail,
   MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList, Plus, Pencil, Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
