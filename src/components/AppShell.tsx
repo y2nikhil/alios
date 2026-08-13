@@ -296,10 +296,14 @@ function ShellInner() {
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
       { to: "/app/moderation" as const, label: "Moderation", icon: Shield },
     ] : []),
+    ...(isAdmin ? [
+      { to: "/app/email-studio" as const, label: "Email Studio", icon: Mail },
+    ] : []),
     ...(isSuperAdmin ? [
       { to: "/app/super" as const, label: "Super", icon: Crown },
       { to: "/app/overwatch" as const, label: "Overwatch", icon: Eye },
     ] : []),
+
   ];
 
 
