@@ -1,68 +1,36 @@
 import * as React from 'react'
-
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Preview,
-  Text,
-} from '@react-email/components'
+import { Heading, Text } from '@react-email/components'
+import { Cta, EmailShell, styles } from './_layout'
 
 interface MagicLinkEmailProps {
-  siteName: string
-  confirmationUrl: string
+  siteName?: string
+  siteUrl?: string
+  recipient?: string
+  confirmationUrl?: string
 }
 
 export const MagicLinkEmail = ({
-  siteName,
-  confirmationUrl,
+  siteName = 'ClassLab',
+  siteUrl = 'https://classlab.in',
+  recipient,
+  confirmationUrl = 'https://classlab.in',
 }: MagicLinkEmailProps) => (
-  <Html lang="en" dir="ltr">
-    <Head />
-    <Preview>Your login link for {siteName}</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>Your login link</Heading>
-        <Text style={text}>
-          Click the button below to log in to {siteName}. This link will expire
-          shortly.
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Log In
-        </Button>
-        <Text style={footer}>
-          If you didn't request this link, you can safely ignore this email.
-        </Text>
-      </Container>
-    </Body>
-  </Html>
+  <EmailShell
+    siteName={siteName}
+    siteUrl={siteUrl}
+    preview={`Your one-time login link for ${siteName}`}
+    footerNote="This link expires shortly and can only be used once."
+  >
+    <Heading style={styles.h1}>Your login link</Heading>
+    <Text style={styles.text}>
+      Tap the button below to sign in{recipient ? ` as ${recipient}` : ''}. No password
+      needed.
+    </Text>
+    <Cta href={confirmationUrl} label="Sign in to ClassLab" />
+    <Text style={{ ...styles.small, marginTop: '22px' }}>
+      If you didn't request this link, ignore this email — your account stays safe.
+    </Text>
+  </EmailShell>
 )
 
 export default MagicLinkEmail
-
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#141414',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const button = {
-  backgroundColor: '#C9A227',
-  color: '#141414',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }

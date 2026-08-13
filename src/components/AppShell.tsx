@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
-  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users,
+  Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users, Mail,
   MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList, Plus, Pencil, Eye,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -296,10 +296,14 @@ function ShellInner() {
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
       { to: "/app/moderation" as const, label: "Moderation", icon: Shield },
     ] : []),
+    ...(isAdmin ? [
+      { to: "/app/email-studio" as const, label: "Email Studio", icon: Mail },
+    ] : []),
     ...(isSuperAdmin ? [
       { to: "/app/super" as const, label: "Super", icon: Crown },
       { to: "/app/overwatch" as const, label: "Overwatch", icon: Eye },
     ] : []),
+
   ];
 
 
