@@ -522,11 +522,18 @@ function MiniTimeline() {
           style={{ left: `${((Date.now() - dayStart) / dayMs) * 100}%` }}
         />
       </div>
-      <div className="mt-2 flex justify-between text-[10px] text-muted-foreground tabular-nums px-1">
+      <div className="relative mt-2 h-4 text-[10px] text-muted-foreground tabular-nums">
         {hourMarks.map((h) => (
-          <span key={h}>{h > 12 ? `${h - 12} PM` : h === 12 ? "12 PM" : `${h} AM`}</span>
+          <span
+            key={h}
+            className="absolute -translate-x-1/2 whitespace-nowrap"
+            style={{ left: `${(h / 24) * 100}%` }}
+          >
+            {h > 12 ? `${h - 12} PM` : h === 12 ? "12 PM" : `${h} AM`}
+          </span>
         ))}
       </div>
+
     </div>
   );
 }
