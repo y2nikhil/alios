@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchPartyRouteImport } from './routes/watch-party'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as StudyGroupsRouteImport } from './routes/study-groups'
 import { Route as StudentChatRouteImport } from './routes/student-chat'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -81,6 +82,11 @@ import { Route as ApiPublicHooksDispatchPushRouteImport } from './routes/api.pub
 const WatchPartyRoute = WatchPartyRouteImport.update({
   id: '/watch-party',
   path: '/watch-party',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudyGroupsRoute = StudyGroupsRouteImport.update({
@@ -450,6 +456,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/watch-party': typeof WatchPartyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -519,6 +526,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/watch-party': typeof WatchPartyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -590,6 +598,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student-chat': typeof StudentChatRoute
   '/study-groups': typeof StudyGroupsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/watch-party': typeof WatchPartyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -662,6 +671,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
+    | '/unsubscribe'
     | '/watch-party'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -731,6 +741,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
+    | '/unsubscribe'
     | '/watch-party'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -801,6 +812,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/student-chat'
     | '/study-groups'
+    | '/unsubscribe'
     | '/watch-party'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -872,6 +884,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudentChatRoute: typeof StudentChatRoute
   StudyGroupsRoute: typeof StudyGroupsRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   WatchPartyRoute: typeof WatchPartyRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -901,6 +914,13 @@ declare module '@tanstack/react-router' {
       path: '/watch-party'
       fullPath: '/watch-party'
       preLoaderRoute: typeof WatchPartyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/study-groups': {
@@ -1457,6 +1477,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudentChatRoute: StudentChatRoute,
   StudyGroupsRoute: StudyGroupsRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   WatchPartyRoute: WatchPartyRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
