@@ -49,6 +49,7 @@ import { Route as AppModerationRouteImport } from './routes/app.moderation'
 import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppFriendsRouteImport } from './routes/app.friends'
 import { Route as AppFeedRouteImport } from './routes/app.feed'
+import { Route as AppEmailStudioRouteImport } from './routes/app.email-studio'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
 import { Route as AppAssistantRouteImport } from './routes/app.assistant'
@@ -277,6 +278,11 @@ const AppFeedRoute = AppFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEmailStudioRoute = AppEmailStudioRouteImport.update({
+  id: '/email-studio',
+  path: '/email-studio',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
   id: '/collaborate',
   path: '/collaborate',
@@ -457,6 +463,7 @@ export interface FileRoutesByFullPath {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
@@ -525,6 +532,7 @@ export interface FileRoutesByTo {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
@@ -595,6 +603,7 @@ export interface FileRoutesById {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
   '/app/live': typeof AppLiveRoute
@@ -666,6 +675,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
     | '/app/live'
@@ -734,6 +744,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
     | '/app/live'
@@ -803,6 +814,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
     | '/app/live'
@@ -1164,6 +1176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFeedRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/email-studio': {
+      id: '/app/email-studio'
+      path: '/email-studio'
+      fullPath: '/app/email-studio'
+      preLoaderRoute: typeof AppEmailStudioRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/collaborate': {
       id: '/app/collaborate'
       path: '/collaborate'
@@ -1362,6 +1381,7 @@ interface AppRouteChildren {
   AppAssistantRoute: typeof AppAssistantRoute
   AppCalendarRoute: typeof AppCalendarRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppEmailStudioRoute: typeof AppEmailStudioRoute
   AppFeedRoute: typeof AppFeedRoute
   AppFriendsRoute: typeof AppFriendsRoute
   AppLiveRoute: typeof AppLiveRoute
@@ -1389,6 +1409,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssistantRoute: AppAssistantRoute,
   AppCalendarRoute: AppCalendarRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppEmailStudioRoute: AppEmailStudioRoute,
   AppFeedRoute: AppFeedRoute,
   AppFriendsRoute: AppFriendsRoute,
   AppLiveRoute: AppLiveRoute,
