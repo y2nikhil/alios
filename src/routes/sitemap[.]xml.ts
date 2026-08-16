@@ -17,6 +17,7 @@ const STATIC_PATHS: SitemapEntry[] = [
   { path: "/forums", changefreq: "weekly", priority: "0.8" },
   { path: "/study-groups", changefreq: "weekly", priority: "0.8" },
   { path: "/exam-prep", changefreq: "weekly", priority: "0.8" },
+  { path: "/exams/jee", changefreq: "weekly", priority: "0.8" },
   { path: "/notes-sharing", changefreq: "weekly", priority: "0.7" },
   { path: "/student-chat", changefreq: "weekly", priority: "0.7" },
   { path: "/watch-party", changefreq: "weekly", priority: "0.7" },
