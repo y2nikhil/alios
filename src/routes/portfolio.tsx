@@ -105,6 +105,7 @@ export const Route = createFileRoute("/portfolio")({
     featureHead(content, {
       metaTitle: "Portfolio | ClassLab",
       description: "Discover the Portfolio feature on ClassLab to help students connect, collaborate and grow.",
+      pageType: "CollectionPage",
       keywords: "student portfolio, peer learning, college students, university students, collaboration",
     }),
   component: PortfolioPage,

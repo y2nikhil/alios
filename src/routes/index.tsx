@@ -134,6 +134,14 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@graph": [
             {
+              "@type": "Organization",
+              name: "ClassLab",
+              url: "https://classlab.in",
+              logo: "https://classlab.in/favicon.png",
+              description:
+                "ClassLab is a digital campus for Indian students, combining community, focus tracking and AI-assisted exam preparation.",
+            },
+            {
               "@type": "WebPage",
               name: "ClassLab — The Digital Campus",
               url: "https://classlab.in/",

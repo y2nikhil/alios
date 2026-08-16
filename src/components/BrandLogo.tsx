@@ -13,7 +13,7 @@ export function BrandLogo({
     <span className={`flex items-center gap-2.5 ${className}`}>
       <img
         src="/favicon.png"
-        alt="ClassLab logo"
+        alt="ClassLab"
         width={size}
         height={size}
         className="rounded-[10px] shrink-0"

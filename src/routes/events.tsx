@@ -105,6 +105,7 @@ export const Route = createFileRoute("/events")({
     featureHead(content, {
       metaTitle: "Events | ClassLab",
       description: "Discover the Events feature on ClassLab to help students connect, collaborate and grow.",
+      pageType: "CollectionPage",
       keywords: "student events, peer learning, college students, university students, collaboration",
     }),
   component: EventsPage,

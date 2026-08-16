@@ -28,7 +28,7 @@ export function ChatImage({ path, alt }: { path: string; alt?: string }) {
   }
   return (
     <a href={url} target="_blank" rel="noreferrer" className="block">
-      <img src={url} alt={alt ?? "attachment"} className="rounded-xl max-h-72 max-w-sm object-cover border border-border" loading="lazy" />
+      <img src={url} alt={alt ?? "Image shared in ClassLab chat"} className="rounded-xl max-h-72 max-w-sm object-cover border border-border" loading="lazy" />
     </a>
   );
 }

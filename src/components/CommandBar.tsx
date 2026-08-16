@@ -188,7 +188,7 @@ export function CommandBar() {
               >
                 {askMode ? "Search" : "Ask AI"}
               </button>
-              <button onClick={() => setOpen(false)} className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-white/5">
+              <button onClick={() => setOpen(false)} aria-label="Close search" className="rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-white/5">
                 <X className="h-4 w-4" />
               </button>
             </div>

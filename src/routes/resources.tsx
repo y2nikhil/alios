@@ -105,6 +105,7 @@ export const Route = createFileRoute("/resources")({
     featureHead(content, {
       metaTitle: "Resources | ClassLab",
       description: "Discover the Resources feature on ClassLab to help students connect, collaborate and grow.",
+      pageType: "CollectionPage",
       keywords: "student resources, peer learning, college students, university students, collaboration",
     }),
   component: ResourcesPage,
