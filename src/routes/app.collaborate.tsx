@@ -29,7 +29,21 @@ export const Route = createFileRoute("/app/collaborate")({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/login" });
   },
-  head: () => ({ meta: [{ title: "Collaborate — ClassLab" }] }),
+  head: () => ({
+    meta: [
+      { title: "Collaborate — ClassLab" },
+      {
+        name: "description",
+        content:
+          "Chat with your study groups, share notes and files, run polls and keep every course conversation organised in one ClassLab workspace.",
+      },
+      { property: "og:title", content: "Collaborate with your study groups — ClassLab" },
+      {
+        property: "og:description",
+        content: "Group chat, shared notes, files and polls for every course and community you study with.",
+      },
+    ],
+  }),
   component: CollaboratePage,
 });
 

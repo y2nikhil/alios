@@ -11,7 +11,16 @@ export const Route = createFileRoute("/app/calendar")({
   head: () => ({
     meta: [
       { title: "Calendar — ClassLab" },
-      { name: "description", content: "Plan your events, deadlines, and reminders." },
+      {
+        name: "description",
+        content:
+          "Plan your study week on ClassLab: track exam dates, assignment deadlines, class events and reminders in one shared student calendar.",
+      },
+      { property: "og:title", content: "Study calendar and exam deadlines — ClassLab" },
+      {
+        property: "og:description",
+        content: "Keep exam dates, deadlines and study sessions in one calendar built for students.",
+      },
     ],
   }),
   component: CalendarPage,

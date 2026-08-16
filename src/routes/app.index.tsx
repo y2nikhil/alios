@@ -28,7 +28,16 @@ export const Route = createFileRoute("/app/")({
   head: () => ({
     meta: [
       { title: "ClassLab — Home" },
-      { name: "description", content: "Your ClassLab home: live status, focus score, live watch parties and AI insights." },
+      {
+        name: "description",
+        content:
+          "Your ClassLab home: today's focus score, punched AUX status, exam countdowns, live watch parties and personalised AI insights.",
+      },
+      { property: "og:title", content: "Your ClassLab home dashboard" },
+      {
+        property: "og:description",
+        content: "Focus score, exam countdowns, live rooms and AI insights for your study day.",
+      },
     ],
   }),
   component: CommandCenter,
