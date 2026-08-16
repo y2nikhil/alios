@@ -37,6 +37,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as PostSlugRouteImport } from './routes/post.$slug'
+import { Route as ExamsJeeRouteImport } from './routes/exams.jee'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
@@ -217,6 +218,11 @@ const UUsernameRoute = UUsernameRouteImport.update({
 const PostSlugRoute = PostSlugRouteImport.update({
   id: '/post/$slug',
   path: '/post/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamsJeeRoute = ExamsJeeRouteImport.update({
+  id: '/exams/jee',
+  path: '/exams/jee',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
@@ -484,6 +490,7 @@ export interface FileRoutesByFullPath {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
@@ -554,6 +561,7 @@ export interface FileRoutesByTo {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app': typeof AppIndexRoute
@@ -626,6 +634,7 @@ export interface FileRoutesById {
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
@@ -699,6 +708,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/email/unsubscribe'
+    | '/exams/jee'
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
@@ -769,6 +779,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/email/unsubscribe'
+    | '/exams/jee'
     | '/post/$slug'
     | '/u/$username'
     | '/app'
@@ -840,6 +851,7 @@ export interface FileRouteTypes {
     | '/app/super'
     | '/app/timeline'
     | '/email/unsubscribe'
+    | '/exams/jee'
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
@@ -894,6 +906,7 @@ export interface RootRouteChildren {
   ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  ExamsJeeRoute: typeof ExamsJeeRoute
   PostSlugRoute: typeof PostSlugRoute
   UUsernameRoute: typeof UUsernameRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -1103,6 +1116,13 @@ declare module '@tanstack/react-router' {
       path: '/post/$slug'
       fullPath: '/post/$slug'
       preLoaderRoute: typeof PostSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exams/jee': {
+      id: '/exams/jee'
+      path: '/exams/jee'
+      fullPath: '/exams/jee'
+      preLoaderRoute: typeof ExamsJeeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -1488,6 +1508,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  ExamsJeeRoute: ExamsJeeRoute,
   PostSlugRoute: PostSlugRoute,
   UUsernameRoute: UUsernameRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
