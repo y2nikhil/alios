@@ -18,7 +18,10 @@ export type FeaturePageContent = {
   related: { label: string; to: string }[];
 };
 
-export function featureHead(c: FeaturePageContent, meta: { metaTitle: string; description: string; keywords: string }) {
+export function featureHead(
+  c: FeaturePageContent,
+  meta: { metaTitle: string; description: string; keywords: string; pageType?: "WebPage" | "CollectionPage" },
+) {
   const url = `https://classlab.in/${c.slug}`;
   return {
     meta: [
@@ -41,7 +44,7 @@ export function featureHead(c: FeaturePageContent, meta: { metaTitle: string; de
           "@context": "https://schema.org",
           "@graph": [
             {
-              "@type": "WebPage",
+              "@type": meta.pageType ?? "WebPage",
               name: meta.metaTitle,
               description: meta.description,
               url,
