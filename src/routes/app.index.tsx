@@ -357,9 +357,6 @@ function CommandCenter() {
             <UpcomingList />
           </div>
 
-          <FocusGoalCard />
-
-
           <CountdownCalendar />
 
           <TrophyProgress userId={user?.id} />
