@@ -16,6 +16,10 @@ export type FeaturePageContent = {
   benefits: string[];
   faqs: { q: string; a: string }[];
   related: { label: string; to: string }[];
+  /** Unique long-form content for this page — keeps it distinct from sibling pages. */
+  deepDive?: { heading: string; paragraphs: string[] }[];
+  /** Who the page is for, with a concrete scenario each. */
+  audience?: { title: string; desc: string }[];
 };
 
 export function featureHead(
@@ -49,6 +53,13 @@ export function featureHead(
               description: meta.description,
               url,
               isPartOf: { "@type": "WebSite", name: "ClassLab", url: "https://classlab.in" },
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://classlab.in/" },
+                { "@type": "ListItem", position: 2, name: c.title, item: url },
+              ],
             },
             {
               "@type": "FAQPage",
@@ -163,6 +174,37 @@ export function FeaturePage({ c }: { c: FeaturePageContent }) {
           ))}
         </ul>
       </section>
+
+      {/* Who it's for */}
+      {c.audience?.length ? (
+        <section className="mx-auto max-w-6xl px-5 pb-16">
+          <h2 className="text-2xl font-semibold tracking-tight">Who {c.title} is for</h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {c.audience.map((a) => (
+              <article key={a.title} className="rounded-2xl border border-border bg-card p-6">
+                <h3 className="font-semibold">{a.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{a.desc}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {/* Deep dive */}
+      {c.deepDive?.length ? (
+        <section className="mx-auto max-w-6xl px-5 pb-16">
+          <div className="grid gap-8 lg:grid-cols-2">
+            {c.deepDive.map((d) => (
+              <article key={d.heading} className="rounded-3xl border border-border bg-card p-8">
+                <h2 className="text-xl font-semibold tracking-tight">{d.heading}</h2>
+                {d.paragraphs.map((para) => (
+                  <p key={para} className="mt-4 text-sm text-muted-foreground leading-relaxed">{para}</p>
+                ))}
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* FAQ */}
       <section className="mx-auto max-w-6xl px-5 pb-16">

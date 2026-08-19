@@ -31,7 +31,6 @@ const STATIC_PATHS: SitemapEntry[] = [
   { path: "/career", changefreq: "weekly", priority: "0.7" },
   { path: "/resources", changefreq: "weekly", priority: "0.7" },
   { path: "/ai-study-assistant", changefreq: "weekly", priority: "0.7" },
-  { path: "/login", changefreq: "monthly", priority: "0.4" },
   { path: "/signup", changefreq: "monthly", priority: "0.5" },
 ];
 
@@ -41,23 +40,27 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const entries: SitemapEntry[] = [...STATIC_PATHS];
 
+        const authorUsernames = new Set<string>();
+
         try {
-          const { data } = await (supabase as any).rpc("public_posts", { _limit: 1000, _offset: 0 });
-          (data ?? []).forEach((p: { slug: string | null; id: string }) => {
-            entries.push({ path: `/post/${p.slug ?? p.id}`, changefreq: "daily", priority: "0.6" });
-          });
+          for (let offset = 0; offset < 1000; offset += 200) {
+            const { data } = await (supabase as any).rpc("public_posts", { _limit: 200, _offset: offset });
+            const rows = (data ?? []) as { slug: string | null; id: string; author_username: string | null }[];
+            rows.forEach((p) => {
+              entries.push({ path: `/post/${p.slug ?? p.id}`, changefreq: "daily", priority: "0.6" });
+              if (p.author_username) authorUsernames.add(p.author_username);
+            });
+            if (rows.length < 200) break;
+          }
         } catch {
           // posts unavailable — still serve the static sitemap
         }
 
-        try {
-          const { data } = await (supabase as any).rpc("public_usernames", { _limit: 1000 });
-          (data ?? []).forEach((u: { username: string | null }) => {
-            if (u.username) entries.push({ path: `/u/${u.username}`, changefreq: "weekly", priority: "0.5" });
-          });
-        } catch {
-          // profiles unavailable — still serve the rest of the sitemap
-        }
+        // Only list profiles that have published content; empty profiles are thin pages
+        // and Google leaves them in "Discovered – currently not indexed".
+        authorUsernames.forEach((username) => {
+          entries.push({ path: `/u/${username}`, changefreq: "weekly", priority: "0.5" });
+        });
 
         const urls = entries.map((e) =>
           [

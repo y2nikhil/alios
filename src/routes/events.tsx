@@ -75,6 +75,36 @@ const content: FeaturePageContent = {
       "a": "No, but it helps hosts plan and helps you get reminders."
     }
   ],
+  "audience": [
+    {
+      "title": "Students who keep missing things",
+      "desc": "Every campus event in one calendar with reminders, so a fest deadline never passes unnoticed again."
+    },
+    {
+      "title": "Club organisers",
+      "desc": "Publish once, track RSVPs, message attendees and measure who actually turned up."
+    },
+    {
+      "title": "Study groups",
+      "desc": "Schedule recurring sessions and watch parties, and let members RSVP so you know the room size."
+    }
+  ],
+  "deepDive": [
+    {
+      "heading": "One calendar for a fragmented campus",
+      "paragraphs": [
+        "Campus information lives in a dozen WhatsApp groups, an Instagram story that expired and a noticeboard nobody walks past. ClassLab pulls events from every community you join into a single calendar view.",
+        "RSVP once and the event lands on your dashboard with a countdown, so it competes for your attention against your actual study plan rather than ambushing you."
+      ]
+    },
+    {
+      "heading": "For organisers: publish, fill, follow up",
+      "paragraphs": [
+        "Create an event in under a minute, share a public link, and let students RSVP without an extra signup. Attendance is recorded so you can see turnout versus registrations.",
+        "After the event, message attendees, post recordings and let the thread continue \u2014 the audience you built stays reachable instead of dissolving."
+      ]
+    }
+  ],
   "related": [
     {
       "label": "Watch Party",
