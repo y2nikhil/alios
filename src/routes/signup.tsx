@@ -22,6 +22,12 @@ const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
 function SignupPage() {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) navigate({ to: "/app" });
+  }, [user, authLoading, navigate]);
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");

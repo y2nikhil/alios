@@ -28,6 +28,12 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) navigate({ to: "/app" });
+  }, [user, authLoading, navigate]);
+
   const { next } = Route.useSearch();
   const nextPath = safeNext(next);
   const afterAuth = () => {
