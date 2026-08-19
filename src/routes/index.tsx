@@ -78,27 +78,6 @@ const HOME_FAQS = [
   },
 ];
 
-const SITE_PAGES = [
-  { label: "Blog", to: "/blog" },
-  { label: "About", to: "/about" },
-  { label: "Watch Party", to: "/watch-party" },
-  { label: "Student Chat", to: "/student-chat" },
-  { label: "Study Groups", to: "/study-groups" },
-  { label: "Communities", to: "/communities" },
-  { label: "Notes Sharing", to: "/notes-sharing" },
-  { label: "College Clubs", to: "/college-clubs" },
-  { label: "Events", to: "/events" },
-  { label: "Projects", to: "/projects" },
-  { label: "Resources", to: "/resources" },
-  { label: "Portfolio", to: "/portfolio" },
-  { label: "Coding Rooms", to: "/coding-rooms" },
-  { label: "Internships", to: "/internships" },
-  { label: "Campus Network", to: "/campus-network" },
-  { label: "Discussion Forums", to: "/forums" },
-  { label: "Exam Prep", to: "/exam-prep" },
-  { label: "Career Hub", to: "/career" },
-  { label: "AI Study Assistant", to: "/ai-study-assistant" },
-];
 
 export const Route = createFileRoute("/")({
   head: () => ({
