@@ -233,6 +233,8 @@ const NAV = [
   { label: "Watch Party", to: "/watch-party" },
   { label: "Exam Prep", to: "/exam-prep" },
   { label: "AI Assistant", to: "/ai-study-assistant" },
+  { label: "Blog", to: "/blog" },
+
 ];
 
 function BrandMark({ size = 36 }: { size?: number }) {

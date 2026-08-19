@@ -4,15 +4,23 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { slugify, type TocItem } from "@/lib/blog";
 
-export function TableOfContents({ toc }: { toc: TocItem[] }) {
+export function TableOfContents({ toc, variant = "card" }: { toc: TocItem[]; variant?: "card" | "sidebar" }) {
   if (toc.length < 2) return null;
+  const sidebar = variant === "sidebar";
   return (
-    <nav aria-label="Table of contents" className="my-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-amber-300">Table of contents</h2>
-      <ol className="mt-3 space-y-1.5 text-sm">
+    <nav
+      aria-label="Table of contents"
+      className={
+        sidebar
+          ? "rounded-2xl border border-white/10 bg-white/[0.02] p-4"
+          : "my-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+      }
+    >
+      <h2 className="text-[11px] font-semibold uppercase tracking-wider text-amber-300">On this page</h2>
+      <ol className={sidebar ? "mt-3 space-y-1.5 text-[13px]" : "mt-3 space-y-1.5 text-sm"}>
         {toc.map((t) => (
-          <li key={t.id} style={{ paddingLeft: (t.level - 2) * 14 }}>
-            <a href={`#${t.id}`} className="text-muted-foreground hover:text-foreground hover:underline">
+          <li key={t.id} style={{ paddingLeft: (t.level - 2) * 12 }}>
+            <a href={`#${t.id}`} className="block text-muted-foreground hover:text-amber-200 hover:underline">
               {t.text}
             </a>
           </li>
@@ -21,6 +29,7 @@ export function TableOfContents({ toc }: { toc: TocItem[] }) {
     </nav>
   );
 }
+
 
 function nodeText(children: ReactNode): string {
   let out = "";
