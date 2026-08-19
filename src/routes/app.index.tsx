@@ -360,6 +360,8 @@ function CommandCenter() {
 
           <CountdownCalendar />
 
+          <GoalGoalCompact />
+
           <TrophyProgress userId={user?.id} />
 
         </div>
