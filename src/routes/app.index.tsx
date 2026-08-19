@@ -332,12 +332,12 @@ function CommandCenter() {
             </div>
           </section>
 
-          {/* Tasks + Notes + Goal/Adherence */}
+          {/* Tasks + Notes + Leaderboard */}
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="glass rounded-3xl p-6"><MyTasks /></div>
             <div className="glass rounded-3xl p-6"><ManagerNotes /></div>
-            <div className="grid gap-4">
-              <GoalRingCard />
+            <div className="min-h-[220px]">
+              <LeaderboardCard />
             </div>
           </div>
         </div>
