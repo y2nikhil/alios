@@ -295,6 +295,12 @@ function CollaboratePage() {
               </p>
               <button onClick={() => setBrowseOpen(true)} className="text-[10px] text-primary hover:underline">Browse</button>
             </div>
+            <button
+              onClick={() => setNewGroupOpen(true)}
+              className="mb-1.5 w-full flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-500 px-2.5 py-2 text-sm font-semibold text-black shadow-[0_6px_18px_-8px_rgba(245,190,60,0.8)] hover:brightness-110 transition"
+            >
+              <Plus className="h-3.5 w-3.5" /> Create group
+            </button>
             {joinedGroups.length === 0 ? (
               <p className="px-2 text-[11px] text-muted-foreground/70 italic">Join a study group →</p>
             ) : joinedGroups.map((g) => {
@@ -325,9 +331,6 @@ function CollaboratePage() {
         <div className="p-2 border-t border-border space-y-1.5">
           <Button size="sm" variant="outline" className="w-full justify-start gap-2" onClick={() => setNewPartyOpen(true)}>
             <Sparkles className="h-3.5 w-3.5 text-pink-400" /> Start watch party
-          </Button>
-          <Button size="sm" variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={() => setNewGroupOpen(true)}>
-            <Plus className="h-3.5 w-3.5" /> New group
           </Button>
         </div>
       </aside>
