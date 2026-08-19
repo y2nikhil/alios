@@ -49,7 +49,7 @@ export function SignupSlider({ delayMs = 30000 }: { delayMs?: number }) {
           Track focus hours, join exam communities, share notes and host watch parties. No card needed.
         </p>
         <div className="mt-4 flex items-center gap-2">
-          <Link to="/signup" className="flex-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-center text-sm font-semibold text-black">
+          <Link to="/login" className="flex-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-center text-sm font-semibold text-black">
             Create free account
           </Link>
           <button onClick={close} className="rounded-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground">

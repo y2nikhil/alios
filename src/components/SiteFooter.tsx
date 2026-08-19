@@ -93,7 +93,7 @@ export function SiteFooter() {
             ) : (
               <>
                 <Link to="/login" className="hover:text-foreground">Log In</Link>
-                <Link to="/signup" className="hover:text-foreground">Join ClassLab</Link>
+                <Link to="/login" className="hover:text-foreground">Join ClassLab</Link>
               </>
             )}
             <Link to="/about" className="hover:text-foreground">Contact</Link>
