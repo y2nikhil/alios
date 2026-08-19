@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { readingMinutes, type BlogPost } from "@/lib/blog";
 import { timeAgo } from "@/lib/feed";
 import { SignupSlider } from "@/components/blog/SignupSlider";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const URL = "https://classlab.in/blog";
 const TITLE = "ClassLab Blog | Study Guides, Exam Strategy & Student Productivity";
@@ -139,6 +140,7 @@ function BlogIndex() {
       )}
 
       <SignupSlider />
+    <SiteFooter />
     </main>
   );
 }
