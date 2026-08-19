@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/BrandLogo";
+import { useAuth } from "@/lib/auth";
 
 const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
@@ -47,6 +48,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
 
 /** Shared public site footer with all important links. */
 export function SiteFooter() {
+  const { user } = useAuth();
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-5 py-12 lg:px-10">
