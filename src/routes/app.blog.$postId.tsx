@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, List, ListOrdered,
   Quote, LinkIcon, ImagePlus, Minus, Loader2, Save, Eye, Send,
-  Table as TableIcon, Code, Strikethrough, ListChecks,
+  Table as TableIcon, Code, Strikethrough, ListChecks, Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
