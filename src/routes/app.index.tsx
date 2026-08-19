@@ -251,9 +251,9 @@ function CommandCenter() {
 
             {/* Today's Focus + Upcoming */}
             <div className="space-y-5">
+              <FocusGoalCard />
               <DaySchedule />
               <NextEventCard />
-
             </div>
           </div>
 
@@ -356,9 +356,6 @@ function CommandCenter() {
             </div>
             <UpcomingList />
           </div>
-
-          <FocusGoalCard />
-
 
           <CountdownCalendar />
 
