@@ -39,9 +39,28 @@ const FAQS = [
 
 export const Route = createFileRoute("/feed")({
   loader: async () => {
-    const { data } = await (supabase as any).rpc("public_posts", { _limit: 40, _offset: 0 });
-    return { posts: (data ?? []) as PublicPost[] };
+    const [postsRes, blogRes, partiesRes] = await Promise.all([
+      (supabase as any).rpc("public_posts", { _limit: 40, _offset: 0 }),
+      (supabase as any)
+        .from("blog_posts")
+        .select("id,slug,title,excerpt")
+        .eq("status", "published")
+        .order("published_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("watch_parties")
+        .select("id,title,poster_url,media_kind,visibility,is_playing")
+        .eq("visibility", "public")
+        .is("ended_at", null)
+        .limit(4),
+    ]);
+    return {
+      posts: (postsRes?.data ?? []) as PublicPost[],
+      articles: (blogRes?.data ?? []) as { id: string; slug: string; title: string; excerpt: string | null }[],
+      parties: (partiesRes?.data ?? []) as any[],
+    };
   },
+
   head: ({ loaderData }) => ({
     meta: [
       { title: TITLE },
