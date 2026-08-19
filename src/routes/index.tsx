@@ -716,28 +716,7 @@ function LandingPage() {
         </section>
 
         {/* FOOTER */}
-        <footer className="border-t border-border">
-          <div className="mx-auto max-w-7xl px-5 pt-10 lg:px-10">
-            <h2 className="text-sm font-semibold">Explore ClassLab</h2>
-            <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              {SITE_PAGES.map((p) => (
-                <li key={p.to}>
-                  <Link to={p.to as never} className="hover:text-foreground">{p.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-8 text-xs text-muted-foreground lg:flex-row lg:px-10">
-            <div className="flex items-center gap-2">
-              <BrandMark size={24} />
-              <span>© {new Date().getFullYear()} ClassLab · The Digital Campus for Every Student</span>
-            </div>
-            <div className="flex gap-5">
-              <Link to="/login" className="hover:text-foreground">Log In</Link>
-              <Link to="/signup" className="hover:text-foreground">Join ClassLab</Link>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
     </div>
   );
