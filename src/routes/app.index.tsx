@@ -548,36 +548,50 @@ function MiniTimeline() {
   );
 }
 
-function GoalRingCard() {
+function useGoalRingData() {
   const stats = useDailyStats();
   const goalMin = 300;
   const minDone = Math.floor(stats.productiveSeconds / 60);
   const pct = Math.min(100, Math.round((minDone / goalMin) * 100));
-  const r = 56;
+  return { pct, minDone, goalMin };
+}
+
+function GoalRing({ size = 140, stroke = 10, pct }: { size?: number; stroke?: number; pct: number }) {
+  const r = (size - stroke) / 2 - 4;
   const c = 2 * Math.PI * r;
   const offset = c - (pct / 100) * c;
+  const cx = size / 2;
+  const cy = size / 2;
+
+  return (
+    <svg width={size} height={size} className="-rotate-90">
+      <circle cx={cx} cy={cy} r={r} stroke="oklch(1 0 0 / 0.08)" strokeWidth={stroke} fill="none" />
+      <motion.circle
+        cx={cx} cy={cy} r={r}
+        stroke="url(#goalGrad)" strokeWidth={stroke} fill="none" strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: offset }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+      />
+      <defs>
+        <linearGradient id="goalGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="oklch(0.74 0.18 280)" />
+          <stop offset="100%" stopColor="oklch(0.78 0.16 200)" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+function GoalRingCard() {
+  const { pct, minDone, goalMin } = useGoalRingData();
 
   return (
     <div className="glass rounded-3xl p-6 flex flex-col items-center justify-center">
       <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Daily Goal</p>
       <div className="relative mt-4">
-        <svg width="140" height="140" className="-rotate-90">
-          <circle cx="70" cy="70" r={r} stroke="oklch(1 0 0 / 0.08)" strokeWidth="10" fill="none" />
-          <motion.circle
-            cx="70" cy="70" r={r}
-            stroke="url(#goalGrad)" strokeWidth="10" fill="none" strokeLinecap="round"
-            strokeDasharray={c}
-            initial={{ strokeDashoffset: c }}
-            animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-          />
-          <defs>
-            <linearGradient id="goalGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="oklch(0.74 0.18 280)" />
-              <stop offset="100%" stopColor="oklch(0.78 0.16 200)" />
-            </linearGradient>
-          </defs>
-        </svg>
+        <GoalRing size={140} stroke={10} pct={pct} />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <p className="text-3xl font-bold">{pct}%</p>
           <p className="text-[10px] text-muted-foreground">{minDone}/{goalMin} min</p>
@@ -586,6 +600,28 @@ function GoalRingCard() {
       <p className="mt-3 text-xs text-center text-muted-foreground">
         {pct >= 100 ? "🎉 Crushed it!" : `${goalMin - minDone} min to your goal`}
       </p>
+    </div>
+  );
+}
+
+function GoalGoalCompact() {
+  const { pct, minDone, goalMin } = useGoalRingData();
+
+  return (
+    <div className="glass rounded-3xl p-4 flex items-center gap-4">
+      <div className="relative shrink-0">
+        <GoalRing size={72} stroke={6} pct={pct} />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="text-sm font-bold">{pct}%</p>
+        </div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Daily Goal</p>
+        <p className="mt-0.5 text-xs font-medium tabular-nums">{minDone}/{goalMin} min</p>
+        <p className="mt-1 text-[10px] text-muted-foreground">
+          {pct >= 100 ? "🎉 Crushed it!" : `${goalMin - minDone} min to goal`}
+        </p>
+      </div>
     </div>
   );
 }
