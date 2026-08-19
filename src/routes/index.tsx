@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { JoinLink, SignedOutOnly } from "@/components/JoinLink";
+import { JoinLink, SignedOutOnly, SignedInOnly } from "@/components/JoinLink";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -440,7 +440,8 @@ function LandingPage() {
               </SignedOutOnly>
               <JoinLink>
                 <Button size="sm" className="rounded-full bg-primary px-4 text-primary-foreground hover:bg-primary/90">
-                  Join ClassLab
+                  <SignedOutOnly>Join ClassLab</SignedOutOnly>
+                  <SignedInOnly>Open ClassLab</SignedInOnly>
                 </Button>
               </JoinLink>
             </div>

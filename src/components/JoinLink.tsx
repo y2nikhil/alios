@@ -21,3 +21,10 @@ export function SignedOutOnly({ children }: { children: ReactNode }) {
   if (loading || user) return null;
   return <>{children}</>;
 }
+
+/** Renders children only when the visitor is signed in. */
+export function SignedInOnly({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  if (!user) return null;
+  return <>{children}</>;
+}
