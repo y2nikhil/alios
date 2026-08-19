@@ -267,14 +267,31 @@ function BlogEditor() {
                     <t.icon className="h-4 w-4" />
                   </button>
                 ))}
-                <select
-                  onChange={(e) => { const v = e.target.value; if (v) { const l = INTERNAL_LINKS.find((x) => x.path === v)!; insert("[", `](${l.path})`, l.label); e.target.value = ""; } }}
-                  className="ml-auto rounded-lg bg-white/5 px-2 py-1.5 text-xs outline-none"
-                  aria-label="Insert internal link"
-                >
-                  <option value="">Link to a ClassLab page…</option>
-                  {INTERNAL_LINKS.map((l) => <option key={l.path} value={l.path}>{l.label}</option>)}
-                </select>
+                <div className="ml-auto flex items-center gap-1">
+                  <select
+                    onChange={(e) => { const v = e.target.value; if (v) { const l = INTERNAL_LINKS.find((x) => x.path === v)!; insert("[", `](${l.path})`, l.label); e.target.value = ""; } }}
+                    className="rounded-lg border border-white/15 bg-neutral-900 px-2 py-1.5 text-xs font-medium text-foreground outline-none focus:border-amber-400/50"
+                    aria-label="Insert a link to a ClassLab page"
+                  >
+                    <option value="" className="bg-neutral-900 text-foreground">Insert link to page…</option>
+                    {INTERNAL_LINKS.map((l) => <option key={l.path} value={l.path} className="bg-neutral-900 text-foreground">{l.label}</option>)}
+                  </select>
+                  <button
+                    type="button"
+                    title="Add a custom link"
+                    aria-label="Add a custom link"
+                    onClick={() => {
+                      const path = prompt("Page path or URL (e.g. /exam-prep or https://…)")?.trim();
+                      if (!path) return;
+                      const label = prompt("Link text", path.replace(/^\//, "")) ?? path;
+                      insert("[", `](${path})`, label);
+                    }}
+                    className="rounded-lg border border-amber-300/30 bg-amber-400/15 p-1.5 text-amber-300 hover:bg-amber-400/25"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
               </div>
               <textarea
                 ref={taRef}
