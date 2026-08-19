@@ -8,6 +8,26 @@ import { BlogContent, TableOfContents } from "@/components/blog/BlogContent";
 import { SignupSlider } from "@/components/blog/SignupSlider";
 import { SiteFooter } from "@/components/SiteFooter";
 
+type FeedPost = {
+  id: string;
+  slug: string | null;
+  title: string;
+  tag: string | null;
+  up_count: number;
+  comment_count: number;
+  created_at: string;
+  author_name: string | null;
+};
+
+type LiveParty = {
+  id: string;
+  title: string | null;
+  poster_url: string | null;
+  media_kind: string | null;
+  started_at: string | null;
+  is_playing: boolean | null;
+};
+
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
     const { data } = await (supabase as any)
@@ -24,7 +44,22 @@ export const Route = createFileRoute("/blog/$slug")({
       .neq("slug", params.slug)
       .order("published_at", { ascending: false })
       .limit(3);
-    return { post: data as BlogPost, related: (more ?? []) as BlogPost[] };
+    const [feedRes, partiesRes] = await Promise.all([
+      (supabase as any).rpc("public_posts", { _limit: 6, _offset: 0 }),
+      supabase
+        .from("watch_parties")
+        .select("id,title,poster_url,media_kind,visibility,started_at,is_playing")
+        .eq("visibility", "public")
+        .is("ended_at", null)
+        .order("started_at", { ascending: false })
+        .limit(6),
+    ]);
+    return {
+      post: data as BlogPost,
+      related: (more ?? []) as BlogPost[],
+      feedPosts: (feedRes?.data ?? []) as FeedPost[],
+      parties: (partiesRes?.data ?? []) as LiveParty[],
+    };
   },
   head: ({ params, loaderData }) => {
     const url = `https://classlab.in/blog/${params.slug}`;
