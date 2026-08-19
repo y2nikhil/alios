@@ -91,10 +91,7 @@ export function SiteFooter() {
             {user ? (
               <Link to="/app" className="hover:text-foreground">Open ClassLab</Link>
             ) : (
-              <>
-                <Link to="/login" className="hover:text-foreground">Log In</Link>
-                <Link to="/login" className="hover:text-foreground">Join ClassLab</Link>
-              </>
+              <Link to="/login" className="hover:text-foreground">Log in / Join</Link>
             )}
             <Link to="/about" className="hover:text-foreground">Contact</Link>
 
