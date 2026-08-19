@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, List, ListOrdered,
   Quote, LinkIcon, ImagePlus, Minus, Loader2, Save, Eye, Send,
+  Table as TableIcon, Code, Strikethrough, ListChecks,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -188,10 +189,22 @@ function BlogEditor() {
     { icon: Heading4, label: "Heading 4", run: () => insertBlock("#### Heading") },
     { icon: Bold, label: "Bold", run: () => insert("**", "**", "bold text") },
     { icon: Italic, label: "Italic", run: () => insert("*", "*", "italic text") },
+    { icon: Strikethrough, label: "Strikethrough", run: () => insert("~~", "~~", "struck text") },
+    { icon: Code, label: "Code block", run: () => insertBlock("```\ncode here\n```") },
     { icon: List, label: "Bullet list", run: () => insertBlock("- First point\n- Second point") },
     { icon: ListOrdered, label: "Numbered list", run: () => insertBlock("1. First step\n2. Second step") },
+    { icon: ListChecks, label: "Task list", run: () => insertBlock("- [ ] First task\n- [x] Done task") },
+    {
+      icon: TableIcon,
+      label: "Table",
+      run: () =>
+        insertBlock(
+          "| Column | Column | Column |\n| --- | --- | --- |\n| Value | Value | Value |\n| Value | Value | Value |",
+        ),
+    },
     { icon: Quote, label: "Quote", run: () => insertBlock("> Key takeaway") },
     { icon: Minus, label: "Divider", run: () => insertBlock("---") },
+
     {
       icon: LinkIcon,
       label: "Link",
