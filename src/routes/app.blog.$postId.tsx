@@ -280,13 +280,30 @@ function BlogEditor() {
                 ref={taRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                onKeyDown={(e) => {
+                  const mod = e.metaKey || e.ctrlKey;
+                  if (!mod) return;
+                  const k = e.key.toLowerCase();
+                  if (k === "b") { e.preventDefault(); insert("**", "**", "bold text"); }
+                  else if (k === "i") { e.preventDefault(); insert("*", "*", "italic text"); }
+                  else if (k === "s") { e.preventDefault(); save(false); }
+                  else if (k === "k") {
+                    e.preventDefault();
+                    const href = prompt("Link URL (internal path like /feed, or a full https:// URL):") ?? "";
+                    if (href) insert("[", `](${href})`, "link text");
+                  }
+                }}
                 rows={26}
-                placeholder={"## Start with the reader's problem\n\nWrite in short paragraphs. Use ## and ### headings so the table of contents builds itself.\n\n- Concrete tips\n- Real numbers\n\n![alt text describing the image](image-url)"}
+                placeholder={"## Start with the reader's problem\n\nWrite in short paragraphs. Use ## and ### headings so the table of contents builds itself.\n\n- Concrete tips\n- Real numbers\n\n| Exam | Date | Seats |\n| --- | --- | --- |\n| CAT | Nov | 3,000 |\n\n![alt text describing the image](image-url)"}
                 className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 font-mono text-[13px] leading-6 outline-none focus:border-amber-400/40"
               />
               <p className="mt-2 text-[11px] text-muted-foreground">
                 {plainText(content).split(/\s+/).filter(Boolean).length} words · {readingMinutes(content)} min read · {parsed.toc.length} headings
               </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Paste Markdown straight in — tables, task lists, ~~strikethrough~~ and code blocks all render. Shortcuts: ⌘/Ctrl+B bold, ⌘/Ctrl+I italic, ⌘/Ctrl+K link, ⌘/Ctrl+S save draft.
+              </p>
+
             </>
           )}
         </div>
