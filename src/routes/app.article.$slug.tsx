@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { parseBlocks, readingMinutes, type BlogPost } from "@/lib/blog";
 import { BlogContent, TableOfContents } from "@/components/blog/BlogContent";
+import { ShareDialog } from "@/components/ShareDialog";
 
 export const Route = createFileRoute("/app/article/$slug")({
   head: () => ({
@@ -58,9 +59,12 @@ function InAppArticle() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6">
-      <Link to="/app/blog" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3.5 w-3.5" /> All articles
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link to="/app/blog" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-3.5 w-3.5" /> All articles
+        </Link>
+        <ShareDialog url={`/blog/${post.slug}`} title={post.title} text={post.excerpt ?? undefined} />
+      </div>
 
       <article className="mt-5">
         {post.tags && post.tags.length > 0 && (
