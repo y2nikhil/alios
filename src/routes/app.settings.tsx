@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 import { useAux, type AuxStatus } from "@/lib/aux-store";
 import { useAuth } from "@/lib/auth";
@@ -117,9 +118,14 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
   
   const [shortcut, setShortcut] = useState(status?.shortcut_key ?? "");
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="glass rounded-2xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div className="glass rounded-2xl p-6 w-full max-w-md my-auto" onClick={(e) => e.stopPropagation()}>
         <h3 className="text-lg font-semibold">{status ? "Edit status" : "New status"}</h3>
         <div className="mt-4 space-y-3">
           <div className="space-y-1.5">
@@ -158,7 +164,8 @@ function StatusEditor({ status, onSave, onClose }: { status: AuxStatus | null; o
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

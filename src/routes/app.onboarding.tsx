@@ -44,6 +44,7 @@ const COACHING = [
 
 function OnboardingPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const load = useServerFn(getPrepProfile);
   const save = useServerFn(finalizeOnboarding);
 
