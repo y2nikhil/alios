@@ -740,7 +740,7 @@ function PreviewCard() {
         <Bell className="h-4 w-4 text-muted-foreground" />
       </div>
 
-      <div className="grid grid-cols-[140px_1fr] gap-3 p-3">
+      <div className="grid grid-cols-1 gap-3 p-2 sm:grid-cols-[140px_1fr] sm:p-3">
         {/* sidebar */}
         <aside className="hidden flex-col gap-1 rounded-[14px] border border-border bg-popover p-2 text-xs sm:flex">
           {["Home", "Feed", "Timeline", "Communities", "Watch Party", "Mind Maps", "Calendar", "Assistant", "Messages", "Trophies", "Settings"].map((s, i) => (
