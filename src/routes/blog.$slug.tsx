@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { JoinLink } from "@/components/JoinLink";
 import { ShareDialog } from "@/components/ShareDialog";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Flame, MessageSquare, Radio } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { parseBlocks, plainText, readingMinutes, type BlogPost } from "@/lib/blog";
 import { BlogContent, TableOfContents } from "@/components/blog/BlogContent";
