@@ -331,8 +331,36 @@ function BlogEditor() {
             <label className="mt-3 block text-[11px] uppercase tracking-wider text-muted-foreground">URL slug</label>
             <input value={slug} onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }} className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs outline-none" />
             <p className="mt-1 text-[10px] text-muted-foreground">classlab.in/blog/{slugify(slug) || "your-slug"}</p>
-            <label className="mt-3 block text-[11px] uppercase tracking-wider text-muted-foreground">Tags (comma separated)</label>
-            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="JEE, Study tips" className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs outline-none" />
+            <label className="mt-3 block text-[11px] uppercase tracking-wider text-muted-foreground">Topics / tags</label>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {tags.split(",").map((t) => t.trim()).filter(Boolean).map((t) => (
+                <span key={t} className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2.5 py-1 text-[11px] font-semibold text-amber-200">
+                  {t}
+                  <button
+                    type="button"
+                    aria-label={`Remove topic ${t}`}
+                    onClick={() => setTags(tags.split(",").map((x) => x.trim()).filter((x) => x && x !== t).join(", "))}
+                    className="text-amber-200/70 hover:text-amber-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  const t = prompt("New topic (e.g. CAT, Study tips)")?.trim();
+                  if (!t) return;
+                  const list = tags.split(",").map((x) => x.trim()).filter(Boolean);
+                  if (!list.some((x) => x.toLowerCase() === t.toLowerCase())) list.push(t);
+                  setTags(list.join(", "));
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-amber-300/30 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-400/20"
+              >
+                <Plus className="h-3 w-3" /> Add topic
+              </button>
+            </div>
+
             <label className="mt-3 flex items-center gap-2 text-xs">
               <input type="checkbox" checked={showToc} onChange={(e) => setShowToc(e.target.checked)} /> Show table of contents
             </label>
