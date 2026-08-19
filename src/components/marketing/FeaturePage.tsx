@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export type FeaturePageContent = {
   slug: string;
@@ -247,6 +248,7 @@ export function FeaturePage({ c }: { c: FeaturePageContent }) {
           <p className="mt-8 text-xs text-muted-foreground">© {new Date().getFullYear()} ClassLab · classlab.in</p>
         </div>
       </footer>
+    <SiteFooter />
     </main>
   );
 }

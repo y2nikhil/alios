@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mail } from "lucide-react";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const URL = "https://classlab.in/about";
 const TITLE = "About ClassLab | The Study Platform Built for Indian Students";
@@ -124,6 +125,7 @@ function AboutPage() {
         <Link to="/feed" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Student feed</Link>
         <Link to="/blog" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Blog</Link>
       </div>
+    <SiteFooter />
     </main>
   );
 }

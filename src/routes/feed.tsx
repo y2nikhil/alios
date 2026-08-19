@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { upvotePct, timeAgo, readingTime } from "@/lib/feed";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export type PublicPost = {
   id: string;
@@ -181,6 +182,7 @@ function PublicFeedPage() {
           </div>
         </div>
       </section>
+    <SiteFooter />
     </main>
   );
 }

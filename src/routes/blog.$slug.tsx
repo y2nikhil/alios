@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { parseBlocks, plainText, readingMinutes, type BlogPost } from "@/lib/blog";
 import { BlogContent, TableOfContents } from "@/components/blog/BlogContent";
 import { SignupSlider } from "@/components/blog/SignupSlider";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -164,6 +165,7 @@ function BlogArticle() {
       </div>
 
       <SignupSlider />
+    <SiteFooter />
     </main>
   );
 }
