@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, List, ListOrdered,
   Quote, LinkIcon, ImagePlus, Minus, Loader2, Save, Eye, Send,
-  Table as TableIcon, Code, Strikethrough, ListChecks,
+  Table as TableIcon, Code, Strikethrough, ListChecks, Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -267,14 +267,31 @@ function BlogEditor() {
                     <t.icon className="h-4 w-4" />
                   </button>
                 ))}
-                <select
-                  onChange={(e) => { const v = e.target.value; if (v) { const l = INTERNAL_LINKS.find((x) => x.path === v)!; insert("[", `](${l.path})`, l.label); e.target.value = ""; } }}
-                  className="ml-auto rounded-lg bg-white/5 px-2 py-1.5 text-xs outline-none"
-                  aria-label="Insert internal link"
-                >
-                  <option value="">Link to a ClassLab page…</option>
-                  {INTERNAL_LINKS.map((l) => <option key={l.path} value={l.path}>{l.label}</option>)}
-                </select>
+                <div className="ml-auto flex items-center gap-1">
+                  <select
+                    onChange={(e) => { const v = e.target.value; if (v) { const l = INTERNAL_LINKS.find((x) => x.path === v)!; insert("[", `](${l.path})`, l.label); e.target.value = ""; } }}
+                    className="rounded-lg border border-white/15 bg-neutral-900 px-2 py-1.5 text-xs font-medium text-foreground outline-none focus:border-amber-400/50"
+                    aria-label="Insert a link to a ClassLab page"
+                  >
+                    <option value="" className="bg-neutral-900 text-foreground">Insert link to page…</option>
+                    {INTERNAL_LINKS.map((l) => <option key={l.path} value={l.path} className="bg-neutral-900 text-foreground">{l.label}</option>)}
+                  </select>
+                  <button
+                    type="button"
+                    title="Add a custom link"
+                    aria-label="Add a custom link"
+                    onClick={() => {
+                      const path = prompt("Page path or URL (e.g. /exam-prep or https://…)")?.trim();
+                      if (!path) return;
+                      const label = prompt("Link text", path.replace(/^\//, "")) ?? path;
+                      insert("[", `](${path})`, label);
+                    }}
+                    className="rounded-lg border border-amber-300/30 bg-amber-400/15 p-1.5 text-amber-300 hover:bg-amber-400/25"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
               </div>
               <textarea
                 ref={taRef}
@@ -314,8 +331,36 @@ function BlogEditor() {
             <label className="mt-3 block text-[11px] uppercase tracking-wider text-muted-foreground">URL slug</label>
             <input value={slug} onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }} className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs outline-none" />
             <p className="mt-1 text-[10px] text-muted-foreground">classlab.in/blog/{slugify(slug) || "your-slug"}</p>
-            <label className="mt-3 block text-[11px] uppercase tracking-wider text-muted-foreground">Tags (comma separated)</label>
-            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="JEE, Study tips" className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs outline-none" />
+            <label className="mt-3 block text-[11px] uppercase tracking-wider text-muted-foreground">Topics / tags</label>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {tags.split(",").map((t) => t.trim()).filter(Boolean).map((t) => (
+                <span key={t} className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2.5 py-1 text-[11px] font-semibold text-amber-200">
+                  {t}
+                  <button
+                    type="button"
+                    aria-label={`Remove topic ${t}`}
+                    onClick={() => setTags(tags.split(",").map((x) => x.trim()).filter((x) => x && x !== t).join(", "))}
+                    className="text-amber-200/70 hover:text-amber-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  const t = prompt("New topic (e.g. CAT, Study tips)")?.trim();
+                  if (!t) return;
+                  const list = tags.split(",").map((x) => x.trim()).filter(Boolean);
+                  if (!list.some((x) => x.toLowerCase() === t.toLowerCase())) list.push(t);
+                  setTags(list.join(", "));
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-amber-300/30 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-amber-400/20"
+              >
+                <Plus className="h-3 w-3" /> Add topic
+              </button>
+            </div>
+
             <label className="mt-3 flex items-center gap-2 text-xs">
               <input type="checkbox" checked={showToc} onChange={(e) => setShowToc(e.target.checked)} /> Show table of contents
             </label>
