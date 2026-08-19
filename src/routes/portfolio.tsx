@@ -75,6 +75,36 @@ const content: FeaturePageContent = {
       "a": "Yes, via a single profile link."
     }
   ],
+  "audience": [
+    {
+      "title": "Students applying for internships",
+      "desc": "Send one link instead of a resume, a Drive folder and three screenshots. Recruiters see shipped work, not claims."
+    },
+    {
+      "title": "Club and society leads",
+      "desc": "Events you hosted and teams you ran show up automatically as leadership evidence."
+    },
+    {
+      "title": "Anyone building in public",
+      "desc": "A permanent, indexable page at classlab.in/u/yourname that grows every time you finish something."
+    }
+  ],
+  "deepDive": [
+    {
+      "heading": "A portfolio that fills itself",
+      "paragraphs": [
+        "The hardest part of a student portfolio is maintaining it. ClassLab solves that by generating it from activity you already do here: projects delivered, events hosted, notes contributed, milestones earned, questions answered in forums.",
+        "You keep full control \u2014 add external work, reorder sections, write your own summary, and hide anything you would rather not show."
+      ]
+    },
+    {
+      "heading": "Built to be found",
+      "paragraphs": [
+        "Your profile is a real public page with its own title, description and structured data, so it can be found when someone searches your name alongside your college or skill.",
+        "Karma from helpful comments and upvotes on your posts appears on the profile too, which gives a stranger a quick read on whether you actually help other students."
+      ]
+    }
+  ],
   "related": [
     {
       "label": "Watch Party",

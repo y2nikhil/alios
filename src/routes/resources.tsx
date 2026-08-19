@@ -75,6 +75,36 @@ const content: FeaturePageContent = {
       "a": "Yes, any student can contribute."
     }
   ],
+  "audience": [
+    {
+      "title": "Exam aspirants",
+      "desc": "Skip the search. Browse only what students who cleared your exam actually used, ranked by upvotes from your community."
+    },
+    {
+      "title": "Subject strugglers",
+      "desc": "Stuck on one topic? Pull the three best explanations for it into a saved list and work through them in a focus session."
+    },
+    {
+      "title": "Note makers",
+      "desc": "Share your material, get feedback, and build karma that makes your future posts more visible."
+    }
+  ],
+  "deepDive": [
+    {
+      "heading": "Curation beats collection",
+      "paragraphs": [
+        "A folder with 400 PDFs is not a resource library, it is a backlog. ClassLab ranks material by what students in the same exam or subject community actually voted useful, so the top of the list is the shortlist you would have built after weeks of trial and error.",
+        "Every resource carries its context \u2014 which exam, which topic, which year it was useful for \u2014 so outdated material naturally sinks."
+      ]
+    },
+    {
+      "heading": "From a saved link to a study session",
+      "paragraphs": [
+        "Saving something is not studying it. Attach a resource to a task or to a mind-map node, and it appears in your plan on the day you intended to use it.",
+        "Video playlists can be checked off as you complete them, and time spent is logged against your daily focus goal automatically."
+      ]
+    }
+  ],
   "related": [
     {
       "label": "Watch Party",

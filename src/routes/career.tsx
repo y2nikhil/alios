@@ -75,6 +75,36 @@ const content: FeaturePageContent = {
       "a": "Yes."
     }
   ],
+  "audience": [
+    {
+      "title": "First and second year students",
+      "desc": "You still have time to choose. Use the path explorer to compare product, data, core engineering, finance and design routes before you commit to a skill stack."
+    },
+    {
+      "title": "Pre-placement year students",
+      "desc": "Placement season rewards preparation started 8-10 months early. Run a weekly interview-prep block in a focus room and log every mock in your timeline."
+    },
+    {
+      "title": "Career switchers",
+      "desc": "Coming from a non-CS branch into tech, or from tech into consulting? Follow seniors who made the same jump and copy the sequence that worked for them."
+    }
+  ],
+  "deepDive": [
+    {
+      "heading": "Build a placement timeline that actually holds",
+      "paragraphs": [
+        "Most students lose placement season to scattered preparation: DSA one week, aptitude the next, resume rewritten the night before the deadline. ClassLab turns that into a visible plan \u2014 pick a target role, get a week-by-week track, and watch the countdown to your campus drive sit next to your daily focus hours.",
+        "Because your AUX punches and study sessions are logged automatically, you can see whether you really put in the interview prep you planned, instead of guessing at the end of the month."
+      ]
+    },
+    {
+      "heading": "Learn from people one year ahead of you",
+      "paragraphs": [
+        "The most useful placement intel is never published: which rounds a company actually runs on your campus, how deep the system-design question goes, what the HR round screens for. Seniors post that in forums and community threads after their interviews.",
+        "Follow the students in your branch who already interviewed, read their post history, and ask follow-ups in the open \u2014 the answer helps everyone in your batch instead of dying in a private DM."
+      ]
+    }
+  ],
   "related": [
     {
       "label": "Watch Party",

@@ -75,6 +75,36 @@ const content: FeaturePageContent = {
       "a": "Yes, enable notifications for matching roles."
     }
   ],
+  "audience": [
+    {
+      "title": "First-time applicants",
+      "desc": "No experience yet? Filter to openings that accept first and second years and apply with your ClassLab portfolio."
+    },
+    {
+      "title": "High-volume applicants",
+      "desc": "Twenty applications is normal. Track every one, with status and follow-up date, instead of trusting your inbox."
+    },
+    {
+      "title": "Referral seekers",
+      "desc": "Find students already interning at a company and ask them in the open thread how their process ran."
+    }
+  ],
+  "deepDive": [
+    {
+      "heading": "Tracking is the part people get wrong",
+      "paragraphs": [
+        "Most missed internships are not rejections \u2014 they are applications nobody followed up on. The tracker keeps every application in one board with its stage, the date you applied and when to nudge, so nothing quietly expires.",
+        "Deadlines can be pushed to your calendar and countdown widget, and push notifications warn you the day before one closes."
+      ]
+    },
+    {
+      "heading": "Apply with proof, not adjectives",
+      "paragraphs": [
+        "Your ClassLab portfolio doubles as your application profile: shipped projects, contributions, events run, and peer-visible karma. That is far more convincing than a one-page resume claiming the same things.",
+        "Peers who interviewed at the same company post what each round looked like, so you walk in knowing the format."
+      ]
+    }
+  ],
   "related": [
     {
       "label": "Watch Party",
