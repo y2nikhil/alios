@@ -86,7 +86,7 @@ const BASE_NAV = [
   { to: "/app/friends", label: "Friends", icon: Users },
   { to: "/app/party", label: "Watch Party", icon: Tv },
   { to: "/app/playlists", label: "Playlists", icon: Youtube },
-  { to: "/blog", label: "Blog", icon: Newspaper },
+  { to: "/app/blog", label: "Blog", icon: Newspaper },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
