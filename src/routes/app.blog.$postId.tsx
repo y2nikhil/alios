@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, List, ListOrdered,
   Quote, LinkIcon, ImagePlus, Minus, Loader2, Save, Eye, Send,
+  Table as TableIcon, Code, Strikethrough, ListChecks,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -188,10 +189,22 @@ function BlogEditor() {
     { icon: Heading4, label: "Heading 4", run: () => insertBlock("#### Heading") },
     { icon: Bold, label: "Bold", run: () => insert("**", "**", "bold text") },
     { icon: Italic, label: "Italic", run: () => insert("*", "*", "italic text") },
+    { icon: Strikethrough, label: "Strikethrough", run: () => insert("~~", "~~", "struck text") },
+    { icon: Code, label: "Code block", run: () => insertBlock("```\ncode here\n```") },
     { icon: List, label: "Bullet list", run: () => insertBlock("- First point\n- Second point") },
     { icon: ListOrdered, label: "Numbered list", run: () => insertBlock("1. First step\n2. Second step") },
+    { icon: ListChecks, label: "Task list", run: () => insertBlock("- [ ] First task\n- [x] Done task") },
+    {
+      icon: TableIcon,
+      label: "Table",
+      run: () =>
+        insertBlock(
+          "| Column | Column | Column |\n| --- | --- | --- |\n| Value | Value | Value |\n| Value | Value | Value |",
+        ),
+    },
     { icon: Quote, label: "Quote", run: () => insertBlock("> Key takeaway") },
     { icon: Minus, label: "Divider", run: () => insertBlock("---") },
+
     {
       icon: LinkIcon,
       label: "Link",
@@ -244,7 +257,7 @@ function BlogEditor() {
               {coverUrl && <img src={coverUrl} alt={coverAlt || title} className="mb-5 w-full rounded-xl object-cover" />}
               <h1 className="text-3xl font-bold leading-tight">{title || "Untitled article"}</h1>
               {showToc && <TableOfContents toc={parsed.toc} />}
-              <div className="mt-4"><BlogContent blocks={parsed.blocks} /></div>
+              <div className="mt-4"><BlogContent markdown={content} /></div>
             </article>
           ) : (
             <>
@@ -267,13 +280,30 @@ function BlogEditor() {
                 ref={taRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                onKeyDown={(e) => {
+                  const mod = e.metaKey || e.ctrlKey;
+                  if (!mod) return;
+                  const k = e.key.toLowerCase();
+                  if (k === "b") { e.preventDefault(); insert("**", "**", "bold text"); }
+                  else if (k === "i") { e.preventDefault(); insert("*", "*", "italic text"); }
+                  else if (k === "s") { e.preventDefault(); save(false); }
+                  else if (k === "k") {
+                    e.preventDefault();
+                    const href = prompt("Link URL (internal path like /feed, or a full https:// URL):") ?? "";
+                    if (href) insert("[", `](${href})`, "link text");
+                  }
+                }}
                 rows={26}
-                placeholder={"## Start with the reader's problem\n\nWrite in short paragraphs. Use ## and ### headings so the table of contents builds itself.\n\n- Concrete tips\n- Real numbers\n\n![alt text describing the image](image-url)"}
+                placeholder={"## Start with the reader's problem\n\nWrite in short paragraphs. Use ## and ### headings so the table of contents builds itself.\n\n- Concrete tips\n- Real numbers\n\n| Exam | Date | Seats |\n| --- | --- | --- |\n| CAT | Nov | 3,000 |\n\n![alt text describing the image](image-url)"}
                 className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 font-mono text-[13px] leading-6 outline-none focus:border-amber-400/40"
               />
               <p className="mt-2 text-[11px] text-muted-foreground">
                 {plainText(content).split(/\s+/).filter(Boolean).length} words · {readingMinutes(content)} min read · {parsed.toc.length} headings
               </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Paste Markdown straight in — tables, task lists, ~~strikethrough~~ and code blocks all render. Shortcuts: ⌘/Ctrl+B bold, ⌘/Ctrl+I italic, ⌘/Ctrl+K link, ⌘/Ctrl+S save draft.
+              </p>
+
             </>
           )}
         </div>

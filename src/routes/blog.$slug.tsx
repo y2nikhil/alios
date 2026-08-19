@@ -104,7 +104,7 @@ function ArticleNotFound() {
 
 function BlogArticle() {
   const { post, related } = Route.useLoaderData();
-  const { blocks, toc } = parseBlocks(post.content);
+  const { toc } = parseBlocks(post.content);
   const published = post.published_at ?? post.created_at;
 
   return (
@@ -140,7 +140,7 @@ function BlogArticle() {
         {post.show_toc && <TableOfContents toc={toc} />}
 
         <div className="mt-6">
-          <BlogContent blocks={blocks} />
+          <BlogContent markdown={post.content} />
         </div>
       </article>
 

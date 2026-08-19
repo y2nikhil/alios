@@ -1,43 +1,8 @@
-import { Fragment, type ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import type { Block, TocItem } from "@/lib/blog";
-
-/** Renders **bold**, *italic*, `code` and [links](url) inside a text run. */
-function inline(text: string, keyBase: string): ReactNode[] {
-  const out: ReactNode[] = [];
-  const re = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g;
-  let last = 0;
-  let m: RegExpExecArray | null;
-  let i = 0;
-  while ((m = re.exec(text))) {
-    if (m.index > last) out.push(text.slice(last, m.index));
-    const tok = m[0];
-    const k = `${keyBase}-${i++}`;
-    if (tok.startsWith("**")) out.push(<strong key={k}>{tok.slice(2, -2)}</strong>);
-    else if (tok.startsWith("`")) out.push(<code key={k} className="rounded bg-white/10 px-1.5 py-0.5 text-[0.85em]">{tok.slice(1, -1)}</code>);
-    else if (tok.startsWith("*")) out.push(<em key={k}>{tok.slice(1, -1)}</em>);
-    else {
-      const lm = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(tok)!;
-      const [, label, href] = lm;
-      if (href.startsWith("/")) {
-        out.push(
-          <Link key={k} to={href} className="font-medium text-amber-300 underline underline-offset-2 hover:text-amber-200">
-            {label}
-          </Link>,
-        );
-      } else {
-        out.push(
-          <a key={k} href={href} target="_blank" rel="noopener noreferrer" className="font-medium text-amber-300 underline underline-offset-2 hover:text-amber-200">
-            {label}
-          </a>,
-        );
-      }
-    }
-    last = m.index + tok.length;
-  }
-  if (last < text.length) out.push(text.slice(last));
-  return out;
-}
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { slugify, type TocItem } from "@/lib/blog";
 
 export function TableOfContents({ toc }: { toc: TocItem[] }) {
   if (toc.length < 2) return null;
@@ -57,67 +22,60 @@ export function TableOfContents({ toc }: { toc: TocItem[] }) {
   );
 }
 
-export function BlogContent({ blocks }: { blocks: Block[] }) {
+function nodeText(children: ReactNode): string {
+  let out = "";
+  Children.forEach(children, (c: any) => {
+    if (c == null || typeof c === "boolean") return;
+    if (typeof c === "string" || typeof c === "number") out += String(c);
+    else if (c?.props?.children) out += nodeText(c.props.children);
+  });
+  return out;
+}
+
+/** Renders raw markdown (GFM: tables, task lists, strikethrough) as styled HTML. */
+export function BlogContent({ markdown }: { markdown: string }) {
+  const used = new Set<string>();
+  const headingId = (children: ReactNode) => {
+    let id = slugify(nodeText(children)) || "section";
+    let n = 2;
+    while (used.has(id)) id = `${id}-${n++}`;
+    used.add(id);
+    return id;
+  };
+
   return (
-    <div className="blog-body space-y-4">
-      {blocks.map((b, i) => {
-        const key = `b-${i}`;
-        switch (b.type) {
-          case "heading": {
-            const cls =
-              b.level === 1
-                ? "mt-8 text-3xl font-bold tracking-tight"
-                : b.level === 2
-                  ? "mt-8 text-2xl font-bold tracking-tight"
-                  : b.level === 3
-                    ? "mt-6 text-xl font-semibold"
-                    : "mt-5 text-base font-semibold uppercase tracking-wide text-amber-300/90";
-            const Tag = `h${b.level}` as "h1" | "h2" | "h3" | "h4";
+    <div className="blog-body prose prose-invert max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-3xl prose-h2:mt-10 prose-h2:text-2xl prose-h3:mt-8 prose-h3:text-xl prose-h4:text-base prose-h4:uppercase prose-h4:tracking-wide prose-h4:text-amber-300/90 prose-p:text-[15px] prose-p:leading-7 prose-p:text-foreground/85 prose-li:text-[15px] prose-li:leading-7 prose-li:text-foreground/85 prose-strong:text-foreground prose-a:font-medium prose-a:text-amber-300 prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-amber-200 prose-blockquote:border-l-2 prose-blockquote:border-amber-400/60 prose-blockquote:not-italic prose-blockquote:text-foreground/80 prose-hr:border-white/10 prose-img:rounded-2xl prose-img:border prose-img:border-white/10 prose-code:rounded prose-code:bg-white/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-2xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-black/40">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: ({ children }) => <h1 id={headingId(children)}>{children}</h1>,
+          h2: ({ children }) => <h2 id={headingId(children)}>{children}</h2>,
+          h3: ({ children }) => <h3 id={headingId(children)}>{children}</h3>,
+          h4: ({ children }) => <h4 id={headingId(children)}>{children}</h4>,
+          a: ({ href, children }) => {
+            const to = href ?? "#";
+            if (to.startsWith("/")) return <Link to={to}>{children}</Link>;
             return (
-              <Tag key={key} id={b.id} className={cls}>
-                {inline(b.text, key)}
-              </Tag>
+              <a href={to} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
             );
-          }
-          case "paragraph":
-            return (
-              <p key={key} className="text-[15px] leading-7 text-foreground/85">
-                {inline(b.text, key)}
-              </p>
-            );
-          case "image":
-            return (
-              <figure key={key} className="my-6">
-                <img src={b.src} alt={b.alt} loading="lazy" className="w-full rounded-2xl border border-white/10 object-cover" />
-                {b.caption && <figcaption className="mt-2 text-center text-xs text-muted-foreground">{b.caption}</figcaption>}
-              </figure>
-            );
-          case "list":
-            return b.ordered ? (
-              <ol key={key} className="ml-5 list-decimal space-y-1.5 text-[15px] leading-7 text-foreground/85">
-                {b.items.map((it, j) => (
-                  <li key={j}>{inline(it, `${key}-${j}`)}</li>
-                ))}
-              </ol>
-            ) : (
-              <ul key={key} className="ml-5 list-disc space-y-1.5 text-[15px] leading-7 text-foreground/85">
-                {b.items.map((it, j) => (
-                  <li key={j}>{inline(it, `${key}-${j}`)}</li>
-                ))}
-              </ul>
-            );
-          case "quote":
-            return (
-              <blockquote key={key} className="border-l-2 border-amber-400/60 pl-4 text-[15px] italic leading-7 text-foreground/80">
-                {inline(b.text, key)}
-              </blockquote>
-            );
-          case "hr":
-            return <hr key={key} className="my-8 border-white/10" />;
-          default:
-            return <Fragment key={key} />;
-        }
-      })}
+          },
+          img: ({ src, alt }) => <img src={typeof src === "string" ? src : ""} alt={alt ?? ""} loading="lazy" className="w-full object-cover" />,
+          table: ({ children }) => (
+            <div className="my-6 -mx-1 overflow-x-auto rounded-2xl border border-white/10">
+              <table className="my-0 w-full min-w-[520px] border-collapse text-left text-sm">{children}</table>
+            </div>
+          ),
+          thead: ({ children }) => <thead className="bg-white/[0.07]">{children}</thead>,
+          th: ({ children }) => <th className="border-b border-white/10 px-4 py-3 text-[13px] font-bold uppercase tracking-wide text-amber-200">{children}</th>,
+          tr: ({ children }) => <tr className="border-b border-white/5 last:border-0 even:bg-white/[0.02]">{children}</tr>,
+          td: ({ children }) => <td className="px-4 py-3 align-top text-[14px] leading-6 text-foreground/85">{children}</td>,
+          input: (props) => <input {...props} disabled className="mr-2 align-middle accent-amber-400" />,
+        }}
+      >
+        {markdown ?? ""}
+      </ReactMarkdown>
     </div>
   );
 }
