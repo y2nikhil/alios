@@ -72,7 +72,7 @@ export function BlogContent({ blocks }: { blocks: Block[] }) {
                   : b.level === 3
                     ? "mt-6 text-xl font-semibold"
                     : "mt-5 text-base font-semibold uppercase tracking-wide text-amber-300/90";
-            const Tag = (`h${b.level}` as unknown) as keyof JSX.IntrinsicElements;
+            const Tag = `h${b.level}` as "h1" | "h2" | "h3" | "h4";
             return (
               <Tag key={key} id={b.id} className={cls}>
                 {inline(b.text, key)}
