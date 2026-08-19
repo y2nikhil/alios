@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { JoinLink, SignedOutOnly, SignedInOnly } from "@/components/JoinLink";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -315,11 +316,11 @@ function PublicPreview() {
               <p className="flex-1 text-xs text-muted-foreground">
                 Reading is free. Sign in to comment, upvote and post.
               </p>
-              <Link to="/signup">
+              <JoinLink>
                 <Button size="sm" className="rounded-full bg-primary px-4 text-primary-foreground hover:bg-primary/90">
                   Sign in to interact
                 </Button>
-              </Link>
+              </JoinLink>
             </div>
           </div>
 
@@ -364,9 +365,9 @@ function PublicPreview() {
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         {r.is_playing ? "Playing now" : "Paused"} · Public room
                       </p>
-                      <Link to="/signup" className="mt-1.5 inline-block text-xs font-medium text-primary">
+                      <JoinLink className="mt-1.5 inline-block text-xs font-medium text-primary">
                         Sign in to join →
-                      </Link>
+                      </JoinLink>
                     </div>
                   </li>
                 ))}
@@ -430,16 +431,19 @@ function LandingPage() {
             </nav>
 
             <div className="flex items-center gap-2">
-              <Link to="/login">
-                <Button variant="outline" size="sm" className="rounded-full border-border bg-transparent px-4 text-foreground hover:bg-secondary">
-                  Log In
-                </Button>
-              </Link>
-              <Link to="/signup">
+              <SignedOutOnly>
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="rounded-full border-border bg-transparent px-4 text-foreground hover:bg-secondary">
+                    Log In
+                  </Button>
+                </Link>
+              </SignedOutOnly>
+              <JoinLink>
                 <Button size="sm" className="rounded-full bg-primary px-4 text-primary-foreground hover:bg-primary/90">
-                  Join ClassLab
+                  <SignedOutOnly>Join ClassLab</SignedOutOnly>
+                  <SignedInOnly>Open ClassLab</SignedInOnly>
                 </Button>
-              </Link>
+              </JoinLink>
             </div>
           </div>
         </header>
@@ -471,7 +475,7 @@ function LandingPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link to="/signup">
+              <JoinLink>
                 <Button
                   size="lg"
                   className="group h-12 rounded-full bg-primary px-6 text-primary-foreground shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--primary)_50%,transparent)] hover:bg-primary/90"
@@ -479,7 +483,7 @@ function LandingPage() {
                   Start free
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Button>
-              </Link>
+              </JoinLink>
               <a href="#features">
                 <Button size="lg" variant="outline" className="h-12 rounded-full border-border bg-transparent px-6 text-foreground hover:bg-secondary">
                   See everything inside
@@ -623,11 +627,11 @@ function LandingPage() {
                 </p>
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/signup">
+                <JoinLink>
                   <Button className="h-11 rounded-full bg-primary px-5 text-primary-foreground hover:bg-primary/90">
                     Create your account
                   </Button>
-                </Link>
+                </JoinLink>
                 <Link to="/feed">
                   <Button variant="outline" className="h-11 rounded-full border-border bg-transparent px-5 hover:bg-secondary">
                     Browse the public feed
@@ -669,12 +673,12 @@ function LandingPage() {
               the first day of the streak.
             </p>
             <div className="relative mt-8 flex justify-center gap-3">
-              <Link to="/signup">
+              <JoinLink>
                 <Button size="lg" className="h-12 rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90">
                   Join ClassLab — it's free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </JoinLink>
             </div>
           </div>
         </section>

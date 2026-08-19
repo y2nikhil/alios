@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/BrandLogo";
+import { useAuth } from "@/lib/auth";
 
 const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
@@ -47,6 +48,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
 
 /** Shared public site footer with all important links. */
 export function SiteFooter() {
+  const { user } = useAuth();
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-5 py-12 lg:px-10">
@@ -86,9 +88,16 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-5 py-6 text-xs text-muted-foreground lg:flex-row lg:px-10">
           <span>© {new Date().getFullYear()} ClassLab · The Digital Campus for Every Student</span>
           <div className="flex gap-5">
-            <Link to="/login" className="hover:text-foreground">Log In</Link>
-            <Link to="/signup" className="hover:text-foreground">Join ClassLab</Link>
+            {user ? (
+              <Link to="/app" className="hover:text-foreground">Open ClassLab</Link>
+            ) : (
+              <>
+                <Link to="/login" className="hover:text-foreground">Log In</Link>
+                <Link to="/signup" className="hover:text-foreground">Join ClassLab</Link>
+              </>
+            )}
             <Link to="/about" className="hover:text-foreground">Contact</Link>
+
           </div>
         </div>
       </div>

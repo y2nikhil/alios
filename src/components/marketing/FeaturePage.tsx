@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { JoinLink } from "@/components/JoinLink";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -91,7 +92,7 @@ export function FeaturePage({ c }: { c: FeaturePageContent }) {
               Log in
             </Link>
             <Button asChild size="sm" className="rounded-xl">
-              <Link to="/signup">Get started</Link>
+              <JoinLink>Get started</JoinLink>
             </Button>
           </div>
         </div>
@@ -116,9 +117,9 @@ export function FeaturePage({ c }: { c: FeaturePageContent }) {
         <p className="mt-5 max-w-2xl text-lg text-muted-foreground">{c.subhead}</p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg" className="rounded-xl">
-            <Link to="/signup">
+            <JoinLink>
               Start free <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
+            </JoinLink>
           </Button>
           <Button asChild size="lg" variant="outline" className="rounded-xl">
             <Link to="/">Explore ClassLab</Link>
@@ -228,9 +229,9 @@ export function FeaturePage({ c }: { c: FeaturePageContent }) {
             Free for students. Set up your profile in under a minute and start collaborating today.
           </p>
           <Button asChild size="lg" className="mt-7 rounded-xl">
-            <Link to="/signup">
+            <JoinLink>
               Create your free account <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
+            </JoinLink>
           </Button>
         </div>
       </section>

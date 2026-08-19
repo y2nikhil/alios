@@ -16,7 +16,7 @@ import { useRole } from "@/lib/use-role";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ManagerNotes } from "@/components/ManagerNotes";
-import { AdherenceRing } from "@/components/AdherenceRing";
+import { DaySchedule } from "@/components/DaySchedule";
 import { MyTasks } from "@/components/MyTasks";
 import { AISummaryPanel } from "@/components/AISummaryPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
@@ -337,7 +337,6 @@ function CommandCenter() {
             <div className="glass rounded-3xl p-6"><ManagerNotes /></div>
             <div className="grid gap-4">
               <GoalRingCard />
-              <AdherenceRing />
             </div>
           </div>
         </div>
@@ -357,6 +356,8 @@ function CommandCenter() {
             </div>
             <UpcomingList />
           </div>
+
+          <DaySchedule />
 
 
           <CountdownCalendar />

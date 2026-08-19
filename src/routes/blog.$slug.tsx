@@ -1,4 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { JoinLink } from "@/components/JoinLink";
+import { ShareDialog } from "@/components/ShareDialog";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { parseBlocks, plainText, readingMinutes, type BlogPost } from "@/lib/blog";
@@ -126,6 +128,9 @@ function BlogArticle() {
           <p className="mt-3 text-xs text-muted-foreground">
             ClassLab Team · <time dateTime={published}>{new Date(published).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}</time> · {readingMinutes(post.content)} min read
           </p>
+          <div className="mt-4">
+            <ShareDialog url={`/blog/${post.slug}`} title={post.title} text={post.excerpt ?? undefined} />
+          </div>
         </header>
 
         {post.cover_url && (
@@ -157,7 +162,7 @@ function BlogArticle() {
         <h2 className="text-lg font-semibold">Study with thousands of students on ClassLab</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">Focus tracking, exam communities, shared notes and watch parties — free.</p>
         <div className="mt-4 flex flex-wrap justify-center gap-3">
-          <Link to="/signup" className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-black">Create free account</Link>
+          <JoinLink className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-black">Create free account</JoinLink>
           <Link to="/blog" className="inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">
             <ArrowLeft className="h-4 w-4" /> All articles
           </Link>

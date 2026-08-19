@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { JoinLink } from "@/components/JoinLink";
 import { Mail } from "lucide-react";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -121,7 +122,7 @@ function AboutPage() {
       </section>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link to="/signup" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Create free account</Link>
+        <JoinLink className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Create free account</JoinLink>
         <Link to="/feed" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Student feed</Link>
         <Link to="/blog" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Blog</Link>
       </div>

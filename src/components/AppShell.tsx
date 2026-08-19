@@ -23,6 +23,7 @@ import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
 import { BrandLogo } from "@/components/BrandLogo";
 import { SiteFooter } from "@/components/SiteFooter";
 import { trackEvent, installClickTracking } from "@/lib/activity";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 
 
@@ -94,7 +95,7 @@ const BASE_NAV = [
 const IDLE_THRESHOLD_MS = 30 * 60 * 1000;
 
 function HeaderStatus() {
-  const { activeSession, activeStatus, markNotResponding } = useAux();
+  const { activeSession, activeStatus, markNotResponding, statuses, switchTo } = useAux();
   const [now, setNow] = useState(() => Date.now());
   const [lastActivity, setLastActivity] = useState(() => Date.now());
 
@@ -114,10 +115,29 @@ function HeaderStatus() {
 
   if (!activeSession || !activeStatus) {
     return (
-      <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-        <span className="h-2 w-2 rounded-full bg-muted-foreground" />
-        No active status
-      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="hidden md:flex items-center gap-2 text-xs text-muted-foreground px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <span className="h-2 w-2 rounded-full bg-muted-foreground" />
+            No active status
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-56 p-1.5">
+          <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            Punch a status
+          </p>
+          {statuses.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => switchTo(s.id)}
+              className="w-full flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-white/10 transition"
+            >
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
+              <span className="flex-1 text-left truncate">{s.name}</span>
+            </button>
+          ))}
+        </PopoverContent>
+      </Popover>
     );
   }
 
