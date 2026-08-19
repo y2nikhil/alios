@@ -22,6 +22,7 @@ import { AISummaryPanel } from "@/components/AISummaryPanel";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
 import { TrophyProgress } from "@/components/TrophyProgress";
 import { FocusGoalCard } from "@/components/FocusGoalCard";
+import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { LivePartiesSlider } from "@/components/LivePartiesSlider";
 
 export const Route = createFileRoute("/app/")({
