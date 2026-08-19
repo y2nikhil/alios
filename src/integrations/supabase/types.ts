@@ -1401,6 +1401,32 @@ export type Database = {
           },
         ]
       }
+      post_slug_aliases: {
+        Row: {
+          created_at: string
+          post_id: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_slug_aliases_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_votes: {
         Row: {
           created_at: string
@@ -2311,6 +2337,10 @@ export type Database = {
         }
         Returns: string
       }
+      post_unique_slug: {
+        Args: { _id: string; _title: string }
+        Returns: string
+      }
       public_post_by_slug: {
         Args: { _slug: string }
         Returns: {
@@ -2345,6 +2375,7 @@ export type Database = {
           up_count: number
         }[]
       }
+      public_post_slug_alias: { Args: { _slug: string }; Returns: string }
       public_posts: {
         Args: { _limit?: number; _offset?: number }
         Returns: {
