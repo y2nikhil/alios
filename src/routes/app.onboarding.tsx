@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { EXAMS, EXAM_BY_KEY, defaultExamDate, type ExamKey } from "@/lib/exam-catalog";
 import { getPrepProfile, finalizeOnboarding, type PrepProfileInput } from "@/lib/onboarding.functions";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/app/onboarding")({
   head: () => ({
