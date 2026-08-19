@@ -78,6 +78,8 @@ const HOME_FAQS = [
 ];
 
 const SITE_PAGES = [
+  { label: "Blog", to: "/blog" },
+  { label: "About", to: "/about" },
   { label: "Watch Party", to: "/watch-party" },
   { label: "Student Chat", to: "/student-chat" },
   { label: "Study Groups", to: "/study-groups" },
