@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { JoinLink } from "@/components/JoinLink";
+import { ShareDialog } from "@/components/ShareDialog";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { parseBlocks, plainText, readingMinutes, type BlogPost } from "@/lib/blog";
@@ -127,6 +128,9 @@ function BlogArticle() {
           <p className="mt-3 text-xs text-muted-foreground">
             ClassLab Team · <time dateTime={published}>{new Date(published).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}</time> · {readingMinutes(post.content)} min read
           </p>
+          <div className="mt-4">
+            <ShareDialog url={`/blog/${post.slug}`} title={post.title} text={post.excerpt ?? undefined} />
+          </div>
         </header>
 
         {post.cover_url && (
