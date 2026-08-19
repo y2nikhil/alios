@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { JoinLink } from "@/components/JoinLink";
 import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { upvotePct, timeAgo, readingTime } from "@/lib/feed";
@@ -177,7 +178,7 @@ function PublicFeedPage() {
         <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-center">
           <h2 className="text-lg font-semibold">Join thousands of students learning together.</h2>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
-            <Link to="/signup" className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-black">Start posting</Link>
+            <JoinLink className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-black">Start posting</JoinLink>
             <Link to="/communities" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Explore communities</Link>
           </div>
         </div>
