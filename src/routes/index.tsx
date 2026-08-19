@@ -778,13 +778,14 @@ function PreviewCard() {
               {quickAccess.map((q) => {
                 const Icon = q.icon;
                 return (
-                  <div key={q.label} className="rounded-xl border border-border bg-background p-2.5 text-center">
+                  <div key={q.label} className="rounded-xl border border-border bg-background px-1.5 py-2.5 text-center">
                     <Icon className="mx-auto h-4 w-4 text-primary" strokeWidth={1.75} />
-                    <p className="mt-1.5 truncate text-[10px] text-muted-foreground">{q.label}</p>
+                    <p className="mt-1.5 text-[10px] leading-tight text-muted-foreground">{q.label}</p>
                   </div>
                 );
               })}
             </div>
+
           </div>
 
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-[1.4fr_1fr]">
