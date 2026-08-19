@@ -25,6 +25,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { upvotePct, timeAgo } from "@/lib/feed";
+import { SiteFooter } from "@/components/SiteFooter";
 
 type PublicHomePost = {
   id: string;
