@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { JoinLink } from "@/components/JoinLink";
 import { ArrowLeft, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,10 +24,18 @@ export const Route = createFileRoute("/post/$slug")({
   loader: async ({ params }) => {
     const { data } = await (supabase as any).rpc("public_post_by_slug", { _slug: params.slug });
     const post = (data ?? [])[0] as PublicPost | undefined;
-    if (!post) throw notFound();
+    if (!post) {
+      // Legacy URL (old slug with a random id suffix) — permanently forward to the clean one.
+      const { data: alias } = await (supabase as any).rpc("public_post_slug_alias", { _slug: params.slug });
+      if (alias && alias !== params.slug) {
+        throw redirect({ to: "/post/$slug", params: { slug: alias as string }, statusCode: 301 });
+      }
+      throw notFound();
+    }
     const { data: cs } = await (supabase as any).rpc("public_post_comments", { _post_id: post.id });
     return { post, comments: (cs ?? []) as PublicComment[] };
   },
+
   head: ({ params, loaderData }) => {
     const url = `https://classlab.in/post/${params.slug}`;
     if (!loaderData) {
