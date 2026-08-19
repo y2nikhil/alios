@@ -304,6 +304,66 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_id: string
+          content: string
+          cover_alt: string | null
+          cover_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          keywords: string | null
+          published_at: string | null
+          seo_description: string | null
+          seo_title: string | null
+          show_toc: boolean
+          slug: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content?: string
+          cover_alt?: string | null
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          keywords?: string | null
+          published_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          show_toc?: boolean
+          slug: string
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          cover_alt?: string | null
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          keywords?: string | null
+          published_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          show_toc?: boolean
+          slug?: string
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_channels: {
         Row: {
           created_at: string
