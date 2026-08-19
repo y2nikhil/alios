@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Activity, BarChart3, Brain, Settings, Sparkles,
   Shield, Crown, MessageSquare, Youtube, Tv, Radio, Menu, X, Users, Mail,
-  MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList, Plus, Pencil, Eye,
+  MoreVertical, AlertCircle, Calendar as CalIcon, LayoutList, Plus, Pencil, Eye, Newspaper, PenLine,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
@@ -86,6 +86,7 @@ const BASE_NAV = [
   { to: "/app/friends", label: "Friends", icon: Users },
   { to: "/app/party", label: "Watch Party", icon: Tv },
   { to: "/app/playlists", label: "Playlists", icon: Youtube },
+  { to: "/blog", label: "Blog", icon: Newspaper },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -292,6 +293,7 @@ function ShellInner() {
   const NAV = [
     ...BASE_NAV,
     ...(isAdmin ? [
+      { to: "/app/blog" as const, label: "Blog Studio", icon: PenLine },
       { to: "/app/live" as const, label: "Live Feed", icon: Radio },
       { to: "/app/admin" as const, label: "Admin", icon: Shield },
       { to: "/app/moderation" as const, label: "Moderation", icon: Shield },
