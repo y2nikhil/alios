@@ -76,6 +76,7 @@ import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boa
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
 import { Route as AppBlogPostIdRouteImport } from './routes/app.blog.$postId'
+import { Route as AppArticleSlugRouteImport } from './routes/app.article.$slug'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -422,6 +423,11 @@ const AppBlogPostIdRoute = AppBlogPostIdRouteImport.update({
   path: '/blog/$postId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppArticleSlugRoute = AppArticleSlugRouteImport.update({
+  id: '/article/$slug',
+  path: '/article/$slug',
+  getParentRoute: () => AppRoute,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -529,6 +535,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/article/$slug': typeof AppArticleSlugRoute
   '/app/blog/$postId': typeof AppBlogPostIdRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -605,6 +612,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/article/$slug': typeof AppArticleSlugRoute
   '/app/blog/$postId': typeof AppBlogPostIdRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -683,6 +691,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/article/$slug': typeof AppArticleSlugRoute
   '/app/blog/$postId': typeof AppBlogPostIdRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
@@ -762,6 +771,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/article/$slug'
     | '/app/blog/$postId'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -838,6 +848,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/article/$slug'
     | '/app/blog/$postId'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -915,6 +926,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/article/$slug'
     | '/app/blog/$postId'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
@@ -1454,6 +1466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBlogPostIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/article/$slug': {
+      id: '/app/article/$slug'
+      path: '/article/$slug'
+      fullPath: '/app/article/$slug'
+      preLoaderRoute: typeof AppArticleSlugRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -1533,6 +1552,7 @@ interface AppRouteChildren {
   AppSuperRoute: typeof AppSuperRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppArticleSlugRoute: typeof AppArticleSlugRoute
   AppBlogPostIdRoute: typeof AppBlogPostIdRoute
   AppDmThreadIdRoute: typeof AppDmThreadIdRoute
   AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
@@ -1563,6 +1583,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSuperRoute: AppSuperRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
+  AppArticleSlugRoute: AppArticleSlugRoute,
   AppBlogPostIdRoute: AppBlogPostIdRoute,
   AppDmThreadIdRoute: AppDmThreadIdRoute,
   AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,

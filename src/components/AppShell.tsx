@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
 import { BrandLogo } from "@/components/BrandLogo";
+import { SiteFooter } from "@/components/SiteFooter";
 import { trackEvent, installClickTracking } from "@/lib/activity";
 
 
@@ -86,7 +87,7 @@ const BASE_NAV = [
   { to: "/app/friends", label: "Friends", icon: Users },
   { to: "/app/party", label: "Watch Party", icon: Tv },
   { to: "/app/playlists", label: "Playlists", icon: Youtube },
-  { to: "/blog", label: "Blog", icon: Newspaper },
+  { to: "/app/blog", label: "Blog", icon: Newspaper },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -393,6 +394,9 @@ function ShellInner() {
           >
             <Outlet />
           </motion.div>
+          {!(location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && (
+            <SiteFooter />
+          )}
         </main>
       </div>
     </div>
