@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth";
 export function JoinLink({ children, className }: { children: ReactNode; className?: string }) {
   const { user } = useAuth();
   return (
-    <Link to={user ? "/app" : "/signup"} className={className}>
+    <Link to={user ? "/app" : "/login"} className={className}>
       {children}
     </Link>
   );

@@ -37,7 +37,7 @@ const INTERNAL_LINKS = [
   { label: "Notes sharing", path: "/notes-sharing" },
   { label: "Watch party", path: "/watch-party" },
   { label: "AI study assistant", path: "/ai-study-assistant" },
-  { label: "Sign up", path: "/signup" },
+  { label: "Sign in / Join", path: "/login" },
 ];
 
 function BlogEditor() {
