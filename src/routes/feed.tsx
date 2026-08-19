@@ -4,6 +4,8 @@ import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { upvotePct, timeAgo, readingTime } from "@/lib/feed";
 import { SiteFooter } from "@/components/SiteFooter";
+import { FeedSideRail, LiveRoomsStrip } from "@/routes/post.$slug";
+
 
 export type PublicPost = {
   id: string;
