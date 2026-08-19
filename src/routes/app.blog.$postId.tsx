@@ -244,7 +244,7 @@ function BlogEditor() {
               {coverUrl && <img src={coverUrl} alt={coverAlt || title} className="mb-5 w-full rounded-xl object-cover" />}
               <h1 className="text-3xl font-bold leading-tight">{title || "Untitled article"}</h1>
               {showToc && <TableOfContents toc={parsed.toc} />}
-              <div className="mt-4"><BlogContent blocks={parsed.blocks} /></div>
+              <div className="mt-4"><BlogContent markdown={content} /></div>
             </article>
           ) : (
             <>

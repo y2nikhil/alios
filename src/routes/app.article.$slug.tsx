@@ -87,7 +87,7 @@ function InAppArticle() {
         {post.show_toc && <TableOfContents toc={toc} />}
 
         <div className="mt-6">
-          <BlogContent blocks={blocks} />
+          <BlogContent markdown={post.content} />
         </div>
       </article>
     </div>
