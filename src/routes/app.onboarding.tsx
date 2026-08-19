@@ -71,7 +71,7 @@ function OnboardingPage() {
             exam: existing.exam as ExamKey,
             attempt_year: existing.attempt_year,
             exam_date: existing.exam_date ?? f.exam_date,
-            daily_hours: Number(existing.daily_hours),
+            daily_hours: Number(existing.daily_hours) || 4,
             preferred_time: existing.preferred_time as any,
             prep_stage: existing.prep_stage as any,
             weak_subjects: existing.weak_subjects ?? [],
@@ -93,7 +93,15 @@ function OnboardingPage() {
   const submit = async () => {
     setSubmitting(true);
     try {
-      const res = await save({ data: form });
+      const hours = Number.isFinite(form.daily_hours) && form.daily_hours > 0 ? form.daily_hours : 4;
+      const res = await save({ data: { ...form, daily_hours: hours } });
+      // Keep the home "Today's Focus" goal in sync with the declared daily capacity.
+      if (user) {
+        await supabase
+          .from("profiles")
+          .update({ daily_focus_goal_minutes: Math.round(hours * 60) })
+          .eq("id", user.id);
+      }
       try {
         localStorage.setItem("alios.onboarded", "1");
         sessionStorage.removeItem("alios.onboarding.skipped");
@@ -195,12 +203,12 @@ function OnboardingPage() {
                   <div>
                     <div className="flex items-baseline justify-between">
                       <Label>Daily study hours</Label>
-                      <span className="text-2xl font-bold tabular-nums">{form.daily_hours}h</span>
+                      <span className="text-2xl font-bold tabular-nums">{Number.isFinite(form.daily_hours) ? form.daily_hours : 4}h</span>
                     </div>
                     <input
                       type="range" min={1} max={14} step={0.5}
                       value={form.daily_hours}
-                      onChange={(e) => set("daily_hours", Number(e.target.value))}
+                      onChange={(e) => set("daily_hours", Number(e.target.value) || 4)}
                       className="w-full mt-3 accent-violet-500"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
