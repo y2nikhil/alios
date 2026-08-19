@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
 import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
 import { BrandLogo } from "@/components/BrandLogo";
+import { SiteFooter } from "@/components/SiteFooter";
 import { trackEvent, installClickTracking } from "@/lib/activity";
 
 
@@ -393,6 +394,9 @@ function ShellInner() {
           >
             <Outlet />
           </motion.div>
+          {!(location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && (
+            <SiteFooter />
+          )}
         </main>
       </div>
     </div>
