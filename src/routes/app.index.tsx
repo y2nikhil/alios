@@ -357,7 +357,7 @@ function CommandCenter() {
             <UpcomingList />
           </div>
 
-          <DaySchedule />
+          <FocusGoalCard />
 
 
           <CountdownCalendar />
