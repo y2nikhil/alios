@@ -34,6 +34,7 @@ import { Route as CampusNetworkRouteImport } from './routes/campus-network'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AiStudyAssistantRouteImport } from './routes/ai-study-assistant'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as PostSlugRouteImport } from './routes/post.$slug'
@@ -203,6 +204,11 @@ const AiStudyAssistantRoute = AiStudyAssistantRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -494,6 +500,7 @@ export interface FileRoutesByFullPath {
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
@@ -565,6 +572,7 @@ export interface FileRoutesByTo {
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app': typeof AppIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
@@ -638,6 +646,7 @@ export interface FileRoutesById {
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
@@ -712,6 +721,7 @@ export interface FileRouteTypes {
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
+    | '/blog/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/app/dm/$threadId'
@@ -783,6 +793,7 @@ export interface FileRouteTypes {
     | '/post/$slug'
     | '/u/$username'
     | '/app'
+    | '/blog'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/app/dm/$threadId'
@@ -855,6 +866,7 @@ export interface FileRouteTypes {
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
+    | '/blog/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/app/dm/$threadId'
@@ -909,6 +921,7 @@ export interface RootRouteChildren {
   ExamsJeeRoute: typeof ExamsJeeRoute
   PostSlugRoute: typeof PostSlugRoute
   UUsernameRoute: typeof UUsernameRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -1095,6 +1108,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -1511,6 +1531,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExamsJeeRoute: ExamsJeeRoute,
   PostSlugRoute: PostSlugRoute,
   UUsernameRoute: UUsernameRoute,
+  BlogIndexRoute: BlogIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
