@@ -13,6 +13,8 @@ interface SitemapEntry {
 const STATIC_PATHS: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/feed", changefreq: "hourly", priority: "0.9" },
+  { path: "/blog", changefreq: "daily", priority: "0.9" },
+  { path: "/about", changefreq: "monthly", priority: "0.7" },
   { path: "/communities", changefreq: "weekly", priority: "0.8" },
   { path: "/forums", changefreq: "weekly", priority: "0.8" },
   { path: "/study-groups", changefreq: "weekly", priority: "0.8" },
@@ -55,6 +57,21 @@ export const Route = createFileRoute("/sitemap.xml")({
         } catch {
           // posts unavailable — still serve the static sitemap
         }
+
+        try {
+          const { data } = await (supabase as any)
+            .from("blog_posts")
+            .select("slug")
+            .eq("status", "published")
+            .limit(500);
+          ((data ?? []) as { slug: string }[]).forEach((b) => {
+            entries.push({ path: `/blog/${b.slug}`, changefreq: "weekly", priority: "0.8" });
+          });
+        } catch {
+          // blog unavailable — still serve the rest of the sitemap
+        }
+
+
 
         // Only list profiles that have published content; empty profiles are thin pages
         // and Google leaves them in "Discovered – currently not indexed".

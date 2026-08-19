@@ -33,12 +33,15 @@ import { Route as CareerRouteImport } from './routes/career'
 import { Route as CampusNetworkRouteImport } from './routes/campus-network'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AiStudyAssistantRouteImport } from './routes/ai-study-assistant'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as PostSlugRouteImport } from './routes/post.$slug'
 import { Route as ExamsJeeRouteImport } from './routes/exams.jee'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -65,12 +68,14 @@ import { Route as ApiAiAskRouteImport } from './routes/api.ai-ask'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
+import { Route as AppBlogIndexRouteImport } from './routes/app.blog.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppPostPostIdRouteImport } from './routes/app.post.$postId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
 import { Route as AppHangoutPartyIdRouteImport } from './routes/app.hangout.$partyId'
 import { Route as AppDmThreadIdRouteImport } from './routes/app.dm.$threadId'
+import { Route as AppBlogPostIdRouteImport } from './routes/app.blog.$postId'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -200,9 +205,19 @@ const AiStudyAssistantRoute = AiStudyAssistantRouteImport.update({
   path: '/ai-study-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -228,6 +243,11 @@ const ExamsJeeRoute = ExamsJeeRouteImport.update({
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppTimelineRoute = AppTimelineRouteImport.update({
@@ -362,6 +382,11 @@ const AppMindmapIndexRoute = AppMindmapIndexRouteImport.update({
   path: '/mindmap/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBlogIndexRoute = AppBlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => AppRoute,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -390,6 +415,11 @@ const AppHangoutPartyIdRoute = AppHangoutPartyIdRouteImport.update({
 const AppDmThreadIdRoute = AppDmThreadIdRouteImport.update({
   id: '/dm/$threadId',
   path: '/dm/$threadId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlogPostIdRoute = AppBlogPostIdRouteImport.update({
+  id: '/blog/$postId',
+  path: '/blog/$postId',
   getParentRoute: () => AppRoute,
 } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
@@ -440,6 +470,7 @@ const ApiPublicHooksDispatchPushRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/app': typeof AppRouteWithChildren
   '/campus-network': typeof CampusNetworkRoute
@@ -489,19 +520,23 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/blog/$postId': typeof AppBlogPostIdRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -512,6 +547,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/campus-network': typeof CampusNetworkRoute
   '/career': typeof CareerRoute
@@ -560,19 +596,23 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app': typeof AppIndexRoute
+  '/blog': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/blog/$postId': typeof AppBlogPostIdRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/app/blog': typeof AppBlogIndexRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -584,6 +624,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/app': typeof AppRouteWithChildren
   '/campus-network': typeof CampusNetworkRoute
@@ -633,19 +674,23 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
   '/u/$username': typeof UUsernameRoute
   '/app/': typeof AppIndexRoute
+  '/blog/': typeof BlogIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/blog/$postId': typeof AppBlogPostIdRoute
   '/app/dm/$threadId': typeof AppDmThreadIdRoute
   '/app/hangout/$partyId': typeof AppHangoutPartyIdRoute
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -658,6 +703,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/ai-study-assistant'
     | '/app'
     | '/campus-network'
@@ -707,19 +753,23 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/blog/$slug'
     | '/email/unsubscribe'
     | '/exams/jee'
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
+    | '/blog/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/blog/$postId'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/post/$postId'
     | '/app/u/$userId'
     | '/lovable/email/suppression'
+    | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
     | '/lovable/email/auth/preview'
@@ -730,6 +780,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/ai-study-assistant'
     | '/campus-network'
     | '/career'
@@ -778,19 +829,23 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/blog/$slug'
     | '/email/unsubscribe'
     | '/exams/jee'
     | '/post/$slug'
     | '/u/$username'
     | '/app'
+    | '/blog'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/blog/$postId'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/post/$postId'
     | '/app/u/$userId'
     | '/lovable/email/suppression'
+    | '/app/blog'
     | '/app/mindmap'
     | '/api/public/hooks/dispatch-push'
     | '/lovable/email/auth/preview'
@@ -801,6 +856,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/ai-study-assistant'
     | '/app'
     | '/campus-network'
@@ -850,19 +906,23 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/blog/$slug'
     | '/email/unsubscribe'
     | '/exams/jee'
     | '/post/$slug'
     | '/u/$username'
     | '/app/'
+    | '/blog/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/blog/$postId'
     | '/app/dm/$threadId'
     | '/app/hangout/$partyId'
     | '/app/mindmap/$boardId'
     | '/app/post/$postId'
     | '/app/u/$userId'
     | '/lovable/email/suppression'
+    | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
     | '/lovable/email/auth/preview'
@@ -874,6 +934,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AiStudyAssistantRoute: typeof AiStudyAssistantRoute
   AppRoute: typeof AppRouteWithChildren
   CampusNetworkRoute: typeof CampusNetworkRoute
@@ -905,10 +966,12 @@ export interface RootRouteChildren {
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
   ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ExamsJeeRoute: typeof ExamsJeeRoute
   PostSlugRoute: typeof PostSlugRoute
   UUsernameRoute: typeof UUsernameRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -1090,11 +1153,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiStudyAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -1130,6 +1207,13 @@ declare module '@tanstack/react-router' {
       path: '/email/unsubscribe'
       fullPath: '/email/unsubscribe'
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/timeline': {
@@ -1314,6 +1398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMindmapIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/blog/': {
+      id: '/app/blog/'
+      path: '/blog'
+      fullPath: '/app/blog/'
+      preLoaderRoute: typeof AppBlogIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -1354,6 +1445,13 @@ declare module '@tanstack/react-router' {
       path: '/dm/$threadId'
       fullPath: '/app/dm/$threadId'
       preLoaderRoute: typeof AppDmThreadIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/blog/$postId': {
+      id: '/app/blog/$postId'
+      path: '/blog/$postId'
+      fullPath: '/app/blog/$postId'
+      preLoaderRoute: typeof AppBlogPostIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/.mcp/invoke-tool/$tool': {
@@ -1435,11 +1533,13 @@ interface AppRouteChildren {
   AppSuperRoute: typeof AppSuperRoute
   AppTimelineRoute: typeof AppTimelineRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppBlogPostIdRoute: typeof AppBlogPostIdRoute
   AppDmThreadIdRoute: typeof AppDmThreadIdRoute
   AppHangoutPartyIdRoute: typeof AppHangoutPartyIdRoute
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
   AppPostPostIdRoute: typeof AppPostPostIdRoute
   AppUUserIdRoute: typeof AppUUserIdRoute
+  AppBlogIndexRoute: typeof AppBlogIndexRoute
   AppMindmapIndexRoute: typeof AppMindmapIndexRoute
 }
 
@@ -1463,11 +1563,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppSuperRoute: AppSuperRoute,
   AppTimelineRoute: AppTimelineRoute,
   AppIndexRoute: AppIndexRoute,
+  AppBlogPostIdRoute: AppBlogPostIdRoute,
   AppDmThreadIdRoute: AppDmThreadIdRoute,
   AppHangoutPartyIdRoute: AppHangoutPartyIdRoute,
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
   AppPostPostIdRoute: AppPostPostIdRoute,
   AppUUserIdRoute: AppUUserIdRoute,
+  AppBlogIndexRoute: AppBlogIndexRoute,
   AppMindmapIndexRoute: AppMindmapIndexRoute,
 }
 
@@ -1475,6 +1577,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AiStudyAssistantRoute: AiStudyAssistantRoute,
   AppRoute: AppRouteWithChildren,
   CampusNetworkRoute: CampusNetworkRoute,
@@ -1507,10 +1610,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiMindmapRoute: ApiAiMindmapRoute,
   ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
+  BlogSlugRoute: BlogSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ExamsJeeRoute: ExamsJeeRoute,
   PostSlugRoute: PostSlugRoute,
   UUsernameRoute: UUsernameRoute,
+  BlogIndexRoute: BlogIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,

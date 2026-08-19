@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, LayoutList, Tv, MessageSquare } from "lucide-react";
+import { Home, LayoutList, Tv, MessageSquare, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
@@ -7,6 +7,7 @@ const SECTIONS = [
   { to: "/app/feed", label: "Feed", sub: "Discussions & Posts", icon: LayoutList },
   { to: "/app/party", label: "Watch Party", sub: "Watch & Sync Together", icon: Tv },
   { to: "/app/collaborate", label: "Chat", sub: "Chat & Study Together", icon: MessageSquare },
+  { to: "/app/blog", label: "Blog", sub: "Write & Publish Guides", icon: Newspaper },
 ] as const;
 
 function isActive(pathname: string, to: string) {
