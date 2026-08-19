@@ -33,6 +33,7 @@ import { Route as CareerRouteImport } from './routes/career'
 import { Route as CampusNetworkRouteImport } from './routes/campus-network'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AiStudyAssistantRouteImport } from './routes/ai-study-assistant'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -200,6 +201,11 @@ const AppRoute = AppRouteImport.update({
 const AiStudyAssistantRoute = AiStudyAssistantRouteImport.update({
   id: '/ai-study-assistant',
   path: '/ai-study-assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -452,6 +458,7 @@ const ApiPublicHooksDispatchPushRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/app': typeof AppRouteWithChildren
   '/campus-network': typeof CampusNetworkRoute
@@ -526,6 +533,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/campus-network': typeof CampusNetworkRoute
   '/career': typeof CareerRoute
@@ -600,6 +608,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/ai-study-assistant': typeof AiStudyAssistantRoute
   '/app': typeof AppRouteWithChildren
   '/campus-network': typeof CampusNetworkRoute
@@ -676,6 +685,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/ai-study-assistant'
     | '/app'
     | '/campus-network'
@@ -750,6 +760,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/ai-study-assistant'
     | '/campus-network'
     | '/career'
@@ -823,6 +834,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/ai-study-assistant'
     | '/app'
     | '/campus-network'
@@ -898,6 +910,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AiStudyAssistantRoute: typeof AiStudyAssistantRoute
   AppRoute: typeof AppRouteWithChildren
   CampusNetworkRoute: typeof CampusNetworkRoute
@@ -1114,6 +1127,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-study-assistant'
       fullPath: '/ai-study-assistant'
       preLoaderRoute: typeof AiStudyAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -1515,6 +1535,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AiStudyAssistantRoute: AiStudyAssistantRoute,
   AppRoute: AppRouteWithChildren,
   CampusNetworkRoute: CampusNetworkRoute,
