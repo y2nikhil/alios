@@ -40,6 +40,7 @@ import { Route as UUsernameRouteImport } from './routes/u.$username'
 import { Route as PostSlugRouteImport } from './routes/post.$slug'
 import { Route as ExamsJeeRouteImport } from './routes/exams.jee'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AppTimelineRouteImport } from './routes/app.timeline'
 import { Route as AppSuperRouteImport } from './routes/app.super'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -234,6 +235,11 @@ const ExamsJeeRoute = ExamsJeeRouteImport.update({
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppTimelineRoute = AppTimelineRouteImport.update({
@@ -495,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
@@ -567,6 +574,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
@@ -641,6 +649,7 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/super': typeof AppSuperRoute
   '/app/timeline': typeof AppTimelineRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/exams/jee': typeof ExamsJeeRoute
   '/post/$slug': typeof PostSlugRoute
@@ -716,6 +725,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/blog/$slug'
     | '/email/unsubscribe'
     | '/exams/jee'
     | '/post/$slug'
@@ -788,6 +798,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/blog/$slug'
     | '/email/unsubscribe'
     | '/exams/jee'
     | '/post/$slug'
@@ -861,6 +872,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/super'
     | '/app/timeline'
+    | '/blog/$slug'
     | '/email/unsubscribe'
     | '/exams/jee'
     | '/post/$slug'
@@ -917,6 +929,7 @@ export interface RootRouteChildren {
   ApiAiMindmapRoute: typeof ApiAiMindmapRoute
   ApiSearchPeopleRoute: typeof ApiSearchPeopleRoute
   ApiYoutubeParseRoute: typeof ApiYoutubeParseRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ExamsJeeRoute: typeof ExamsJeeRoute
   PostSlugRoute: typeof PostSlugRoute
@@ -1150,6 +1163,13 @@ declare module '@tanstack/react-router' {
       path: '/email/unsubscribe'
       fullPath: '/email/unsubscribe'
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/timeline': {
@@ -1527,6 +1547,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiMindmapRoute: ApiAiMindmapRoute,
   ApiSearchPeopleRoute: ApiSearchPeopleRoute,
   ApiYoutubeParseRoute: ApiYoutubeParseRoute,
+  BlogSlugRoute: BlogSlugRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ExamsJeeRoute: ExamsJeeRoute,
   PostSlugRoute: PostSlugRoute,
