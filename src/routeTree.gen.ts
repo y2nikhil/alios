@@ -68,6 +68,7 @@ import { Route as ApiAiAskRouteImport } from './routes/api.ai-ask'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
+import { Route as AppBlogIndexRouteImport } from './routes/app.blog.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppPostPostIdRouteImport } from './routes/app.post.$postId'
@@ -380,6 +381,11 @@ const AppMindmapIndexRoute = AppMindmapIndexRouteImport.update({
   path: '/mindmap/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBlogIndexRoute = AppBlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => AppRoute,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -523,6 +529,7 @@ export interface FileRoutesByFullPath {
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -597,6 +604,7 @@ export interface FileRoutesByTo {
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/app/blog': typeof AppBlogIndexRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -673,6 +681,7 @@ export interface FileRoutesById {
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -750,6 +759,7 @@ export interface FileRouteTypes {
     | '/app/post/$postId'
     | '/app/u/$userId'
     | '/lovable/email/suppression'
+    | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
     | '/lovable/email/auth/preview'
@@ -824,6 +834,7 @@ export interface FileRouteTypes {
     | '/app/post/$postId'
     | '/app/u/$userId'
     | '/lovable/email/suppression'
+    | '/app/blog'
     | '/app/mindmap'
     | '/api/public/hooks/dispatch-push'
     | '/lovable/email/auth/preview'
@@ -899,6 +910,7 @@ export interface FileRouteTypes {
     | '/app/post/$postId'
     | '/app/u/$userId'
     | '/lovable/email/suppression'
+    | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
     | '/lovable/email/auth/preview'
@@ -1374,6 +1386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMindmapIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/blog/': {
+      id: '/app/blog/'
+      path: '/blog'
+      fullPath: '/app/blog/'
+      preLoaderRoute: typeof AppBlogIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -1500,6 +1519,7 @@ interface AppRouteChildren {
   AppMindmapBoardIdRoute: typeof AppMindmapBoardIdRoute
   AppPostPostIdRoute: typeof AppPostPostIdRoute
   AppUUserIdRoute: typeof AppUUserIdRoute
+  AppBlogIndexRoute: typeof AppBlogIndexRoute
   AppMindmapIndexRoute: typeof AppMindmapIndexRoute
 }
 
@@ -1528,6 +1548,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMindmapBoardIdRoute: AppMindmapBoardIdRoute,
   AppPostPostIdRoute: AppPostPostIdRoute,
   AppUUserIdRoute: AppUUserIdRoute,
+  AppBlogIndexRoute: AppBlogIndexRoute,
   AppMindmapIndexRoute: AppMindmapIndexRoute,
 }
 
