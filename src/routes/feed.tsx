@@ -121,12 +121,16 @@ export const Route = createFileRoute("/feed")({
 });
 
 function PublicFeedPage() {
-  const { posts } = Route.useLoaderData() as { posts: PublicPost[] };
+  const { posts, articles, parties } = Route.useLoaderData() as {
+    posts: PublicPost[];
+    articles: { id: string; slug: string; title: string; excerpt: string | null }[];
+    parties: any[];
+  };
 
   return (
     <main className="min-h-screen bg-background">
       <section className="border-b border-white/10 bg-gradient-to-b from-amber-400/10 to-transparent">
-        <div className="mx-auto max-w-3xl px-5 py-14">
+        <div className="mx-auto max-w-[1600px] px-4 py-14 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-4 text-xs text-muted-foreground">
             <Link to="/" className="hover:underline">ClassLab</Link> <span>/</span> <span className="text-foreground">Student Feed</span>
           </nav>
@@ -147,64 +151,90 @@ function PublicFeedPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-5 py-10">
-        <h2 className="text-lg font-semibold">Latest student discussions</h2>
-        <ul className="mt-4 space-y-3">
-          {posts.length === 0 && (
-            <li className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-muted-foreground">
-              No public discussions yet — be the first to post.
-            </li>
-          )}
-          {posts.map((p) => {
-            const pct = upvotePct(p.up_count, p.down_count);
-            return (
-              <li key={p.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/20">
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  {p.author_username ? (
-            <Link to="/u/$username" params={{ username: p.author_username }} className="font-medium text-foreground hover:underline">
-              {p.author_name ?? p.author_username}
-            </Link>
-          ) : (
-            <span className="font-medium text-foreground">{p.author_name ?? "Student"}</span>
-          )}
-                  <span>· {timeAgo(p.created_at)}</span>
-                  <span>· {readingTime(p.body)} min read</span>
-                  {p.tag && <span className="ml-auto rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{p.tag}</span>}
-                </div>
-                <h3 className="mt-2 text-base font-semibold leading-snug">
-                  <Link to="/post/$slug" params={{ slug: p.slug ?? p.id }} className="hover:underline">{p.title}</Link>
-                </h3>
-                {p.body && <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">{p.body}</p>}
-                <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><ThumbsUp className="h-3.5 w-3.5" /> {pct === null ? "New" : `${pct}% helpful`}</span>
-                  <span className="inline-flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> {p.comment_count}</span>
-                  <Link to="/post/$slug" params={{ slug: p.slug ?? p.id }} className="ml-auto text-amber-300 hover:underline">Read discussion</Link>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      <div className="w-full px-4 py-10 lg:px-8">
+        <div className="mx-auto grid w-full max-w-[1600px] gap-8 lg:grid-cols-[210px_minmax(0,1fr)_300px]">
+          {/* LEFT — nav rail */}
+          <aside className="hidden lg:block">
+            <div className="sticky top-6 space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Browse</p>
+              <Link to="/communities" className="block text-sm font-semibold hover:text-amber-200">Communities</Link>
+              <Link to="/blog" className="block text-sm font-semibold hover:text-amber-200">Blog</Link>
+              <Link to="/watch-party" className="block text-sm font-semibold hover:text-amber-200">Watch parties</Link>
+              <Link to="/study-groups" className="block text-sm font-semibold hover:text-amber-200">Study groups</Link>
+              <Link to="/exam-prep" className="block text-sm font-semibold hover:text-amber-200">Exam prep</Link>
+            </div>
+          </aside>
 
-      <section className="mx-auto max-w-3xl px-5 pb-16">
-        <h2 className="text-lg font-semibold">Frequently asked questions</h2>
-        <div className="mt-4 space-y-3">
-          {FAQS.map((f) => (
-            <details key={f.q} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-              <summary className="cursor-pointer text-sm font-medium">{f.q}</summary>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
-            </details>
-          ))}
-        </div>
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-center">
-          <h2 className="text-lg font-semibold">Join thousands of students learning together.</h2>
-          <div className="mt-4 flex flex-wrap justify-center gap-3">
-            <JoinLink className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-black">Start posting</JoinLink>
-            <Link to="/communities" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Explore communities</Link>
+          {/* CENTER — discussions + FAQ */}
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold">Latest student discussions</h2>
+            <ul className="mt-4 space-y-3">
+              {posts.length === 0 && (
+                <li className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-muted-foreground">
+                  No public discussions yet — be the first to post.
+                </li>
+              )}
+              {posts.map((p) => {
+                const pct = upvotePct(p.up_count, p.down_count);
+                return (
+                  <li key={p.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-white/20">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      {p.author_username ? (
+                        <Link to="/u/$username" params={{ username: p.author_username }} className="font-medium text-foreground hover:underline">
+                          {p.author_name ?? p.author_username}
+                        </Link>
+                      ) : (
+                        <span className="font-medium text-foreground">{p.author_name ?? "Student"}</span>
+                      )}
+                      <span>· {timeAgo(p.created_at)}</span>
+                      <span>· {readingTime(p.body)} min read</span>
+                      {p.tag && <span className="ml-auto rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{p.tag}</span>}
+                    </div>
+                    <h3 className="mt-2 text-base font-semibold leading-snug">
+                      <Link to="/post/$slug" params={{ slug: p.slug ?? p.id }} className="hover:underline">{p.title}</Link>
+                    </h3>
+                    {p.body && <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">{p.body}</p>}
+                    <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><ThumbsUp className="h-3.5 w-3.5" /> {pct === null ? "New" : `${pct}% helpful`}</span>
+                      <span className="inline-flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> {p.comment_count}</span>
+                      <Link to="/post/$slug" params={{ slug: p.slug ?? p.id }} className="ml-auto text-amber-300 hover:underline">Read discussion</Link>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <section className="mt-12">
+              <h2 className="text-lg font-semibold">Frequently asked questions</h2>
+              <div className="mt-4 space-y-3">
+                {FAQS.map((f) => (
+                  <details key={f.q} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                    <summary className="cursor-pointer text-sm font-medium">{f.q}</summary>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+              <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-center">
+                <h2 className="text-lg font-semibold">Join thousands of students learning together.</h2>
+                <div className="mt-4 flex flex-wrap justify-center gap-3">
+                  <JoinLink className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-black">Start posting</JoinLink>
+                  <Link to="/communities" className="rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">Explore communities</Link>
+                </div>
+              </div>
+            </section>
           </div>
+
+          {/* RIGHT — trending + blog */}
+          <aside className="min-w-0">
+            <FeedSideRail posts={posts} articles={articles} title="Trending discussions" />
+          </aside>
         </div>
-      </section>
-    <SiteFooter />
+
+        <LiveRoomsStrip parties={parties} />
+      </div>
+
+      <SiteFooter />
     </main>
   );
 }
+
