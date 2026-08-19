@@ -104,7 +104,7 @@ function ArticleNotFound() {
 
 function BlogArticle() {
   const { post, related } = Route.useLoaderData();
-  const { blocks, toc } = parseBlocks(post.content);
+  const { toc } = parseBlocks(post.content);
   const published = post.published_at ?? post.created_at;
 
   return (

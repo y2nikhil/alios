@@ -54,7 +54,7 @@ function InAppArticle() {
     );
   }
 
-  const { blocks, toc } = parseBlocks(post.content);
+  const { toc } = parseBlocks(post.content);
   const published = post.published_at ?? post.created_at;
 
   return (
