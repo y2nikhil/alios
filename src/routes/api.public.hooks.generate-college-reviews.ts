@@ -18,7 +18,7 @@ async function runPipeline(limitOverride?: number) {
     return { ok: false, reason: "another run is in progress" };
   }
 
-  const limit = probeOnly ? 1 : Math.max(1, Math.min(10, limitOverride ?? state.daily_limit ?? 5));
+  const limit = probeOnly ? 1 : Math.max(1, Math.min(25, limitOverride ?? state.daily_limit ?? 5));
 
   // Single-flight lock (30 min lease)
   await db
