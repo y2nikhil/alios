@@ -55,6 +55,7 @@ import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppFriendsRouteImport } from './routes/app.friends'
 import { Route as AppFeedRouteImport } from './routes/app.feed'
 import { Route as AppEmailStudioRouteImport } from './routes/app.email-studio'
+import { Route as AppCollegePipelineRouteImport } from './routes/app.college-pipeline'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
 import { Route as AppAssistantRouteImport } from './routes/app.assistant'
@@ -84,6 +85,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicHooksGenerateCollegeReviewsRouteImport } from './routes/api.public.hooks.generate-college-reviews'
 import { Route as ApiPublicHooksDispatchPushRouteImport } from './routes/api.public.hooks.dispatch-push'
 
 const WatchPartyRoute = WatchPartyRouteImport.update({
@@ -316,6 +318,11 @@ const AppEmailStudioRoute = AppEmailStudioRouteImport.update({
   path: '/email-studio',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollegePipelineRoute = AppCollegePipelineRouteImport.update({
+  id: '/college-pipeline',
+  path: '/college-pipeline',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
   id: '/collaborate',
   path: '/collaborate',
@@ -467,6 +474,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksGenerateCollegeReviewsRoute =
+  ApiPublicHooksGenerateCollegeReviewsRouteImport.update({
+    id: '/api/public/hooks/generate-college-reviews',
+    path: '/api/public/hooks/generate-college-reviews',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksDispatchPushRoute =
   ApiPublicHooksDispatchPushRouteImport.update({
     id: '/api/public/hooks/dispatch-push',
@@ -513,6 +526,7 @@ export interface FileRoutesByFullPath {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/college-pipeline': typeof AppCollegePipelineRoute
   '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
@@ -546,6 +560,7 @@ export interface FileRoutesByFullPath {
   '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/api/public/hooks/generate-college-reviews': typeof ApiPublicHooksGenerateCollegeReviewsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -590,6 +605,7 @@ export interface FileRoutesByTo {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/college-pipeline': typeof AppCollegePipelineRoute
   '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
@@ -623,6 +639,7 @@ export interface FileRoutesByTo {
   '/app/blog': typeof AppBlogIndexRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/api/public/hooks/generate-college-reviews': typeof ApiPublicHooksGenerateCollegeReviewsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -669,6 +686,7 @@ export interface FileRoutesById {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/college-pipeline': typeof AppCollegePipelineRoute
   '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
@@ -702,6 +720,7 @@ export interface FileRoutesById {
   '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/api/public/hooks/generate-college-reviews': typeof ApiPublicHooksGenerateCollegeReviewsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -749,6 +768,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/college-pipeline'
     | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
@@ -782,6 +802,7 @@ export interface FileRouteTypes {
     | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
+    | '/api/public/hooks/generate-college-reviews'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -826,6 +847,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/college-pipeline'
     | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
@@ -859,6 +881,7 @@ export interface FileRouteTypes {
     | '/app/blog'
     | '/app/mindmap'
     | '/api/public/hooks/dispatch-push'
+    | '/api/public/hooks/generate-college-reviews'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -904,6 +927,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/college-pipeline'
     | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
@@ -937,6 +961,7 @@ export interface FileRouteTypes {
     | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
+    | '/api/public/hooks/generate-college-reviews'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -988,6 +1013,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
+  ApiPublicHooksGenerateCollegeReviewsRoute: typeof ApiPublicHooksGenerateCollegeReviewsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1319,6 +1345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEmailStudioRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/college-pipeline': {
+      id: '/app/college-pipeline'
+      path: '/college-pipeline'
+      fullPath: '/app/college-pipeline'
+      preLoaderRoute: typeof AppCollegePipelineRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/collaborate': {
       id: '/app/collaborate'
       path: '/collaborate'
@@ -1522,6 +1555,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/generate-college-reviews': {
+      id: '/api/public/hooks/generate-college-reviews'
+      path: '/api/public/hooks/generate-college-reviews'
+      fullPath: '/api/public/hooks/generate-college-reviews'
+      preLoaderRoute: typeof ApiPublicHooksGenerateCollegeReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/dispatch-push': {
       id: '/api/public/hooks/dispatch-push'
       path: '/api/public/hooks/dispatch-push'
@@ -1538,6 +1578,7 @@ interface AppRouteChildren {
   AppAssistantRoute: typeof AppAssistantRoute
   AppCalendarRoute: typeof AppCalendarRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppCollegePipelineRoute: typeof AppCollegePipelineRoute
   AppEmailStudioRoute: typeof AppEmailStudioRoute
   AppFeedRoute: typeof AppFeedRoute
   AppFriendsRoute: typeof AppFriendsRoute
@@ -1569,6 +1610,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssistantRoute: AppAssistantRoute,
   AppCalendarRoute: AppCalendarRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppCollegePipelineRoute: AppCollegePipelineRoute,
   AppEmailStudioRoute: AppEmailStudioRoute,
   AppFeedRoute: AppFeedRoute,
   AppFriendsRoute: AppFriendsRoute,
@@ -1641,6 +1683,8 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
+  ApiPublicHooksGenerateCollegeReviewsRoute:
+    ApiPublicHooksGenerateCollegeReviewsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

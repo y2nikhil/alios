@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { BookOpen, Loader2, PenLine, Plus, Sparkles, Trash2, ExternalLink } from "lucide-react";
+import { BookOpen, GraduationCap, Loader2, PenLine, Plus, Sparkles, Trash2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/lib/use-role";
@@ -80,12 +80,20 @@ function AppBlog() {
             </p>
           </div>
           {isAdmin && (
-            <button
-              onClick={() => navigate({ to: "/app/blog/$postId", params: { postId: "new" } })}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-sm font-semibold text-black shadow-[0_10px_30px_-12px_rgba(245,190,60,0.9)]"
-            >
-              <Plus className="h-4 w-4" /> New article
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                to="/app/college-pipeline"
+                className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-400/10 px-4 py-2 text-sm font-semibold text-amber-200"
+              >
+                <GraduationCap className="h-4 w-4" /> College pipeline
+              </Link>
+              <button
+                onClick={() => navigate({ to: "/app/blog/$postId", params: { postId: "new" } })}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-sm font-semibold text-black shadow-[0_10px_30px_-12px_rgba(245,190,60,0.9)]"
+              >
+                <Plus className="h-4 w-4" /> New article
+              </button>
+            </div>
           )}
         </div>
       </section>
