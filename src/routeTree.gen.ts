@@ -84,6 +84,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicHooksGenerateCollegeReviewsRouteImport } from './routes/api.public.hooks.generate-college-reviews'
 import { Route as ApiPublicHooksDispatchPushRouteImport } from './routes/api.public.hooks.dispatch-push'
 
 const WatchPartyRoute = WatchPartyRouteImport.update({
@@ -467,6 +468,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksGenerateCollegeReviewsRoute =
+  ApiPublicHooksGenerateCollegeReviewsRouteImport.update({
+    id: '/api/public/hooks/generate-college-reviews',
+    path: '/api/public/hooks/generate-college-reviews',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksDispatchPushRoute =
   ApiPublicHooksDispatchPushRouteImport.update({
     id: '/api/public/hooks/dispatch-push',
@@ -546,6 +553,7 @@ export interface FileRoutesByFullPath {
   '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/api/public/hooks/generate-college-reviews': typeof ApiPublicHooksGenerateCollegeReviewsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -623,6 +631,7 @@ export interface FileRoutesByTo {
   '/app/blog': typeof AppBlogIndexRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/api/public/hooks/generate-college-reviews': typeof ApiPublicHooksGenerateCollegeReviewsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -702,6 +711,7 @@ export interface FileRoutesById {
   '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
   '/api/public/hooks/dispatch-push': typeof ApiPublicHooksDispatchPushRoute
+  '/api/public/hooks/generate-college-reviews': typeof ApiPublicHooksGenerateCollegeReviewsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -782,6 +792,7 @@ export interface FileRouteTypes {
     | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
+    | '/api/public/hooks/generate-college-reviews'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -859,6 +870,7 @@ export interface FileRouteTypes {
     | '/app/blog'
     | '/app/mindmap'
     | '/api/public/hooks/dispatch-push'
+    | '/api/public/hooks/generate-college-reviews'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -937,6 +949,7 @@ export interface FileRouteTypes {
     | '/app/blog/'
     | '/app/mindmap/'
     | '/api/public/hooks/dispatch-push'
+    | '/api/public/hooks/generate-college-reviews'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -988,6 +1001,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
+  ApiPublicHooksGenerateCollegeReviewsRoute: typeof ApiPublicHooksGenerateCollegeReviewsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1522,6 +1536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/generate-college-reviews': {
+      id: '/api/public/hooks/generate-college-reviews'
+      path: '/api/public/hooks/generate-college-reviews'
+      fullPath: '/api/public/hooks/generate-college-reviews'
+      preLoaderRoute: typeof ApiPublicHooksGenerateCollegeReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/dispatch-push': {
       id: '/api/public/hooks/dispatch-push'
       path: '/api/public/hooks/dispatch-push'
@@ -1641,6 +1662,8 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
+  ApiPublicHooksGenerateCollegeReviewsRoute:
+    ApiPublicHooksGenerateCollegeReviewsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
