@@ -62,7 +62,7 @@ async function runPipeline(limitOverride?: number) {
       try {
         const article = await generateArticle(college);
 
-        let slug = slugifyTitle(`${college.name} admission ${new Date().getUTCFullYear() + 1} review`);
+        let slug = slugifyTitle(article.title || `${college.name} admission ${new Date().getUTCFullYear() + 1} review`);
         const { data: clash } = await db.from("blog_posts").select("id").eq("slug", slug).maybeSingle();
         if (clash) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
 
