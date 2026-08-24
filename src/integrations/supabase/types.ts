@@ -466,6 +466,120 @@ export type Database = {
           },
         ]
       }
+      college_gen_runs: {
+        Row: {
+          detail: Json
+          error: string | null
+          failed: number
+          finished_at: string | null
+          id: string
+          requested: number
+          started_at: string
+          succeeded: number
+        }
+        Insert: {
+          detail?: Json
+          error?: string | null
+          failed?: number
+          finished_at?: string | null
+          id?: string
+          requested?: number
+          started_at?: string
+          succeeded?: number
+        }
+        Update: {
+          detail?: Json
+          error?: string | null
+          failed?: number
+          finished_at?: string | null
+          id?: string
+          requested?: number
+          started_at?: string
+          succeeded?: number
+        }
+        Relationships: []
+      }
+      college_pipeline_state: {
+        Row: {
+          daily_limit: number
+          id: number
+          last_run_at: string | null
+          lock_until: string | null
+          pause_reason: string | null
+          paused: boolean
+          updated_at: string
+        }
+        Insert: {
+          daily_limit?: number
+          id?: number
+          last_run_at?: string | null
+          lock_until?: string | null
+          pause_reason?: string | null
+          paused?: boolean
+          updated_at?: string
+        }
+        Update: {
+          daily_limit?: number
+          id?: number
+          last_run_at?: string | null
+          lock_until?: string | null
+          pause_reason?: string | null
+          paused?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      college_queue: {
+        Row: {
+          attempts: number
+          city: string | null
+          created_at: string
+          created_by: string | null
+          error: string | null
+          exam_track: string
+          id: string
+          name: string
+          notes: string | null
+          post_id: string | null
+          priority: number
+          published_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          city?: string | null
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          exam_track?: string
+          id?: string
+          name: string
+          notes?: string | null
+          post_id?: string | null
+          priority?: number
+          published_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          city?: string | null
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          exam_track?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          post_id?: string | null
+          priority?: number
+          published_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_adherence: {
         Row: {
           break_overrun_minutes: number
