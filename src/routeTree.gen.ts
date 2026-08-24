@@ -55,6 +55,7 @@ import { Route as AppLiveRouteImport } from './routes/app.live'
 import { Route as AppFriendsRouteImport } from './routes/app.friends'
 import { Route as AppFeedRouteImport } from './routes/app.feed'
 import { Route as AppEmailStudioRouteImport } from './routes/app.email-studio'
+import { Route as AppCollegePipelineRouteImport } from './routes/app.college-pipeline'
 import { Route as AppCollaborateRouteImport } from './routes/app.collaborate'
 import { Route as AppCalendarRouteImport } from './routes/app.calendar'
 import { Route as AppAssistantRouteImport } from './routes/app.assistant'
@@ -317,6 +318,11 @@ const AppEmailStudioRoute = AppEmailStudioRouteImport.update({
   path: '/email-studio',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollegePipelineRoute = AppCollegePipelineRouteImport.update({
+  id: '/college-pipeline',
+  path: '/college-pipeline',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCollaborateRoute = AppCollaborateRouteImport.update({
   id: '/collaborate',
   path: '/collaborate',
@@ -520,6 +526,7 @@ export interface FileRoutesByFullPath {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/college-pipeline': typeof AppCollegePipelineRoute
   '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
@@ -598,6 +605,7 @@ export interface FileRoutesByTo {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/college-pipeline': typeof AppCollegePipelineRoute
   '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
@@ -678,6 +686,7 @@ export interface FileRoutesById {
   '/app/assistant': typeof AppAssistantRoute
   '/app/calendar': typeof AppCalendarRoute
   '/app/collaborate': typeof AppCollaborateRoute
+  '/app/college-pipeline': typeof AppCollegePipelineRoute
   '/app/email-studio': typeof AppEmailStudioRoute
   '/app/feed': typeof AppFeedRoute
   '/app/friends': typeof AppFriendsRoute
@@ -759,6 +768,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/college-pipeline'
     | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
@@ -837,6 +847,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/college-pipeline'
     | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
@@ -916,6 +927,7 @@ export interface FileRouteTypes {
     | '/app/assistant'
     | '/app/calendar'
     | '/app/collaborate'
+    | '/app/college-pipeline'
     | '/app/email-studio'
     | '/app/feed'
     | '/app/friends'
@@ -1333,6 +1345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEmailStudioRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/college-pipeline': {
+      id: '/app/college-pipeline'
+      path: '/college-pipeline'
+      fullPath: '/app/college-pipeline'
+      preLoaderRoute: typeof AppCollegePipelineRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/collaborate': {
       id: '/app/collaborate'
       path: '/collaborate'
@@ -1559,6 +1578,7 @@ interface AppRouteChildren {
   AppAssistantRoute: typeof AppAssistantRoute
   AppCalendarRoute: typeof AppCalendarRoute
   AppCollaborateRoute: typeof AppCollaborateRoute
+  AppCollegePipelineRoute: typeof AppCollegePipelineRoute
   AppEmailStudioRoute: typeof AppEmailStudioRoute
   AppFeedRoute: typeof AppFeedRoute
   AppFriendsRoute: typeof AppFriendsRoute
@@ -1590,6 +1610,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssistantRoute: AppAssistantRoute,
   AppCalendarRoute: AppCalendarRoute,
   AppCollaborateRoute: AppCollaborateRoute,
+  AppCollegePipelineRoute: AppCollegePipelineRoute,
   AppEmailStudioRoute: AppEmailStudioRoute,
   AppFeedRoute: AppFeedRoute,
   AppFriendsRoute: AppFriendsRoute,
