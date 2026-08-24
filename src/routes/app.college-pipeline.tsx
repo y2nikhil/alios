@@ -83,17 +83,24 @@ function CollegePipeline() {
     const lines = bulk.split("\n").map((l) => l.trim()).filter(Boolean);
     if (!lines.length) return;
     const { data: user } = await supabase.auth.getUser();
-    const payload = lines.map((line, i) => {
-      const [name, city] = line.split(",").map((p) => p.trim());
-      return {
-        name,
-        city: city || null,
-        exam_track: track,
-        priority: 100 + i,
-        created_by: user.user?.id ?? null,
-      };
-    });
-    const { error } = await (supabase as any).from("college_queue").upsert(payload, { onConflict: "name", ignoreDuplicates: true });
+    const existing = new Set(rows.map((r) => r.name.toLowerCase()));
+    const seen = new Set<string>();
+    const payload = lines
+      .map((line, i) => {
+        const [name, city] = line.split(",").map((p) => p.trim());
+        return { name, city: city || null, exam_track: track, priority: 100 + i, created_by: user.user?.id ?? null };
+      })
+      .filter((p) => {
+        const k = p.name.toLowerCase();
+        if (!p.name || existing.has(k) || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+    if (!payload.length) {
+      setBulk("");
+      return toast.info("Those colleges are already in the queue");
+    }
+    const { error } = await (supabase as any).from("college_queue").insert(payload);
     if (error) return toast.error(error.message);
     setBulk("");
     toast.success(`${payload.length} college${payload.length > 1 ? "s" : ""} queued`);
