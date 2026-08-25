@@ -68,7 +68,7 @@ async function perplexityResearch(college: QueueRow, year: number): Promise<stri
   const key = process.env.PERPLEXITY_API_KEY;
   if (!key) return null;
 
-  const prompt = `Research the Indian college "${college.name}"${college.city ? ` in ${college.city}` : ""} for a ${year} admissions review.
+  const prompt = `Research the Indian college "${college.name}"${college.city ? ` in ${college.city}` : ""} for a ${year} admissions review (entrance exams held in ${examYear(year)} feed this ${year} intake).
 Collect, with the YEAR and SOURCE attached to every number:
 - official website, university/parent body, establishment year, type, accreditation
 - courses offered with duration, eligibility, entrance exam and course-wise fees
