@@ -200,6 +200,9 @@ export async function generateArticle(college: QueueRow): Promise<GeneratedArtic
       role: "user",
       content: `Write the full ClassLab college review for "${college.name}"${college.city ? `, ${college.city}` : ""} (admission cycle ${year}).
 
+Year rule (must be followed everywhere): the ${year} intake is filled through entrance exams held in ${examYear(year)}. Always write the exam as "${college.exam_track ?? "CAT"} ${examYear(year)}" and the intake as "${year} admission" / "${year}-${String(year + 2).slice(2)} batch". Never refer to a ${year} exam session or a ${year + 1} intake.
+
+
 Start with a 2-3 sentence intro paragraph, then a "## Quick College Information" markdown table with rows: College Name, University / Parent Institution, Location, Established, College Type, Affiliation / Accreditation, Flagship Course, Entrance Exam, Estimated Cutoff, Average Package, Highest Package, Total Fees, Official Website.
 
 Then these 27 sections as "## " headings, exactly in this order:
