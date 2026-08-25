@@ -270,3 +270,97 @@ export function slugifyTitle(text: string): string {
     .slice(0, 80)
     .replace(/-$/, "");
 }
+
+/* ------------------------------------------------------------------ *
+ * Free-form topic articles ("just drop a topic, get a blog post")
+ * ------------------------------------------------------------------ */
+
+async function topicResearch(topic: string): Promise<string | null> {
+  const key = process.env.PERPLEXITY_API_KEY;
+  if (!key) return null;
+  const res = await fetch("https://api.perplexity.ai/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "sonar-pro",
+      messages: [
+        { role: "system", content: "You are a meticulous researcher for an Indian student-focused publication. Attach a year and a source to every number. Never invent data." },
+        { role: "user", content: `Research the topic "${topic}" for an in-depth article aimed at Indian students preparing for competitive exams and college admissions. Include current facts, dates, numbers, official sources, expert guidance, common mistakes and what students say online. Mark anything unverified.` },
+      ],
+    }),
+  });
+  if (!res.ok) return null;
+  const json = (await res.json()) as any;
+  const content: string = json?.choices?.[0]?.message?.content ?? "";
+  const citations: string[] = json?.citations ?? json?.search_results?.map((s: any) => s.url) ?? [];
+  if (!content) return null;
+  return citations.length ? `${content}\n\nSOURCES:\n${citations.map((c) => `- ${c}`).join("\n")}` : content;
+}
+
+export async function generateTopicArticle(row: QueueRow): Promise<GeneratedArticle> {
+  const topic = row.name;
+  let research: string | null = null;
+  try {
+    research = await topicResearch(topic);
+  } catch (e) {
+    if (e instanceof PipelineHalt) throw e;
+    console.error("topic research failed", e);
+  }
+  if (!research) {
+    research = await gateway([
+      { role: "system", content: "You are a careful research analyst writing for Indian students. State only what you are confident about, attach years to figures, and mark anything uncertain." },
+      { role: "user", content: `Compile a factual research brief on: ${topic}` },
+    ]);
+  }
+
+  const markdown = await gateway([
+    {
+      role: "system",
+      content:
+        "You write ClassLab blog articles for Indian students. Output ONLY the markdown article body — no code fences, no preamble, no H1 title (the title is stored separately). Use '## ' section headings, GitHub-flavoured markdown tables where data helps, short paragraphs, bullet lists and a final '## FAQs' section with 5-8 questions. Plain English, no marketing fluff, never invent data.",
+    },
+    {
+      role: "user",
+      content: `Write a comprehensive, genuinely useful 1500-2500 word article on the topic: "${topic}".
+${row.notes ? `Editor notes to respect: ${row.notes}\n` : ""}Open with a 2-3 sentence intro, then 8-14 well-structured sections that actually answer what a student searching this topic wants, and close with FAQs.
+
+RESEARCH BRIEF:
+${research.slice(0, 20000)}`,
+    },
+  ]);
+
+  const content = markdown.replace(/^```(?:markdown)?\s*/i, "").replace(/```\s*$/i, "").trim();
+
+  const meta = await gateway([
+    {
+      role: "system",
+      content: 'Return ONLY minified JSON, no code fences. Shape: {"title":string,"excerpt":string,"seo_title":string,"seo_description":string,"keywords":string,"tags":string[]}',
+    },
+    {
+      role: "user",
+      content: `For an article on "${topic}" aimed at Indian students: title (SEO-friendly, under 70 chars), excerpt (150-180 chars), seo_title (under 60 chars), seo_description (under 158 chars), keywords (6-9 comma separated phrases), tags (3-5 short lowercase topic tags).`,
+    },
+  ]);
+
+  let parsed: any = {};
+  try {
+    parsed = JSON.parse(meta.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim());
+  } catch { /* fallbacks below */ }
+
+  const title = String(parsed.title || topic).slice(0, 140);
+  const fallbackDesc = `${topic} — a complete, up-to-date guide for Indian students: key facts, dates, tips and FAQs.`;
+  const tags = Array.isArray(parsed.tags) && parsed.tags.length
+    ? parsed.tags.slice(0, 5).map((t: unknown) => String(t).toLowerCase())
+    : ["guide", row.exam_track];
+
+  return {
+    title,
+    excerpt: String(parsed.excerpt ?? fallbackDesc).slice(0, 220),
+    content,
+    seo_title: String(parsed.seo_title ?? title).slice(0, 60),
+    seo_description: String(parsed.seo_description ?? fallbackDesc).slice(0, 158),
+    keywords: String(parsed.keywords ?? topic),
+    tags: Array.from(new Set(tags)).slice(0, 6),
+    cover_alt: title,
+  };
+}

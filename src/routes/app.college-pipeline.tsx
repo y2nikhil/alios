@@ -12,6 +12,7 @@ type QueueRow = {
   name: string;
   city: string | null;
   exam_track: string;
+  kind?: string | null;
   priority: number;
   status: string;
   error: string | null;
@@ -19,6 +20,7 @@ type QueueRow = {
   post_id: string | null;
   published_at: string | null;
 };
+
 
 type RunRow = {
   id: string;

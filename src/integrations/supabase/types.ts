@@ -538,6 +538,7 @@ export type Database = {
           error: string | null
           exam_track: string
           id: string
+          kind: string
           name: string
           notes: string | null
           post_id: string | null
@@ -554,6 +555,7 @@ export type Database = {
           error?: string | null
           exam_track?: string
           id?: string
+          kind?: string
           name: string
           notes?: string | null
           post_id?: string | null
@@ -570,6 +572,7 @@ export type Database = {
           error?: string | null
           exam_track?: string
           id?: string
+          kind?: string
           name?: string
           notes?: string | null
           post_id?: string | null
