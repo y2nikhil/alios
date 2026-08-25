@@ -1,0 +1,1 @@
+ALTER TABLE public.college_queue ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'college';
