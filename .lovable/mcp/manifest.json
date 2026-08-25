@@ -192,6 +192,355 @@
           }
         },
         "outputSchema": null
+      },
+      {
+        "name": "create_post",
+        "title": "Create feed post",
+        "description": "Publish a new post to the ClassLab community feed as the signed-in user.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Post title."
+            },
+            "body": {
+              "description": "Post body (markdown allowed).",
+              "type": "string",
+              "maxLength": 20000
+            },
+            "tag": {
+              "description": "Optional topic tag.",
+              "type": "string",
+              "maxLength": 60
+            },
+            "media_url": {
+              "description": "Optional image or video URL.",
+              "type": "string",
+              "format": "uri"
+            },
+            "media_kind": {
+              "description": "Kind of attached media.",
+              "type": "string",
+              "enum": [
+                "image",
+                "video"
+              ]
+            }
+          },
+          "required": [
+            "title"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_comment",
+        "title": "Comment on a post",
+        "description": "Add a comment (or a threaded reply) to a ClassLab feed post as the signed-in user. Accepts a post id or slug.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "post": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Post UUID or slug."
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 10000,
+              "description": "Comment text."
+            },
+            "parent_id": {
+              "description": "Optional parent comment id to reply to.",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          "required": [
+            "post",
+            "body"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_post_comments",
+        "title": "List comments on a post",
+        "description": "Read the comment thread of a ClassLab feed post by id or slug.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "post": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Post UUID or slug."
+            },
+            "limit": {
+              "default": 50,
+              "description": "Maximum comments to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "post"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "vote_post",
+        "title": "Vote on a post",
+        "description": "Upvote, downvote, or clear the signed-in user's vote on a ClassLab feed post.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "post_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "Post UUID."
+            },
+            "value": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down",
+                "clear"
+              ],
+              "description": "Vote direction, or 'clear' to remove."
+            }
+          },
+          "required": [
+            "post_id",
+            "value"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_blog_post",
+        "title": "Create blog post",
+        "description": "Create a ClassLab blog article (markdown body) as a draft or published. Requires an admin account.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Article title."
+            },
+            "content": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Full markdown body of the article."
+            },
+            "excerpt": {
+              "description": "Short summary shown in listings.",
+              "type": "string",
+              "maxLength": 500
+            },
+            "slug": {
+              "description": "URL slug; derived from the title when omitted.",
+              "type": "string",
+              "maxLength": 120
+            },
+            "tags": {
+              "description": "Topic tags.",
+              "maxItems": 10,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 40
+              }
+            },
+            "status": {
+              "default": "draft",
+              "description": "Publish immediately or keep as draft.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "cover_url": {
+              "description": "Optional cover image URL.",
+              "type": "string",
+              "format": "uri"
+            },
+            "cover_alt": {
+              "description": "Alt text for the cover image.",
+              "type": "string",
+              "maxLength": 200
+            },
+            "seo_title": {
+              "description": "SEO title override.",
+              "type": "string",
+              "maxLength": 120
+            },
+            "seo_description": {
+              "description": "Meta description.",
+              "type": "string",
+              "maxLength": 200
+            },
+            "keywords": {
+              "description": "Comma-separated SEO keywords.",
+              "type": "string",
+              "maxLength": 400
+            }
+          },
+          "required": [
+            "title",
+            "content"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_blog_post",
+        "title": "Update or publish blog post",
+        "description": "Edit an existing ClassLab blog article or change its status (draft/published). Requires an admin account.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Blog post UUID (or provide slug).",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "slug": {
+              "description": "Existing slug of the article.",
+              "type": "string",
+              "maxLength": 120
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "content": {
+              "description": "Replacement markdown body.",
+              "type": "string"
+            },
+            "excerpt": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "tags": {
+              "maxItems": 10,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 40
+              }
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "cover_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "seo_title": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "seo_description": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_blog_posts",
+        "title": "List blog posts",
+        "description": "List ClassLab blog articles, optionally filtered by status or keyword.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "default": "published",
+              "description": "Filter by status.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "any"
+              ]
+            },
+            "query": {
+              "description": "Keyword to match in title or excerpt.",
+              "type": "string",
+              "maxLength": 120
+            },
+            "limit": {
+              "default": 20,
+              "description": "Maximum number of articles.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
       }
     ]
   }
