@@ -28,9 +28,16 @@ export class PipelineHalt extends Error {
 
 function admissionYear(): number {
   const now = new Date();
-  // Articles target the next admission cycle.
-  return now.getUTCMonth() >= 5 ? now.getUTCFullYear() + 2 : now.getUTCFullYear() + 1;
+  // Articles target the admission cycle that entrance exams held this year feed into.
+  // e.g. during 2026 the CAT 2026 exam leads to 2027 admissions.
+  return now.getUTCFullYear() + 1;
 }
+
+// The entrance-exam year that feeds the given admission cycle (CAT 2026 -> 2027 intake).
+function examYear(year: number): number {
+  return year - 1;
+}
+
 
 async function gateway(messages: { role: string; content: string }[]): Promise<string> {
   const key = process.env.LOVABLE_API_KEY;
@@ -61,7 +68,7 @@ async function perplexityResearch(college: QueueRow, year: number): Promise<stri
   const key = process.env.PERPLEXITY_API_KEY;
   if (!key) return null;
 
-  const prompt = `Research the Indian college "${college.name}"${college.city ? ` in ${college.city}` : ""} for a ${year} admissions review.
+  const prompt = `Research the Indian college "${college.name}"${college.city ? ` in ${college.city}` : ""} for a ${year} admissions review (entrance exams held in ${examYear(year)} feed this ${year} intake).
 Collect, with the YEAR and SOURCE attached to every number:
 - official website, university/parent body, establishment year, type, accreditation
 - courses offered with duration, eligibility, entrance exam and course-wise fees
@@ -192,6 +199,9 @@ export async function generateArticle(college: QueueRow): Promise<GeneratedArtic
     {
       role: "user",
       content: `Write the full ClassLab college review for "${college.name}"${college.city ? `, ${college.city}` : ""} (admission cycle ${year}).
+
+Year rule (must be followed everywhere): the ${year} intake is filled through entrance exams held in ${examYear(year)}. Always write the exam as "${college.exam_track ?? "CAT"} ${examYear(year)}" and the intake as "${year} admission" / "${year}-${String(year + 2).slice(2)} batch". Never refer to a ${year} exam session or a ${year + 1} intake.
+
 
 Start with a 2-3 sentence intro paragraph, then a "## Quick College Information" markdown table with rows: College Name, University / Parent Institution, Location, Established, College Type, Affiliation / Accreditation, Flagship Course, Entrance Exam, Estimated Cutoff, Average Package, Highest Package, Total Fees, Official Website.
 
