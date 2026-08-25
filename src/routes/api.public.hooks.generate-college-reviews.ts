@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { generateArticle, slugifyTitle, PipelineHalt, type QueueRow } from "@/lib/college-review.server";
+import {
+  generateArticle,
+  generateTopicArticle,
+  slugifyTitle,
+  PipelineHalt,
+  type QueueRow,
+} from "@/lib/college-review.server";
 
 /**
  * Daily automated college review generator.
  * Called by pg_cron (or an admin "Run now") with the project anon key in the apikey header.
+ * Multiple runs may overlap — rows are claimed atomically, so two runs never pick the same item.
  */
 async function runPipeline(limitOverride?: number) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -14,16 +21,12 @@ async function runPipeline(limitOverride?: number) {
 
   const now = Date.now();
   const probeOnly = !!state.paused;
-  if (state.lock_until && new Date(state.lock_until).getTime() > now) {
-    return { ok: false, reason: "another run is in progress" };
-  }
 
   const limit = probeOnly ? 1 : Math.max(1, Math.min(25, limitOverride ?? state.daily_limit ?? 5));
 
-  // Single-flight lock (30 min lease)
   await db
     .from("college_pipeline_state")
-    .update({ lock_until: new Date(now + 30 * 60_000).toISOString(), last_run_at: new Date().toISOString() })
+    .update({ last_run_at: new Date().toISOString(), lock_until: null })
     .eq("id", 1);
 
   const { data: run } = await db
@@ -51,20 +54,32 @@ async function runPipeline(limitOverride?: number) {
 
     const { data: queue } = await db
       .from("college_queue")
-      .select("id, name, city, exam_track, notes")
+      .select("id, name, city, exam_track, notes, kind")
       .eq("status", "pending")
       .order("priority", { ascending: true })
       .order("created_at", { ascending: true })
-      .limit(limit);
+      .limit(limit * 3);
 
-    for (const college of (queue ?? []) as QueueRow[]) {
-      await db.from("college_queue").update({ status: "generating", error: null }).eq("id", college.id);
+    let processed = 0;
+    for (const college of (queue ?? []) as (QueueRow & { kind?: string })[]) {
+      if (processed >= limit) break;
+      // Atomic claim: only one concurrent run can flip this row out of "pending".
+      const { data: claimed } = await db
+        .from("college_queue")
+        .update({ status: "generating", error: null })
+        .eq("id", college.id)
+        .eq("status", "pending")
+        .select("id");
+      if (!claimed || claimed.length === 0) continue;
+      processed += 1;
       try {
-        const article = await generateArticle(college);
+        const isTopic = college.kind === "topic";
+        const article = isTopic ? await generateTopicArticle(college) : await generateArticle(college);
 
-        let slug = slugifyTitle(article.title || `${college.name} admission ${new Date().getUTCFullYear() + 1} review`);
+        let slug = slugifyTitle(article.title || college.name);
         const { data: clash } = await db.from("blog_posts").select("id").eq("slug", slug).maybeSingle();
         if (clash) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+
 
         const { data: post, error: postErr } = await db
           .from("blog_posts")
