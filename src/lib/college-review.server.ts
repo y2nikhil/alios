@@ -28,9 +28,16 @@ export class PipelineHalt extends Error {
 
 function admissionYear(): number {
   const now = new Date();
-  // Articles target the next admission cycle.
-  return now.getUTCMonth() >= 5 ? now.getUTCFullYear() + 2 : now.getUTCFullYear() + 1;
+  // Articles target the admission cycle that entrance exams held this year feed into.
+  // e.g. during 2026 the CAT 2026 exam leads to 2027 admissions.
+  return now.getUTCFullYear() + 1;
 }
+
+// The entrance-exam year that feeds the given admission cycle (CAT 2026 -> 2027 intake).
+function examYear(year: number): number {
+  return year - 1;
+}
+
 
 async function gateway(messages: { role: string; content: string }[]): Promise<string> {
   const key = process.env.LOVABLE_API_KEY;
