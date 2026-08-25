@@ -19,7 +19,6 @@ async function runPipeline(limitOverride?: number) {
   const { data: state } = await db.from("college_pipeline_state").select("*").eq("id", 1).maybeSingle();
   if (!state) return { ok: false, reason: "no pipeline state" };
 
-  const now = Date.now();
   const probeOnly = !!state.paused;
 
   const limit = probeOnly ? 1 : Math.max(1, Math.min(25, limitOverride ?? state.daily_limit ?? 5));
