@@ -315,15 +315,15 @@ function CollegePipeline() {
         <table className="w-full text-left text-sm">
           <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wider text-muted-foreground">
             <tr>
-              <th className="px-4 py-2">College</th>
-              <th className="px-4 py-2">Track</th>
+              <th className="px-4 py-2">Item</th>
+              <th className="px-4 py-2">Type</th>
               <th className="px-4 py-2">Status</th>
               <th className="px-4 py-2" />
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 && (
-              <tr><td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">Queue is empty — paste your college list above.</td></tr>
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">Queue is empty — paste colleges or topics above.</td></tr>
             )}
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-white/5">
@@ -332,7 +332,10 @@ function CollegePipeline() {
                   {r.city && <div className="text-xs text-muted-foreground">{r.city}</div>}
                   {r.error && <div className="mt-1 line-clamp-2 text-[11px] text-rose-300">{r.error}</div>}
                 </td>
-                <td className="px-4 py-2.5 text-xs uppercase text-muted-foreground">{r.exam_track}</td>
+                <td className="px-4 py-2.5 text-xs uppercase text-muted-foreground">
+                  {r.kind === "topic" ? "Topic" : r.exam_track}
+                </td>
+
                 <td className="px-4 py-2.5">
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
                     r.status === "published" ? "bg-emerald-400/10 text-emerald-300"
