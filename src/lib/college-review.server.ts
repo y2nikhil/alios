@@ -351,7 +351,7 @@ ${research.slice(0, 20000)}`,
   const fallbackDesc = `${topic} — a complete, up-to-date guide for Indian students: key facts, dates, tips and FAQs.`;
   const tags = Array.isArray(parsed.tags) && parsed.tags.length
     ? parsed.tags.slice(0, 5).map((t: unknown) => String(t).toLowerCase())
-    : ["guide", row.exam_track];
+    : ["guide", String(row.exam_track)];
 
   return {
     title,
