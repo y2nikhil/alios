@@ -21,7 +21,7 @@ async function runPipeline(limitOverride?: number) {
 
   const probeOnly = !!state.paused;
 
-  const limit = probeOnly ? 1 : Math.max(1, Math.min(25, limitOverride ?? state.daily_limit ?? 5));
+  const limit = probeOnly ? 1 : Math.max(1, Math.min(5, limitOverride ?? state.daily_limit ?? 3));
 
   await db
     .from("college_pipeline_state")
