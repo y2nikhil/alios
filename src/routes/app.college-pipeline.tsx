@@ -64,6 +64,7 @@ function CollegePipeline() {
   const [loading, setLoading] = useState(true);
   const [bulk, setBulk] = useState("");
   const [track, setTrack] = useState("cat");
+  const [mode, setMode] = useState<"college" | "topic">("college");
   const [running, setRunning] = useState(false);
 
   const load = async () => {
@@ -89,8 +90,25 @@ function CollegePipeline() {
     const seen = new Set<string>();
     const payload = lines
       .map((line, i) => {
+        if (mode === "topic") {
+          return {
+            name: line,
+            city: null as string | null,
+            exam_track: track,
+            kind: "topic",
+            priority: 50 + i,
+            created_by: user.user?.id ?? null,
+          };
+        }
         const [name, city] = line.split(",").map((p) => p.trim());
-        return { name, city: city || null, exam_track: track, priority: 100 + i, created_by: user.user?.id ?? null };
+        return {
+          name,
+          city: city || null,
+          exam_track: track,
+          kind: "college",
+          priority: 100 + i,
+          created_by: user.user?.id ?? null,
+        };
       })
       .filter((p) => {
         const k = p.name.toLowerCase();
@@ -100,12 +118,12 @@ function CollegePipeline() {
       });
     if (!payload.length) {
       setBulk("");
-      return toast.info("Those colleges are already in the queue");
+      return toast.info("Those entries are already in the queue");
     }
     const { error } = await (supabase as any).from("college_queue").insert(payload);
     if (error) return toast.error(error.message);
     setBulk("");
-    toast.success(`${payload.length} college${payload.length > 1 ? "s" : ""} queued`);
+    toast.success(`${payload.length} ${mode === "topic" ? "topic" : "college"}${payload.length > 1 ? "s" : ""} queued`);
     load();
   };
 
@@ -115,9 +133,21 @@ function CollegePipeline() {
   };
 
   const remove = async (id: string) => {
-    await (supabase as any).from("college_queue").delete().eq("id", id);
+    const { error } = await (supabase as any).from("college_queue").delete().eq("id", id);
+    if (error) return toast.error(error.message);
     setRows((p) => p.filter((r) => r.id !== id));
   };
+
+  const cancelRun = async (id: string) => {
+    await (supabase as any)
+      .from("college_gen_runs")
+      .update({ finished_at: new Date().toISOString(), error: "Cancelled by admin" })
+      .eq("id", id);
+    await (supabase as any).from("college_queue").update({ status: "pending" }).eq("status", "generating");
+    toast.success("Run cleared");
+    load();
+  };
+
 
   const togglePause = async () => {
     if (!state) return;
