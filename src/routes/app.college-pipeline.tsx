@@ -379,10 +379,19 @@ function CollegePipeline() {
               {run.failed > 0 && <span className="text-rose-300">{run.failed} failed</span>}
               {!run.finished_at && <span className="text-amber-300">running…</span>}
               {run.error && <span className="text-rose-300">{run.error}</span>}
+              {!run.finished_at && (
+                <button
+                  onClick={() => cancelRun(run.id)}
+                  className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-[11px] hover:bg-rose-500/20"
+                >
+                  <Trash2 className="h-3 w-3" /> Cancel run
+                </button>
+              )}
             </div>
           ))}
         </div>
       </section>
+
     </div>
   );
 }
