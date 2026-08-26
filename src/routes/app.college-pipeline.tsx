@@ -64,6 +64,7 @@ function CollegePipeline() {
   const [loading, setLoading] = useState(true);
   const [bulk, setBulk] = useState("");
   const [track, setTrack] = useState("cat");
+  const [mode, setMode] = useState<"college" | "topic">("college");
   const [running, setRunning] = useState(false);
 
   const load = async () => {
@@ -89,8 +90,25 @@ function CollegePipeline() {
     const seen = new Set<string>();
     const payload = lines
       .map((line, i) => {
+        if (mode === "topic") {
+          return {
+            name: line,
+            city: null as string | null,
+            exam_track: track,
+            kind: "topic",
+            priority: 50 + i,
+            created_by: user.user?.id ?? null,
+          };
+        }
         const [name, city] = line.split(",").map((p) => p.trim());
-        return { name, city: city || null, exam_track: track, priority: 100 + i, created_by: user.user?.id ?? null };
+        return {
+          name,
+          city: city || null,
+          exam_track: track,
+          kind: "college",
+          priority: 100 + i,
+          created_by: user.user?.id ?? null,
+        };
       })
       .filter((p) => {
         const k = p.name.toLowerCase();
@@ -100,12 +118,12 @@ function CollegePipeline() {
       });
     if (!payload.length) {
       setBulk("");
-      return toast.info("Those colleges are already in the queue");
+      return toast.info("Those entries are already in the queue");
     }
     const { error } = await (supabase as any).from("college_queue").insert(payload);
     if (error) return toast.error(error.message);
     setBulk("");
-    toast.success(`${payload.length} college${payload.length > 1 ? "s" : ""} queued`);
+    toast.success(`${payload.length} ${mode === "topic" ? "topic" : "college"}${payload.length > 1 ? "s" : ""} queued`);
     load();
   };
 
@@ -115,9 +133,21 @@ function CollegePipeline() {
   };
 
   const remove = async (id: string) => {
-    await (supabase as any).from("college_queue").delete().eq("id", id);
+    const { error } = await (supabase as any).from("college_queue").delete().eq("id", id);
+    if (error) return toast.error(error.message);
     setRows((p) => p.filter((r) => r.id !== id));
   };
+
+  const cancelRun = async (id: string) => {
+    await (supabase as any)
+      .from("college_gen_runs")
+      .update({ finished_at: new Date().toISOString(), error: "Cancelled by admin" })
+      .eq("id", id);
+    await (supabase as any).from("college_queue").update({ status: "pending" }).eq("status", "generating");
+    toast.success("Run cleared");
+    load();
+  };
+
 
   const togglePause = async () => {
     if (!state) return;
@@ -221,15 +251,41 @@ function CollegePipeline() {
       </div>
 
       <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-        <h2 className="text-sm font-semibold">Add colleges</h2>
-        <p className="mt-1 text-xs text-muted-foreground">One per line. Optionally <code className="text-amber-300">Name, City</code>.</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-sm font-semibold">Add to queue</h2>
+          <div className="ml-auto inline-flex rounded-full border border-white/10 p-0.5">
+            {(["college", "topic"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                  mode === m ? "bg-amber-400 text-black" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {m === "college" ? "College review" : "Blog topic"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {mode === "college" ? (
+            <>One college per line. Optionally <code className="text-amber-300">Name, City</code>.</>
+          ) : (
+            <>One topic per line — AI researches it and publishes a full blog article.</>
+          )}
+        </p>
         <textarea
           value={bulk}
           onChange={(e) => setBulk(e.target.value)}
           rows={6}
-          placeholder={"IIM Ahmedabad, Ahmedabad\nFMS Delhi, New Delhi\nIIT Bombay, Mumbai"}
+          placeholder={
+            mode === "college"
+              ? "IIM Ahmedabad, Ahmedabad\nFMS Delhi, New Delhi\nIIT Bombay, Mumbai"
+              : "How to crack CAT 2026 in 6 months\nNEET 2026 biology revision plan\nBest SSC CGL study routine for working professionals"
+          }
           className="mt-3 w-full rounded-xl border border-white/10 bg-black/40 p-3 font-mono text-xs outline-none focus:border-amber-300/40"
         />
+
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <select
             value={track}
@@ -259,15 +315,15 @@ function CollegePipeline() {
         <table className="w-full text-left text-sm">
           <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wider text-muted-foreground">
             <tr>
-              <th className="px-4 py-2">College</th>
-              <th className="px-4 py-2">Track</th>
+              <th className="px-4 py-2">Item</th>
+              <th className="px-4 py-2">Type</th>
               <th className="px-4 py-2">Status</th>
               <th className="px-4 py-2" />
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 && (
-              <tr><td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">Queue is empty — paste your college list above.</td></tr>
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">Queue is empty — paste colleges or topics above.</td></tr>
             )}
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-white/5">
@@ -276,7 +332,10 @@ function CollegePipeline() {
                   {r.city && <div className="text-xs text-muted-foreground">{r.city}</div>}
                   {r.error && <div className="mt-1 line-clamp-2 text-[11px] text-rose-300">{r.error}</div>}
                 </td>
-                <td className="px-4 py-2.5 text-xs uppercase text-muted-foreground">{r.exam_track}</td>
+                <td className="px-4 py-2.5 text-xs uppercase text-muted-foreground">
+                  {r.kind === "topic" ? "Topic" : r.exam_track}
+                </td>
+
                 <td className="px-4 py-2.5">
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
                     r.status === "published" ? "bg-emerald-400/10 text-emerald-300"
@@ -320,10 +379,19 @@ function CollegePipeline() {
               {run.failed > 0 && <span className="text-rose-300">{run.failed} failed</span>}
               {!run.finished_at && <span className="text-amber-300">running…</span>}
               {run.error && <span className="text-rose-300">{run.error}</span>}
+              {!run.finished_at && (
+                <button
+                  onClick={() => cancelRun(run.id)}
+                  className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-[11px] hover:bg-rose-500/20"
+                >
+                  <Trash2 className="h-3 w-3" /> Cancel run
+                </button>
+              )}
             </div>
           ))}
         </div>
       </section>
+
     </div>
   );
 }
