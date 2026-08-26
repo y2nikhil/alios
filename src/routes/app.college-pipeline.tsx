@@ -251,15 +251,41 @@ function CollegePipeline() {
       </div>
 
       <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-        <h2 className="text-sm font-semibold">Add colleges</h2>
-        <p className="mt-1 text-xs text-muted-foreground">One per line. Optionally <code className="text-amber-300">Name, City</code>.</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-sm font-semibold">Add to queue</h2>
+          <div className="ml-auto inline-flex rounded-full border border-white/10 p-0.5">
+            {(["college", "topic"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
+                  mode === m ? "bg-amber-400 text-black" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {m === "college" ? "College review" : "Blog topic"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {mode === "college" ? (
+            <>One college per line. Optionally <code className="text-amber-300">Name, City</code>.</>
+          ) : (
+            <>One topic per line — AI researches it and publishes a full blog article.</>
+          )}
+        </p>
         <textarea
           value={bulk}
           onChange={(e) => setBulk(e.target.value)}
           rows={6}
-          placeholder={"IIM Ahmedabad, Ahmedabad\nFMS Delhi, New Delhi\nIIT Bombay, Mumbai"}
+          placeholder={
+            mode === "college"
+              ? "IIM Ahmedabad, Ahmedabad\nFMS Delhi, New Delhi\nIIT Bombay, Mumbai"
+              : "How to crack CAT 2026 in 6 months\nNEET 2026 biology revision plan\nBest SSC CGL study routine for working professionals"
+          }
           className="mt-3 w-full rounded-xl border border-white/10 bg-black/40 p-3 font-mono text-xs outline-none focus:border-amber-300/40"
         />
+
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <select
             value={track}
