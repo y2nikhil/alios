@@ -1,9 +1,12 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
+import { GA_MEASUREMENT_ID, trackPageView } from "@/lib/analytics";
 
 import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
