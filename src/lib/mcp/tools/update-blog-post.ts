@@ -19,7 +19,7 @@ export default defineTool({
     seo_title: z.string().trim().max(120).optional(),
     seo_description: z.string().trim().max(200).optional(),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   handler: async (input, ctx) => {
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
