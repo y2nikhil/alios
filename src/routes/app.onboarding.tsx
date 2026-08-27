@@ -66,9 +66,14 @@ function OnboardingPage() {
   });
 
   useEffect(() => {
-    load()
-      .then((existing) => {
-        if (existing) {
+    // Wait for the Supabase session before calling the auth-protected server fn,
+    // otherwise it throws a raw 401 Response ("Error: [object Response]").
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const existing = await load();
+        if (!cancelled && existing) {
           setForm((f) => ({
             ...f,
             exam: existing.exam as ExamKey,
@@ -82,10 +87,15 @@ function OnboardingPage() {
             coaching_status: existing.coaching_status as any,
           }));
         }
-      })
-      .catch(() => { /* no profile yet or not authed — start fresh */ })
-      .finally(() => setInitialized(true));
-  }, [load]);
+      } catch {
+        /* no profile yet or not authed — start fresh */
+      } finally {
+        if (!cancelled) setInitialized(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [load, user]);
+
 
 
   const set = <K extends keyof PrepProfileInput>(k: K, v: PrepProfileInput[K]) =>
