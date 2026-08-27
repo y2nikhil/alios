@@ -1,5 +1,12 @@
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /post/
+Allow: /feed
+Allow: /u/
+# Signed-in app screens only (duplicates of the public pages above)
 Disallow: /app/
+Disallow: /.mcp/
+Disallow: /api/
 
 Sitemap: https://classlab.in/sitemap.xml
