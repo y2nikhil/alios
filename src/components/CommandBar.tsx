@@ -175,7 +175,7 @@ export function CommandBar() {
         className="group flex w-full max-w-xl items-center gap-2 rounded-full border border-white/15 hover:border-violet-400/40 shadow-[0_2px_18px_-6px_rgba(139,92,246,0.45)] transition px-4 py-2 text-sm text-muted-foreground"
       >
         <Search className="h-4 w-4" />
-        <span className="flex-1 text-left truncate">Search people, groups, parties · or ask AI</span>
+        <span className="flex-1 text-left truncate">Search anything — people, posts, blogs, rooms · or ask AI</span>
         <kbd className="hidden md:inline-flex h-5 items-center rounded border border-white/10 bg-white/5 px-1.5 text-[10px] font-mono">⌘K</kbd>
       </button>
 
@@ -205,7 +205,7 @@ export function CommandBar() {
                     } else if (results[0]) pick(results[0]);
                   }
                 }}
-                placeholder={askMode ? "Ask anything…" : "Search @username, name, email, groups, parties — or ask a question"}
+                placeholder={askMode ? "Ask anything…" : "Search people, posts, blogs, groups, parties — or ask a question"}
                 className="flex-1 bg-transparent outline-none text-sm"
               />
               <button
