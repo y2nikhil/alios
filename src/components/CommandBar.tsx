@@ -82,12 +82,28 @@ export function CommandBar() {
       const listAllPeople = raw === "@";
       const searchTerm = stripped.toLowerCase();
       const { data: { session } } = await supabase.auth.getSession();
-      const [{ data: groups }, { data: parties }, peopleRes] = await Promise.all([
+      const safe = searchTerm.replace(/[%,()]/g, " ").trim();
+      const [{ data: groups }, { data: parties }, { data: feedPosts }, { data: articles }, peopleRes] = await Promise.all([
         searchTerm
           ? supabase.from("groups").select("id, name, emoji").ilike("name", `%${searchTerm}%`).limit(4)
           : Promise.resolve({ data: [] as any[] }),
         searchTerm
           ? (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${searchTerm}%`).limit(4)
+          : Promise.resolve({ data: [] as any[] }),
+        safe
+          ? (supabase.from("posts") as any)
+              .select("id, slug, title, body")
+              .or(`title.ilike.%${safe}%,body.ilike.%${safe}%`)
+              .order("created_at", { ascending: false })
+              .limit(6)
+          : Promise.resolve({ data: [] as any[] }),
+        safe
+          ? (supabase.from("blog_posts") as any)
+              .select("id, slug, title, excerpt, content")
+              .eq("status", "published")
+              .or(`title.ilike.%${safe}%,excerpt.ilike.%${safe}%,content.ilike.%${safe}%,keywords.ilike.%${safe}%`)
+              .order("published_at", { ascending: false })
+              .limit(6)
           : Promise.resolve({ data: [] as any[] }),
         fetch("/api/search-people", {
           method: "POST",
@@ -96,10 +112,19 @@ export function CommandBar() {
         }).then((r) => r.json()).catch(() => ({ results: [] })),
       ]);
       if (cancelled) return;
+      const snippetOf = (text: string | null | undefined) => {
+        if (!text) return undefined;
+        const plain = text.replace(/[#*`>_\[\]()!]/g, " ").replace(/\s+/g, " ").trim();
+        const i = plain.toLowerCase().indexOf(searchTerm);
+        if (i < 0) return plain.slice(0, 110);
+        return `${i > 30 ? "…" : ""}${plain.slice(Math.max(0, i - 30), i + 90)}…`;
+      };
       const people: Person[] = peopleRes?.results ?? [];
       const next: Result[] = [
         ...people.map((p) => ({ kind: "person" as const, person: p })),
         ...PAGES.filter((p) => p.kind === "page" && searchTerm && p.label.toLowerCase().includes(searchTerm)),
+        ...((articles ?? []) as any[]).filter((a) => a.slug).map((a) => ({ kind: "article" as const, label: a.title, slug: a.slug, snippet: snippetOf(a.excerpt || a.content) })),
+        ...((feedPosts ?? []) as any[]).filter((p) => p.slug).map((p) => ({ kind: "post" as const, label: p.title, slug: p.slug, snippet: snippetOf(p.body) })),
         ...((groups ?? []) as any[]).map((g) => ({ kind: "group" as const, label: g.name, emoji: g.emoji ?? "💬", id: g.id })),
         ...((parties ?? []) as any[]).filter((p) => p.visibility !== "private").map((p) => ({ kind: "party" as const, label: p.title, id: p.id })),
       ];
