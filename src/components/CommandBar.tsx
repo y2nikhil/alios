@@ -21,6 +21,8 @@ type Result =
   | { kind: "page"; label: string; to: string; icon: any }
   | { kind: "group"; label: string; emoji: string; id: string }
   | { kind: "party"; label: string; id: string }
+  | { kind: "post"; label: string; slug: string; snippet?: string }
+  | { kind: "article"; label: string; slug: string; snippet?: string }
   | { kind: "person"; person: Person };
 
 const PAGES: Result[] = [
