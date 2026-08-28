@@ -254,6 +254,8 @@ export function CommandBar() {
                         {r.kind === "page" && <r.icon className="h-4 w-4 text-muted-foreground shrink-0" />}
                         {r.kind === "group" && <span className="text-base">{r.emoji}</span>}
                         {r.kind === "party" && <Tv className="h-4 w-4 text-pink-400 shrink-0" />}
+                        {r.kind === "article" && <Newspaper className="h-4 w-4 text-amber-300 shrink-0" />}
+                        {r.kind === "post" && <FileText className="h-4 w-4 text-sky-300 shrink-0" />}
                         {r.kind === "person" && (
                           <AvatarIconRender
                             icon={r.person.avatar_icon}
@@ -277,6 +279,11 @@ export function CommandBar() {
                                 </span>
                               )}
                             </div>
+                          </div>
+                        ) : (r.kind === "post" || r.kind === "article") ? (
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{r.label}</div>
+                            {r.snippet && <div className="text-[11px] text-muted-foreground truncate">{r.snippet}</div>}
                           </div>
                         ) : (
                           <span className="flex-1 truncate">{(r as any).label}</span>
