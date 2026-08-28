@@ -15,12 +15,38 @@ function isActive(pathname: string, to: string) {
   return pathname.startsWith(to);
 }
 
-/** Section cards shown under the search bar — always visible inside the app. */
+/** Section tabs shown under the search bar — compact text tabs on mobile, cards on desktop. */
 export function SectionSwitcher() {
   const { pathname } = useLocation();
   return (
     <div className="w-full border-b border-white/5">
-      <div className="flex flex-nowrap items-stretch gap-3 overflow-x-auto scrollbar-thin px-3 py-3 lg:px-6">
+      {/* Mobile: compact text tab bar, no boxes, fits the screen */}
+      <div className="flex items-center justify-between px-2 py-1 lg:hidden">
+        {SECTIONS.map((s) => {
+          const active = isActive(pathname, s.to);
+          return (
+            <Link
+              key={s.to}
+              to={s.to}
+              className={cn(
+                "relative flex flex-col items-center gap-0.5 px-1.5 py-1.5 text-[10px] font-semibold leading-tight transition-colors",
+                active ? "text-amber-300" : "text-muted-foreground",
+              )}
+            >
+              <span className="whitespace-nowrap">{s.label}</span>
+              <span
+                className={cn(
+                  "h-0.5 w-6 rounded-full transition-all",
+                  active ? "bg-amber-400" : "bg-transparent",
+                )}
+              />
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Desktop: full cards */}
+      <div className="hidden flex-nowrap items-stretch gap-3 px-6 py-3 lg:flex">
         {SECTIONS.map((s) => {
           const active = isActive(pathname, s.to);
           const Icon = s.icon;
