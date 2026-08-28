@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Search, Sparkles, Loader2, Tv, MessageSquare, Brain, BarChart3, User as UserIcon, Mail, X } from "lucide-react";
+import { Search, Sparkles, Loader2, Tv, MessageSquare, Brain, BarChart3, User as UserIcon, Mail, X, FileText, Newspaper } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,8 @@ type Result =
   | { kind: "page"; label: string; to: string; icon: any }
   | { kind: "group"; label: string; emoji: string; id: string }
   | { kind: "party"; label: string; id: string }
+  | { kind: "post"; label: string; slug: string; snippet?: string }
+  | { kind: "article"; label: string; slug: string; snippet?: string }
   | { kind: "person"; person: Person };
 
 const PAGES: Result[] = [
@@ -80,12 +82,28 @@ export function CommandBar() {
       const listAllPeople = raw === "@";
       const searchTerm = stripped.toLowerCase();
       const { data: { session } } = await supabase.auth.getSession();
-      const [{ data: groups }, { data: parties }, peopleRes] = await Promise.all([
+      const safe = searchTerm.replace(/[%,()]/g, " ").trim();
+      const [{ data: groups }, { data: parties }, { data: feedPosts }, { data: articles }, peopleRes] = await Promise.all([
         searchTerm
           ? supabase.from("groups").select("id, name, emoji").ilike("name", `%${searchTerm}%`).limit(4)
           : Promise.resolve({ data: [] as any[] }),
         searchTerm
           ? (supabase.from("watch_parties") as any).select("id, title, visibility, ended_at").is("ended_at", null).ilike("title", `%${searchTerm}%`).limit(4)
+          : Promise.resolve({ data: [] as any[] }),
+        safe
+          ? (supabase.from("posts") as any)
+              .select("id, slug, title, body")
+              .or(`title.ilike.%${safe}%,body.ilike.%${safe}%`)
+              .order("created_at", { ascending: false })
+              .limit(6)
+          : Promise.resolve({ data: [] as any[] }),
+        safe
+          ? (supabase.from("blog_posts") as any)
+              .select("id, slug, title, excerpt, content")
+              .eq("status", "published")
+              .or(`title.ilike.%${safe}%,excerpt.ilike.%${safe}%,content.ilike.%${safe}%,keywords.ilike.%${safe}%`)
+              .order("published_at", { ascending: false })
+              .limit(6)
           : Promise.resolve({ data: [] as any[] }),
         fetch("/api/search-people", {
           method: "POST",
@@ -94,10 +112,19 @@ export function CommandBar() {
         }).then((r) => r.json()).catch(() => ({ results: [] })),
       ]);
       if (cancelled) return;
+      const snippetOf = (text: string | null | undefined) => {
+        if (!text) return undefined;
+        const plain = text.replace(/[#*`>_\[\]()!]/g, " ").replace(/\s+/g, " ").trim();
+        const i = plain.toLowerCase().indexOf(searchTerm);
+        if (i < 0) return plain.slice(0, 110);
+        return `${i > 30 ? "…" : ""}${plain.slice(Math.max(0, i - 30), i + 90)}…`;
+      };
       const people: Person[] = peopleRes?.results ?? [];
       const next: Result[] = [
         ...people.map((p) => ({ kind: "person" as const, person: p })),
         ...PAGES.filter((p) => p.kind === "page" && searchTerm && p.label.toLowerCase().includes(searchTerm)),
+        ...((articles ?? []) as any[]).filter((a) => a.slug).map((a) => ({ kind: "article" as const, label: a.title, slug: a.slug, snippet: snippetOf(a.excerpt || a.content) })),
+        ...((feedPosts ?? []) as any[]).filter((p) => p.slug).map((p) => ({ kind: "post" as const, label: p.title, slug: p.slug, snippet: snippetOf(p.body) })),
         ...((groups ?? []) as any[]).map((g) => ({ kind: "group" as const, label: g.name, emoji: g.emoji ?? "💬", id: g.id })),
         ...((parties ?? []) as any[]).filter((p) => p.visibility !== "private").map((p) => ({ kind: "party" as const, label: p.title, id: p.id })),
       ];
@@ -135,6 +162,8 @@ export function CommandBar() {
     if (r.kind === "page") navigate({ to: r.to });
     else if (r.kind === "group") navigate({ to: "/app/collaborate" });
     else if (r.kind === "party") navigate({ to: "/app/hangout/$partyId", params: { partyId: r.id } });
+    else if (r.kind === "post") navigate({ to: "/post/$slug", params: { slug: r.slug } });
+    else if (r.kind === "article") navigate({ to: "/blog/$slug", params: { slug: r.slug } });
     else if (r.kind === "person") navigate({ to: "/app/u/$userId", params: { userId: r.person.id } });
   };
 
@@ -146,7 +175,7 @@ export function CommandBar() {
         className="group flex w-full max-w-xl items-center gap-2 rounded-full border border-white/15 hover:border-violet-400/40 shadow-[0_2px_18px_-6px_rgba(139,92,246,0.45)] transition px-4 py-2 text-sm text-muted-foreground"
       >
         <Search className="h-4 w-4" />
-        <span className="flex-1 text-left truncate">Search people, groups, parties · or ask AI</span>
+        <span className="flex-1 text-left truncate">Search anything — people, posts, blogs, rooms · or ask AI</span>
         <kbd className="hidden md:inline-flex h-5 items-center rounded border border-white/10 bg-white/5 px-1.5 text-[10px] font-mono">⌘K</kbd>
       </button>
 
@@ -176,7 +205,7 @@ export function CommandBar() {
                     } else if (results[0]) pick(results[0]);
                   }
                 }}
-                placeholder={askMode ? "Ask anything…" : "Search @username, name, email, groups, parties — or ask a question"}
+                placeholder={askMode ? "Ask anything…" : "Search people, posts, blogs, groups, parties — or ask a question"}
                 className="flex-1 bg-transparent outline-none text-sm"
               />
               <button
@@ -225,6 +254,8 @@ export function CommandBar() {
                         {r.kind === "page" && <r.icon className="h-4 w-4 text-muted-foreground shrink-0" />}
                         {r.kind === "group" && <span className="text-base">{r.emoji}</span>}
                         {r.kind === "party" && <Tv className="h-4 w-4 text-pink-400 shrink-0" />}
+                        {r.kind === "article" && <Newspaper className="h-4 w-4 text-amber-300 shrink-0" />}
+                        {r.kind === "post" && <FileText className="h-4 w-4 text-sky-300 shrink-0" />}
                         {r.kind === "person" && (
                           <AvatarIconRender
                             icon={r.person.avatar_icon}
@@ -248,6 +279,11 @@ export function CommandBar() {
                                 </span>
                               )}
                             </div>
+                          </div>
+                        ) : (r.kind === "post" || r.kind === "article") ? (
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{r.label}</div>
+                            {r.snippet && <div className="text-[11px] text-muted-foreground truncate">{r.snippet}</div>}
                           </div>
                         ) : (
                           <span className="flex-1 truncate">{(r as any).label}</span>
