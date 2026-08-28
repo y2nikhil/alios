@@ -162,6 +162,8 @@ export function CommandBar() {
     if (r.kind === "page") navigate({ to: r.to });
     else if (r.kind === "group") navigate({ to: "/app/collaborate" });
     else if (r.kind === "party") navigate({ to: "/app/hangout/$partyId", params: { partyId: r.id } });
+    else if (r.kind === "post") navigate({ to: "/post/$slug", params: { slug: r.slug } });
+    else if (r.kind === "article") navigate({ to: "/blog/$slug", params: { slug: r.slug } });
     else if (r.kind === "person") navigate({ to: "/app/u/$userId", params: { userId: r.person.id } });
   };
 
