@@ -7,6 +7,7 @@ import { useRole } from "@/lib/use-role";
 import { AvatarIconRender } from "@/components/AvatarIcon";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostMedia } from "@/components/feed/PostCard";
+import { RichText } from "@/components/feed/RichText";
 import { buildTree, CommentThread } from "@/components/feed/CommentThread";
 import { SuggestedPosts } from "@/components/feed/SuggestedPosts";
 
@@ -161,7 +162,7 @@ function PostPage() {
           {post.tag && <span className="ml-auto rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{post.tag}</span>}
         </div>
         <h1 className="mt-2 text-lg font-bold leading-snug">{post.title}</h1>
-        {post.body && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">{post.body}</p>}
+        {post.body && <RichText text={post.body} className="mt-2 text-foreground/85" />}
         {post.media_url && <PostMedia url={post.media_url} kind={post.media_kind} />}
         <div className="mt-3 flex items-center gap-3">
           <VoteControl up={post.up_count} down={post.down_count} mine={postVote} onVote={votePost} />

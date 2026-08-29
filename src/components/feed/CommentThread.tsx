@@ -100,7 +100,7 @@ export function CommentThread({
 
               {!isCollapsed && (
                 <>
-                  <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{n.body}</p>
+                  <RichText text={n.body} className="mt-1" />
                   <div className="mt-1 flex items-center gap-2">
                     <VoteControl compact up={n.up_count} down={n.down_count} mine={votes[n.id] ?? 0} onVote={(v) => onVote(n.id, v)} />
                     <button
