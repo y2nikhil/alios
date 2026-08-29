@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Bookmark, ExternalLink, MessageSquare, Pin, Share2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
@@ -28,7 +29,7 @@ export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
   );
 }
 
-export function PostCard({
+export const PostCard = memo(function PostCard({
   post, author, myVote, onVote, canModerate, onDelete,
   saved, onToggleSave, canPin, onTogglePin,
   reactions = {}, myReaction = null, onReact, online,
@@ -166,4 +167,4 @@ export function PostCard({
 
     </article>
   );
-}
+});
