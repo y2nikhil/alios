@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { JoinLink, SignedOutOnly, SignedInOnly } from "@/components/JoinLink";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+
 import {
   ArrowRight,
   Users,
@@ -452,12 +452,7 @@ function LandingPage() {
 
         {/* HERO */}
         <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 pt-10 pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:px-10 lg:pt-16 lg:pb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col justify-center"
-          >
+          <div className="flex animate-in flex-col justify-center fade-in-0 slide-in-from-bottom-4 duration-700">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs text-muted-foreground">
               <span aria-hidden>🇮🇳</span>
               Built for Indian students
