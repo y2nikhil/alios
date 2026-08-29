@@ -97,7 +97,8 @@ const IDLE_THRESHOLD_MS = 30 * 60 * 1000;
 function HeaderStatus() {
   const { activeSession, activeStatus, markNotResponding, statuses, switchTo } = useAux();
   const [now, setNow] = useState(() => Date.now());
-  const [lastActivity, setLastActivity] = useState(() => Date.now());
+  // Activity timestamp lives in a ref: pointer/scroll events must never trigger a render.
+  const lastActivityRef = useRef(Date.now());
 
   useEffect(() => {
     const i = setInterval(() => setNow(Date.now()), 1000);
@@ -105,13 +106,13 @@ function HeaderStatus() {
   }, []);
 
   useEffect(() => {
-    const bump = () => setLastActivity(Date.now());
+    const bump = () => { lastActivityRef.current = Date.now(); };
     const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll"] as const;
     events.forEach((e) => window.addEventListener(e, bump, { passive: true }));
     return () => { events.forEach((e) => window.removeEventListener(e, bump)); };
   }, []);
 
-  useEffect(() => { setLastActivity(Date.now()); }, [activeSession?.id]);
+  useEffect(() => { lastActivityRef.current = Date.now(); }, [activeSession?.id]);
 
   if (!activeSession || !activeStatus) {
     return (
