@@ -4,6 +4,7 @@ import { CornerDownRight, Loader2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
 import { ReportButton } from "@/components/ReportButton";
 import { VoteControl } from "@/components/feed/VoteControl";
+import { RichText } from "@/components/feed/RichText";
 import { THREAD_COLORS, timeAgo, type Author, type Comment } from "@/lib/feed";
 import { cn } from "@/lib/utils";
 

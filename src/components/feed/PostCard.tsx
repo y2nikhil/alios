@@ -4,6 +4,7 @@ import { AvatarIconRender } from "@/components/AvatarIcon";
 import { OnlineDot } from "@/components/BrandLogo";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostReactions } from "@/components/feed/PostReactions";
+import { RichText } from "@/components/feed/RichText";
 import { ReportButton } from "@/components/ReportButton";
 import { postPath, timeAgo, type Author, type Post } from "@/lib/feed";
 import { cn } from "@/lib/utils";
@@ -84,7 +85,11 @@ export function PostCard({
 
       <Link to="/app/post/$postId" params={{ postId: post.id }} className="block">
         <h3 className="mt-2 text-base font-semibold leading-snug hover:underline">{post.title}</h3>
-        {post.body && <p className="mt-1 text-sm text-muted-foreground line-clamp-4 whitespace-pre-wrap">{post.body}</p>}
+        {post.body && (
+          <div className="relative mt-1 max-h-56 overflow-hidden">
+            <RichText text={post.body} className="text-muted-foreground" />
+          </div>
+        )}
       </Link>
       {post.media_url && <PostMedia url={post.media_url} kind={post.media_kind} />}
 

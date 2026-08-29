@@ -4,6 +4,7 @@ import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { upvotePct, timeAgo, readingTime } from "@/lib/feed";
 import { SiteFooter } from "@/components/SiteFooter";
+import { stripMarkdown } from "@/components/feed/RichText";
 import { FeedSideRail, LiveRoomsStrip } from "@/routes/post.$slug";
 
 

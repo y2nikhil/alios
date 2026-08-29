@@ -4,6 +4,7 @@ import { ArrowLeft, Flame, MessageSquare, Radio, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { readingTime, timeAgo, upvotePct } from "@/lib/feed";
 import { SiteFooter } from "@/components/SiteFooter";
+import { RichText } from "@/components/feed/RichText";
 import type { PublicPost } from "@/routes/feed";
 
 type PublicComment = {
