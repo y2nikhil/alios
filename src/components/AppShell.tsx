@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/lib/use-role";
@@ -143,7 +143,7 @@ function HeaderStatus() {
   }
 
   const elapsed = Math.floor((now - new Date(activeSession.started_at).getTime()) / 1000);
-  const isIdle = now - lastActivity >= IDLE_THRESHOLD_MS;
+  const isIdle = now - lastActivityRef.current >= IDLE_THRESHOLD_MS;
 
   return (
     <div className="hidden md:flex items-center gap-2">
