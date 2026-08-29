@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { JoinLink, SignedOutOnly, SignedInOnly } from "@/components/JoinLink";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+
 import {
   ArrowRight,
   Users,
