@@ -4,6 +4,7 @@ import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { upvotePct, timeAgo, readingTime } from "@/lib/feed";
 import { SiteFooter } from "@/components/SiteFooter";
+import { stripMarkdown } from "@/components/feed/RichText";
 import { FeedSideRail, LiveRoomsStrip } from "@/routes/post.$slug";
 
 
@@ -193,7 +194,7 @@ function PublicFeedPage() {
                     <h3 className="mt-2 text-base font-semibold leading-snug">
                       <Link to="/post/$slug" params={{ slug: p.slug ?? p.id }} className="hover:underline">{p.title}</Link>
                     </h3>
-                    {p.body && <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-sm text-muted-foreground">{p.body}</p>}
+                    {p.body && <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{stripMarkdown(p.body)}</p>}
                     <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1"><ThumbsUp className="h-3.5 w-3.5" /> {pct === null ? "New" : `${pct}% helpful`}</span>
                       <span className="inline-flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> {p.comment_count}</span>

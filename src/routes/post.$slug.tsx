@@ -4,6 +4,7 @@ import { ArrowLeft, Flame, MessageSquare, Radio, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { readingTime, timeAgo, upvotePct } from "@/lib/feed";
 import { SiteFooter } from "@/components/SiteFooter";
+import { RichText } from "@/components/feed/RichText";
 import type { PublicPost } from "@/routes/feed";
 
 type PublicComment = {
@@ -168,7 +169,7 @@ function CommentList({ comments, parentId = null, depth = 0 }: { comments: Publi
                 <span className="font-medium text-foreground/90">{c.author_name ?? c.author_username ?? "Student"}</span> · {timeAgo(c.created_at)}
                 {pct !== null && <> · {pct}% helpful</>}
               </p>
-              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{c.body}</p>
+              <RichText text={c.body} className="mt-1" />
             </div>
             <CommentList comments={comments} parentId={c.id} depth={depth + 1} />
           </div>
@@ -308,7 +309,7 @@ function PublicPostPage() {
               {post.tag && <span className="ml-auto rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{post.tag}</span>}
             </div>
             <h1 className="mt-3 text-2xl font-bold leading-snug">{post.title}</h1>
-            {post.body && <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">{post.body}</p>}
+            {post.body && <RichText text={post.body} className="mt-3 text-foreground/85" />}
             {post.media_url && post.media_kind === "image" && (
               <img src={post.media_url} alt={post.title} loading="lazy" className="mt-4 w-full rounded-xl border border-white/10 object-cover" />
             )}

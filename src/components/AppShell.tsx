@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/lib/use-role";
@@ -97,7 +97,8 @@ const IDLE_THRESHOLD_MS = 30 * 60 * 1000;
 function HeaderStatus() {
   const { activeSession, activeStatus, markNotResponding, statuses, switchTo } = useAux();
   const [now, setNow] = useState(() => Date.now());
-  const [lastActivity, setLastActivity] = useState(() => Date.now());
+  // Activity timestamp lives in a ref: pointer/scroll events must never trigger a render.
+  const lastActivityRef = useRef(Date.now());
 
   useEffect(() => {
     const i = setInterval(() => setNow(Date.now()), 1000);
@@ -105,13 +106,13 @@ function HeaderStatus() {
   }, []);
 
   useEffect(() => {
-    const bump = () => setLastActivity(Date.now());
+    const bump = () => { lastActivityRef.current = Date.now(); };
     const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll"] as const;
     events.forEach((e) => window.addEventListener(e, bump, { passive: true }));
     return () => { events.forEach((e) => window.removeEventListener(e, bump)); };
   }, []);
 
-  useEffect(() => { setLastActivity(Date.now()); }, [activeSession?.id]);
+  useEffect(() => { lastActivityRef.current = Date.now(); }, [activeSession?.id]);
 
   if (!activeSession || !activeStatus) {
     return (
@@ -142,7 +143,7 @@ function HeaderStatus() {
   }
 
   const elapsed = Math.floor((now - new Date(activeSession.started_at).getTime()) / 1000);
-  const isIdle = now - lastActivity >= IDLE_THRESHOLD_MS;
+  const isIdle = now - lastActivityRef.current >= IDLE_THRESHOLD_MS;
 
   return (
     <div className="hidden md:flex items-center gap-2">

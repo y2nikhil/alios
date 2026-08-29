@@ -1,9 +1,11 @@
+import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Bookmark, ExternalLink, MessageSquare, Pin, Share2, Trash2 } from "lucide-react";
 import { AvatarIconRender } from "@/components/AvatarIcon";
 import { OnlineDot } from "@/components/BrandLogo";
 import { VoteControl } from "@/components/feed/VoteControl";
 import { PostReactions } from "@/components/feed/PostReactions";
+import { RichText } from "@/components/feed/RichText";
 import { ReportButton } from "@/components/ReportButton";
 import { postPath, timeAgo, type Author, type Post } from "@/lib/feed";
 import { cn } from "@/lib/utils";
@@ -27,7 +29,7 @@ export function PostMedia({ url, kind }: { url: string; kind: string | null }) {
   );
 }
 
-export function PostCard({
+export const PostCard = memo(function PostCard({
   post, author, myVote, onVote, canModerate, onDelete,
   saved, onToggleSave, canPin, onTogglePin,
   reactions = {}, myReaction = null, onReact, online,
@@ -84,8 +86,12 @@ export function PostCard({
 
       <Link to="/app/post/$postId" params={{ postId: post.id }} className="block">
         <h3 className="mt-2 text-base font-semibold leading-snug hover:underline">{post.title}</h3>
-        {post.body && <p className="mt-1 text-sm text-muted-foreground line-clamp-4 whitespace-pre-wrap">{post.body}</p>}
       </Link>
+      {post.body && (
+        <div className="relative mt-1 max-h-56 overflow-hidden">
+          <RichText text={post.body} className="text-muted-foreground" />
+        </div>
+      )}
       {post.media_url && <PostMedia url={post.media_url} kind={post.media_kind} />}
 
       {onReact && (
@@ -161,4 +167,4 @@ export function PostCard({
 
     </article>
   );
-}
+});
