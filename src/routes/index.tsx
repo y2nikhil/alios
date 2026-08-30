@@ -500,17 +500,12 @@ function LandingPage() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
-          >
+          <div className="relative animate-in fade-in-0 zoom-in-95 duration-700">
             <div className="absolute -inset-6 -z-10 rounded-[36px] bg-primary/10 blur-3xl" />
             <PreviewCard />
-          </motion.div>
+          </div>
         </section>
 
         {/* PUBLIC PREVIEW: FEED + LIVE ROOMS */}
@@ -532,15 +527,11 @@ function LandingPage() {
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PILLARS.map((f, i) => {
+            {PILLARS.map((f) => {
               const Icon = f.icon;
               return (
-                <motion.div
+                <div
                   key={f.title}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.4, delay: i * 0.04 }}
                   className="hover-lift group flex flex-col rounded-[22px] border border-border bg-card p-6"
                 >
                   <span className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-secondary">
@@ -555,7 +546,7 @@ function LandingPage() {
                     {f.cta}
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
-                </motion.div>
+                </div>
               );
             })}
           </div>
