@@ -454,15 +454,28 @@ function ShellInner() {
 }
 
 export function AppShell() {
+  // Overlays are deferred: they never render on first paint, so keeping them out
+  // of the initial chunk makes the shell interactive sooner.
+  const [showOverlays, setShowOverlays] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setShowOverlays(true), 1200);
+    return () => clearTimeout(id);
+  }, []);
+
   return (
     <AuxProvider>
       <OnboardingRedirect />
       <PresenceHeartbeat />
-      <DisplayNamePrompt />
 
       <ShellInner />
-      <IdlePrompt />
-      <PunchPrompt />
+
+      {showOverlays && (
+        <Suspense fallback={null}>
+          <DisplayNamePrompt />
+          <IdlePrompt />
+          <PunchPrompt />
+        </Suspense>
+      )}
     </AuxProvider>
   );
 }
