@@ -51,6 +51,11 @@ export const Route = createRootRoute({
       { rel: "apple-touch-icon", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Warm the API connection before the first query fires.
+      ...(import.meta.env["VITE_SUPABASE_URL"]
+        ? [{ rel: "preconnect", href: import.meta.env["VITE_SUPABASE_URL"] as string, crossOrigin: "anonymous" }]
+        : []),
+      { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" },
     ],
   }),
