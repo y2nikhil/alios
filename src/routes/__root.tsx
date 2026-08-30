@@ -77,11 +77,16 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en" className="dark">
       <head>
         <HeadContent />
-        {/* Google tag (gtag.js) */}
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+        {/* Fonts: swap the print-media stylesheet in as soon as it has loaded. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');`,
+            __html: `(function(){function s(){document.querySelectorAll('link[data-lazy-font]').forEach(function(l){l.media='all';});}if(document.readyState!=='loading'){s();}else{document.addEventListener('DOMContentLoaded',s);}})();`,
+          }}
+        />
+        {/* Analytics is loaded after the page is interactive so it never blocks first paint. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');function __ga(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s);}if('requestIdleCallback' in window){requestIdleCallback(__ga,{timeout:4000});}else{window.addEventListener('load',function(){setTimeout(__ga,2000);});}`,
           }}
         />
         <script
@@ -90,6 +95,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
           }}
         />
       </head>
+
 
       <body>
         {children}
