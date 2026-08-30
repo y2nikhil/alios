@@ -7,19 +7,20 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+
+const IdlePrompt = lazy(() => import("@/components/IdlePrompt").then((m) => ({ default: m.IdlePrompt })));
+const PunchPrompt = lazy(() => import("@/components/PunchPrompt").then((m) => ({ default: m.PunchPrompt })));
+const DisplayNamePrompt = lazy(() => import("@/components/DisplayNamePrompt").then((m) => ({ default: m.DisplayNamePrompt })));
 import { formatDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/lib/use-role";
 import { ProfileMenu } from "@/components/ProfileMenu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { CommandBar } from "@/components/CommandBar";
-import { IdlePrompt } from "@/components/IdlePrompt";
-import { PunchPrompt } from "@/components/PunchPrompt";
 import { SectionSwitcher } from "@/components/SectionSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { useFocusMilestones } from "@/lib/use-focus-milestones";
-import { DisplayNamePrompt } from "@/components/DisplayNamePrompt";
 import { BrandLogo } from "@/components/BrandLogo";
 import { SiteFooter } from "@/components/SiteFooter";
 import { trackEvent, installClickTracking } from "@/lib/activity";
