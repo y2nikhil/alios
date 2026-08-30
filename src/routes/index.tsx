@@ -500,17 +500,12 @@ function LandingPage() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
-          >
+          <div className="relative animate-in fade-in-0 zoom-in-95 duration-700">
             <div className="absolute -inset-6 -z-10 rounded-[36px] bg-primary/10 blur-3xl" />
             <PreviewCard />
-          </motion.div>
+          </div>
         </section>
 
         {/* PUBLIC PREVIEW: FEED + LIVE ROOMS */}
