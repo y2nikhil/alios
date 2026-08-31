@@ -75,13 +75,21 @@ export function useNotifications() {
   const unread = items.filter((n) => !n.read_at).length;
 
   const markRead = async (id: string) => {
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    try {
+      await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    } catch (e) {
+      console.error("markRead failed", e);
+    }
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
   };
 
   const markAllRead = async () => {
     if (!user) return;
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+    try {
+      await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+    } catch (e) {
+      console.error("markAllRead failed", e);
+    }
     setItems((prev) => prev.map((n) => (n.read_at ? n : { ...n, read_at: new Date().toISOString() })));
   };
 
