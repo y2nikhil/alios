@@ -29,13 +29,19 @@ export function useNotifications() {
       return;
     }
     setLoading(true);
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    setItems((data ?? []) as Notification[]);
+    try {
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) console.error("notifications load failed", error);
+      setItems((data ?? []) as Notification[]);
+    } catch (e) {
+      console.error("notifications load failed", e);
+      setItems([]);
+    }
     setLoading(false);
   }, [user]);
 
@@ -69,13 +75,21 @@ export function useNotifications() {
   const unread = items.filter((n) => !n.read_at).length;
 
   const markRead = async (id: string) => {
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    try {
+      await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    } catch (e) {
+      console.error("markRead failed", e);
+    }
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
   };
 
   const markAllRead = async () => {
     if (!user) return;
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+    try {
+      await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+    } catch (e) {
+      console.error("markAllRead failed", e);
+    }
     setItems((prev) => prev.map((n) => (n.read_at ? n : { ...n, read_at: new Date().toISOString() })));
   };
 

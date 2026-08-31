@@ -1,15 +1,10 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Bell, Check } from "lucide-react";
 import { useNotifications } from "@/lib/use-notifications";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/notifications")({
-  beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/login" });
-  },
   head: () => ({ meta: [{ title: "Notifications — ClassLab" }] }),
   component: NotificationsPage,
 });
