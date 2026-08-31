@@ -6,10 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/notifications")({
-  beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/login" });
-  },
   head: () => ({ meta: [{ title: "Notifications — ClassLab" }] }),
   component: NotificationsPage,
 });
