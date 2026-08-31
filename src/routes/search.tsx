@@ -28,7 +28,7 @@ export const Route = createFileRoute("/search")({
   loader: async ({ deps }) => {
     const term = (deps.q ?? "").trim();
     const safe = term.replace(/[%,()]/g, " ").trim();
-    if (!safe) return { posts: [], blogs: [], groups: [], parties: [] };
+    if (!safe) return { q: term, posts: [], blogs: [], groups: [], parties: [] };
 
     const [postsRes, blogsRes, groupsRes, partiesRes] = await Promise.all([
       (supabase as any)
@@ -54,14 +54,15 @@ export const Route = createFileRoute("/search")({
     ]);
 
     return {
+      q: term,
       posts: ((postsRes?.data ?? []) as PostHit[]).filter((p) => p.slug),
       blogs: (blogsRes?.data ?? []) as BlogHit[],
       groups: (groupsRes?.data ?? []) as GroupHit[],
       parties: ((partiesRes?.data ?? []) as any[]).filter((p) => p.visibility !== "private") as PartyHit[],
     };
   },
-  head: ({ search }) => {
-    const q = (search as SearchParams | undefined)?.q?.trim();
+  head: ({ loaderData }) => {
+    const q = loaderData?.q?.trim();
     const title = q ? `Search results for "${q}" | ClassLab` : "Search | ClassLab";
     const description = q
       ? `Posts, blog articles, study groups and live rooms on ClassLab matching "${q}".`
