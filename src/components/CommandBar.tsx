@@ -199,10 +199,11 @@ export function CommandBar() {
                   if (e.key === "Enter") {
                     if (askMode) { ask(); return; }
                     const trimmed = q.trim();
-                    const noPeopleOrContent = !results.some((r) => r.kind !== "page");
-                    if (trimmed && (looksLikeQuestion(trimmed) || noPeopleOrContent)) {
-                      ask(trimmed);
-                    } else if (results[0]) pick(results[0]);
+                    if (!trimmed) return;
+                    if (looksLikeQuestion(trimmed)) { ask(trimmed); return; }
+                    setOpen(false);
+                    setQ("");
+                    navigate({ to: "/search", search: { q: trimmed } });
                   }
                 }}
                 placeholder={askMode ? "Ask anything…" : "Search people, posts, blogs, groups, parties — or ask a question"}
