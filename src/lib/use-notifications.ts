@@ -29,13 +29,19 @@ export function useNotifications() {
       return;
     }
     setLoading(true);
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    setItems((data ?? []) as Notification[]);
+    try {
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) console.error("notifications load failed", error);
+      setItems((data ?? []) as Notification[]);
+    } catch (e) {
+      console.error("notifications load failed", e);
+      setItems([]);
+    }
     setLoading(false);
   }, [user]);
 
