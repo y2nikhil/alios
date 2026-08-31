@@ -47,9 +47,19 @@ export function NotificationBell() {
               <button
                 key={n.id}
                 onClick={async () => {
-                  if (!n.read_at) await markRead(n.id);
-                  if (n.link) navigate({ to: n.link as any });
+                  try {
+                    if (!n.read_at) await markRead(n.id);
+                  } catch {
+                    /* ignore */
+                  }
                   setOpen(false);
+                  if (n.link) {
+                    try {
+                      await navigate({ to: n.link as never });
+                    } catch {
+                      if (typeof window !== "undefined") window.location.assign(n.link);
+                    }
+                  }
                 }}
                 className={cn(
                   "w-full text-left px-3 py-2.5 border-b border-border/40 hover:bg-accent/40 transition-colors",
