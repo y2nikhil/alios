@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Brain, Coffee, FileText, Zap, TrendingUp, Activity, Target,
   MessageSquare, Youtube, Shield, Crown, Sparkles, Calendar as CalIcon,
-  Trophy, Info, Pencil,
+  Trophy, Pencil,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAux } from "@/lib/aux-store";
