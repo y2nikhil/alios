@@ -3,17 +3,19 @@ import { Home, LayoutList, Tv, MessageSquare, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
-  { to: "/app", label: "Home", icon: Home },
-  { to: "/app/feed", label: "Feed", icon: LayoutList },
-  { to: "/app/party", label: "Watch Party", icon: Tv },
-  { to: "/app/collaborate", label: "Chat", icon: MessageSquare },
-  { to: "/app/blog", label: "Blog", icon: Newspaper },
+  { to: "/app", label: "Home", icon: Home, alias: [] as string[] },
+  { to: "/app/feed", label: "Feed", icon: LayoutList, alias: ["/feed", "/post/"] },
+  { to: "/app/party", label: "Watch Party", icon: Tv, alias: [] as string[] },
+  { to: "/app/collaborate", label: "Chat", icon: MessageSquare, alias: [] as string[] },
+  { to: "/app/blog", label: "Blog", icon: Newspaper, alias: ["/blog"] },
 ] as const;
 
-function isActive(pathname: string, to: string) {
+function isActive(pathname: string, to: string, alias: readonly string[] = []) {
+  if (alias.some((a) => pathname === a || pathname.startsWith(a))) return true;
   if (to === "/app") return pathname === "/app" || pathname === "/app/";
   return pathname.startsWith(to);
 }
+
 
 /** Section tabs shown under the search bar — compact text tabs on mobile, cards on desktop. */
 export function SectionSwitcher() {
