@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { PublicShell } from "@/components/PublicShell";
 import { useState } from "react";
 import { Search, FileText, Newspaper, Tv, MessageSquare, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,7 +82,11 @@ export const Route = createFileRoute("/search")({
       ],
     };
   },
-  component: SearchPage,
+  component: () => (
+    <PublicShell>
+      <SearchPage />
+    </PublicShell>
+  ),
 });
 
 function SearchPage() {

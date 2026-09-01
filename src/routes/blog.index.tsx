@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublicShell } from "@/components/PublicShell";
 import { ArrowRight, PenLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { readingMinutes, type BlogPost } from "@/lib/blog";
@@ -67,7 +68,11 @@ export const Route = createFileRoute("/blog/")({
       },
     ],
   }),
-  component: BlogIndex,
+  component: () => (
+    <PublicShell>
+      <BlogIndex />
+    </PublicShell>
+  ),
 });
 
 function BlogIndex() {

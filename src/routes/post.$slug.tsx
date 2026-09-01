@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
+import { PublicShell } from "@/components/PublicShell";
 import { JoinLink } from "@/components/JoinLink";
 import { ArrowLeft, Flame, MessageSquare, Radio, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -138,7 +139,11 @@ export const Route = createFileRoute("/post/$slug")({
     };
   },
   notFoundComponent: PostNotFound,
-  component: PublicPostPage,
+  component: () => (
+    <PublicShell>
+      <PublicPostPage />
+    </PublicShell>
+  ),
 });
 
 function PostNotFound() {
