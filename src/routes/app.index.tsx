@@ -24,6 +24,8 @@ import { TrophyProgress } from "@/components/TrophyProgress";
 import { FocusGoalCard } from "@/components/FocusGoalCard";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { LivePartiesSlider } from "@/components/LivePartiesSlider";
+import { HelpTip } from "@/components/HelpTip";
+import { GettingStartedTips } from "@/components/GettingStartedTips";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -275,7 +277,9 @@ function CommandCenter() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-semibold">Today's Timeline</h3>
-                <Info className="h-3 w-3 text-muted-foreground" />
+                <HelpTip title="Today's Timeline">
+                  A visual strip of every AUX you punched today. Hover a block to see the status and how long it lasted — it resets each night at midnight.
+                </HelpTip>
               </div>
               <Link to="/app/timeline" className="text-xs text-muted-foreground hover:text-foreground">
                 View full timeline →
