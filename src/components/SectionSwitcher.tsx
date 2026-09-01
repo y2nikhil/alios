@@ -3,17 +3,19 @@ import { Home, LayoutList, Tv, MessageSquare, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
-  { to: "/app", label: "Home", icon: Home },
-  { to: "/app/feed", label: "Feed", icon: LayoutList },
-  { to: "/app/party", label: "Watch Party", icon: Tv },
-  { to: "/app/collaborate", label: "Chat", icon: MessageSquare },
-  { to: "/app/blog", label: "Blog", icon: Newspaper },
+  { to: "/app", label: "Home", icon: Home, alias: [] as string[] },
+  { to: "/app/feed", label: "Feed", icon: LayoutList, alias: ["/feed", "/post/"] },
+  { to: "/app/party", label: "Watch Party", icon: Tv, alias: [] as string[] },
+  { to: "/app/collaborate", label: "Chat", icon: MessageSquare, alias: [] as string[] },
+  { to: "/app/blog", label: "Blog", icon: Newspaper, alias: ["/blog"] },
 ] as const;
 
-function isActive(pathname: string, to: string) {
+function isActive(pathname: string, to: string, alias: readonly string[] = []) {
+  if (alias.some((a) => pathname === a || pathname.startsWith(a))) return true;
   if (to === "/app") return pathname === "/app" || pathname === "/app/";
   return pathname.startsWith(to);
 }
+
 
 /** Section tabs shown under the search bar — compact text tabs on mobile, cards on desktop. */
 export function SectionSwitcher() {
@@ -23,7 +25,7 @@ export function SectionSwitcher() {
       {/* Mobile: compact text tab bar, no boxes, fits the screen */}
       <div className="flex items-center justify-between px-2 py-1 lg:hidden">
         {SECTIONS.map((s) => {
-          const active = isActive(pathname, s.to);
+          const active = isActive(pathname, s.to, s.alias);
           return (
             <Link
               key={s.to}
@@ -48,7 +50,7 @@ export function SectionSwitcher() {
       {/* Desktop: full cards */}
       <div className="hidden flex-nowrap items-stretch gap-3 px-6 py-3 lg:flex">
         {SECTIONS.map((s) => {
-          const active = isActive(pathname, s.to);
+          const active = isActive(pathname, s.to, s.alias);
           const Icon = s.icon;
           return (
             <Link

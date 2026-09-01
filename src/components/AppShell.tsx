@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 const IdlePrompt = lazy(() => import("@/components/IdlePrompt").then((m) => ({ default: m.IdlePrompt })));
 const PunchPrompt = lazy(() => import("@/components/PunchPrompt").then((m) => ({ default: m.PunchPrompt })));
@@ -329,7 +329,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
   );
 }
 
-function ShellInner() {
+function ShellInner({ children, hideFooter }: { children?: ReactNode; hideFooter?: boolean }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin } = useRole();
@@ -443,9 +443,9 @@ function ShellInner() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <Outlet />
+            {children ?? <Outlet />}
           </motion.div>
-          {!(location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && (
+          {!hideFooter && !(location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && (
             <SiteFooter />
           )}
         </main>
@@ -454,7 +454,7 @@ function ShellInner() {
   );
 }
 
-export function AppShell() {
+export function AppShell({ children, hideFooter }: { children?: ReactNode; hideFooter?: boolean }) {
   // Overlays are deferred: they never render on first paint, so keeping them out
   // of the initial chunk makes the shell interactive sooner.
   const [showOverlays, setShowOverlays] = useState(false);
@@ -468,7 +468,8 @@ export function AppShell() {
       <OnboardingRedirect />
       <PresenceHeartbeat />
 
-      <ShellInner />
+      <ShellInner hideFooter={hideFooter}>{children}</ShellInner>
+
 
       {showOverlays && (
         <Suspense fallback={null}>

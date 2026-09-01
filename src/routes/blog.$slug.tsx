@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { PublicShell } from "@/components/PublicShell";
 import { JoinLink } from "@/components/JoinLink";
 import { ShareDialog } from "@/components/ShareDialog";
 import { ArrowLeft, Flame, MessageSquare, Radio } from "lucide-react";
@@ -124,7 +125,11 @@ export const Route = createFileRoute("/blog/$slug")({
     };
   },
   notFoundComponent: ArticleNotFound,
-  component: BlogArticle,
+  component: () => (
+    <PublicShell>
+      <BlogArticle />
+    </PublicShell>
+  ),
 });
 
 function ArticleNotFound() {

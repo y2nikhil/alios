@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { PublicShell } from "@/components/PublicShell";
 import { useState } from "react";
 import { MessageSquare, ThumbsUp, CalendarDays, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,7 +87,11 @@ export const Route = createFileRoute("/u/$username")({
       ],
     };
   },
-  component: PublicProfilePage,
+  component: () => (
+    <PublicShell>
+      <PublicProfilePage />
+    </PublicShell>
+  ),
 });
 
 function Stat({ value, label }: { value: number; label: string }) {

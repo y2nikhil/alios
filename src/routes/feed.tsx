@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublicShell } from "@/components/PublicShell";
 import { JoinLink } from "@/components/JoinLink";
 import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,7 +119,11 @@ export const Route = createFileRoute("/feed")({
       },
     ],
   }),
-  component: PublicFeedPage,
+  component: () => (
+    <PublicShell>
+      <PublicFeedPage />
+    </PublicShell>
+  ),
 });
 
 function PublicFeedPage() {
