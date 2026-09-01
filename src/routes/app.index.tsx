@@ -247,12 +247,19 @@ function CommandCenter() {
                 </div>
 
                 <div className="mt-5">
-                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                  <p className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
                     Live right now
+                    <HelpTip title="Live right now">
+                      Public watch parties happening at this moment. Use the arrows to browse and tap a card to join the room.
+                    </HelpTip>
                   </p>
                   <LivePartiesSlider />
                 </div>
+                </div>
+
+                <GettingStartedTips className="self-start" />
               </div>
+
             </motion.div>
 
             {/* Today's Focus + Upcoming */}
