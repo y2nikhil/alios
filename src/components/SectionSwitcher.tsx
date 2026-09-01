@@ -25,7 +25,7 @@ export function SectionSwitcher() {
       {/* Mobile: compact text tab bar, no boxes, fits the screen */}
       <div className="flex items-center justify-between px-2 py-1 lg:hidden">
         {SECTIONS.map((s) => {
-          const active = isActive(pathname, s.to);
+          const active = isActive(pathname, s.to, s.alias);
           return (
             <Link
               key={s.to}
@@ -50,7 +50,7 @@ export function SectionSwitcher() {
       {/* Desktop: full cards */}
       <div className="hidden flex-nowrap items-stretch gap-3 px-6 py-3 lg:flex">
         {SECTIONS.map((s) => {
-          const active = isActive(pathname, s.to);
+          const active = isActive(pathname, s.to, s.alias);
           const Icon = s.icon;
           return (
             <Link
