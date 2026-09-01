@@ -3,6 +3,7 @@ import { Trophy } from "lucide-react";
 import { getTodayLeaderboard, type LeaderboardEntry } from "@/lib/leaderboard.functions";
 import { formatShortDuration } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { HelpTip } from "@/components/HelpTip";
 
 function initials(name: string | null) {
   if (!name) return "?";
@@ -36,7 +37,7 @@ export function LeaderboardCard() {
     <div className="glass rounded-3xl p-5 flex flex-col h-full">
       <div className="flex items-center justify-between">
         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-          Leaderboard
+          Leaderboard<HelpTip title="Leaderboard" align="end">Today's top learners ranked by productive focus time. It resets every midnight.</HelpTip>
         </p>
         <Trophy className="h-3.5 w-3.5 text-amber-400" />
       </div>

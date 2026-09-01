@@ -7,6 +7,7 @@ import { useDailyStats } from "@/lib/use-daily-stats";
 import { formatShortDuration } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { HelpTip } from "@/components/HelpTip";
 
 function labelFor(minutes: number) {
   const h = Math.floor(minutes / 60);
@@ -63,7 +64,7 @@ export function FocusGoalCard() {
   return (
     <div className="glass rounded-3xl p-5">
       <div className="flex items-start justify-between">
-        <p className="text-xs text-muted-foreground">Today's Focus</p>
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">Today's Focus<HelpTip title="Today's Focus">Productive AUX time you have logged today against your daily goal. Click the pencil to change the goal.</HelpTip></p>
         {!editing && (
           <button
             onClick={() => setEditing(true)}

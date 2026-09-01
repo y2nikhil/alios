@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { HelpTip } from "@/components/HelpTip";
 
 type Block = { id: string; start: string; end: string; statusId: string; label?: string };
 
@@ -66,7 +67,7 @@ export function DaySchedule() {
     <div className="glass rounded-3xl p-5">
       <div className="flex items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-          <CalendarClock className="h-3 w-3" /> Upcoming schedule
+          <CalendarClock className="h-3 w-3" /> Upcoming schedule<HelpTip title="Upcoming schedule">Plan which AUX you will be on at what time. ClassLab compares your plan with what you actually punch to score adherence.</HelpTip>
         </p>
         <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px]" onClick={() => setOpen(true)}>
           <Plus className="mr-1 h-3 w-3" /> Add
