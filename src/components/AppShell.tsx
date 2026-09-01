@@ -454,7 +454,7 @@ function ShellInner({ children, hideFooter }: { children?: ReactNode; hideFooter
   );
 }
 
-export function AppShell() {
+export function AppShell({ children, hideFooter }: { children?: ReactNode; hideFooter?: boolean }) {
   // Overlays are deferred: they never render on first paint, so keeping them out
   // of the initial chunk makes the shell interactive sooner.
   const [showOverlays, setShowOverlays] = useState(false);
@@ -468,7 +468,8 @@ export function AppShell() {
       <OnboardingRedirect />
       <PresenceHeartbeat />
 
-      <ShellInner />
+      <ShellInner hideFooter={hideFooter}>{children}</ShellInner>
+
 
       {showOverlays && (
         <Suspense fallback={null}>
