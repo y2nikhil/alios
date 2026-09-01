@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Brain, Coffee, FileText, Zap, TrendingUp, Activity, Target,
   MessageSquare, Youtube, Shield, Crown, Sparkles, Calendar as CalIcon,
-  Trophy, Info, Pencil,
+  Trophy, Pencil,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAux } from "@/lib/aux-store";
@@ -24,6 +24,8 @@ import { TrophyProgress } from "@/components/TrophyProgress";
 import { FocusGoalCard } from "@/components/FocusGoalCard";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { LivePartiesSlider } from "@/components/LivePartiesSlider";
+import { HelpTip } from "@/components/HelpTip";
+import { GettingStartedTips } from "@/components/GettingStartedTips";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -158,10 +160,15 @@ function CommandCenter() {
                   style={{ backgroundColor: activeStatus.color }}
                 />
               )}
-              <div className="relative">
+              <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_17rem]">
+                <div className="min-w-0">
                 <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                   <span className="text-violet-400">✦</span> Currently Focused
+                  <HelpTip title="Currently Focused">
+                    This is your live AUX timer. Pick a status below to punch in — the clock runs until you switch or punch out. Only <strong>productive</strong> statuses count towards your focus time.
+                  </HelpTip>
                 </div>
+
                 <div className="mt-3 flex items-center gap-3">
                   {activeStatus && (
                     <span
@@ -242,12 +249,19 @@ function CommandCenter() {
                 </div>
 
                 <div className="mt-5">
-                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                  <p className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
                     Live right now
+                    <HelpTip title="Live right now">
+                      Public watch parties happening at this moment. Use the arrows to browse and tap a card to join the room.
+                    </HelpTip>
                   </p>
                   <LivePartiesSlider />
                 </div>
+                </div>
+
+                <GettingStartedTips className="self-start" />
               </div>
+
             </motion.div>
 
             {/* Today's Focus + Upcoming */}
@@ -263,7 +277,9 @@ function CommandCenter() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-semibold">Today's Timeline</h3>
-                <Info className="h-3 w-3 text-muted-foreground" />
+                <HelpTip title="Today's Timeline">
+                  A visual strip of every AUX you punched today. Hover a block to see the status and how long it lasted — it resets each night at midnight.
+                </HelpTip>
               </div>
               <Link to="/app/timeline" className="text-xs text-muted-foreground hover:text-foreground">
                 View full timeline →
