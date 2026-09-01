@@ -443,9 +443,9 @@ function ShellInner({ children, hideFooter }: { children?: ReactNode; hideFooter
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <Outlet />
+            {children ?? <Outlet />}
           </motion.div>
-          {!(location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && (
+          {!hideFooter && !(location.pathname.startsWith("/app/collaborate") || location.pathname.startsWith("/app/hangout/")) && (
             <SiteFooter />
           )}
         </main>
