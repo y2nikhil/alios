@@ -158,10 +158,15 @@ function CommandCenter() {
                   style={{ backgroundColor: activeStatus.color }}
                 />
               )}
-              <div className="relative">
+              <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_17rem]">
+                <div className="min-w-0">
                 <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                   <span className="text-violet-400">✦</span> Currently Focused
+                  <HelpTip title="Currently Focused">
+                    This is your live AUX timer. Pick a status below to punch in — the clock runs until you switch or punch out. Only <strong>productive</strong> statuses count towards your focus time.
+                  </HelpTip>
                 </div>
+
                 <div className="mt-3 flex items-center gap-3">
                   {activeStatus && (
                     <span
