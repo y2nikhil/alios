@@ -329,7 +329,7 @@ function SidebarPanel({ NAV, onClose }: { NAV: any[]; onClose?: () => void }) {
   );
 }
 
-function ShellInner() {
+function ShellInner({ children, hideFooter }: { children?: ReactNode; hideFooter?: boolean }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAdmin, isSuperAdmin } = useRole();
