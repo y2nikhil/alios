@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { AuxProvider, useAux } from "@/lib/aux-store";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 const IdlePrompt = lazy(() => import("@/components/IdlePrompt").then((m) => ({ default: m.IdlePrompt })));
 const PunchPrompt = lazy(() => import("@/components/PunchPrompt").then((m) => ({ default: m.PunchPrompt })));
