@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { PublicShell } from "@/components/PublicShell";
 import { JoinLink } from "@/components/JoinLink";
 import { ArrowRight, MessageSquare, ThumbsUp } from "lucide-react";
@@ -42,7 +43,7 @@ const FAQS = [
 export const Route = createFileRoute("/feed")({
   loader: async () => {
     const [postsRes, blogRes, partiesRes] = await Promise.all([
-      (supabase as any).rpc("public_posts", { _limit: 40, _offset: 0 }),
+      (supabase as any).rpc("public_posts", { _limit: 10, _offset: 0 }),
       (supabase as any)
         .from("blog_posts")
         .select("id,slug,title,excerpt")
@@ -127,10 +128,22 @@ export const Route = createFileRoute("/feed")({
 });
 
 function PublicFeedPage() {
-  const { posts, articles, parties } = Route.useLoaderData() as {
+  const { posts: initialPosts, articles, parties } = Route.useLoaderData() as {
     posts: PublicPost[];
     articles: { id: string; slug: string; title: string; excerpt: string | null }[];
     parties: any[];
+  };
+  const [posts, setPosts] = useState<PublicPost[]>(initialPosts);
+  const [done, setDone] = useState(initialPosts.length < 10);
+  const [busy, setBusy] = useState(false);
+
+  const loadMore = async () => {
+    setBusy(true);
+    const { data } = await (supabase as any).rpc("public_posts", { _limit: 10, _offset: posts.length });
+    const next = (data ?? []) as PublicPost[];
+    setPosts((p) => [...p, ...next]);
+    if (next.length < 10) setDone(true);
+    setBusy(false);
   };
 
   return (
@@ -209,6 +222,16 @@ function PublicFeedPage() {
                 );
               })}
             </ul>
+
+            {!done && posts.length > 0 && (
+              <button
+                onClick={loadMore}
+                disabled={busy}
+                className="mt-4 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold text-amber-200 transition hover:bg-white/[0.07] disabled:opacity-60"
+              >
+                {busy ? "Loading…" : "Show more posts"}
+              </button>
+            )}
 
             <section className="mt-12">
               <h2 className="text-lg font-semibold">Frequently asked questions</h2>
