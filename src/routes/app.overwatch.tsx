@@ -76,7 +76,7 @@ function Overwatch() {
       supabase.from("profiles").select("id,display_name,username,last_seen_at,created_at").order("last_seen_at", { ascending: false, nullsFirst: false }).limit(2000),
       supabase.from("aux_sessions").select("id,user_id,status_id,started_at,ended_at,duration_seconds,note").gte("started_at", since).order("started_at", { ascending: false }).limit(5000),
       supabase.from("aux_statuses").select("id,user_id,name,color,category").limit(5000),
-      supabase.from("activity_events").select("id,user_id,kind,path,label,metadata,created_at").order("created_at", { ascending: false }).limit(3000),
+      supabase.from("activity_events").select("id,user_id,kind,path,label,metadata,created_at").gte("created_at", new Date(Date.now() - 86400000).toISOString()).order("created_at", { ascending: false }).limit(1000),
       supabase.from("chat_messages").select("id,user_id,body,created_at,channel_id").order("created_at", { ascending: false }).limit(1000),
       supabase.from("watch_party_messages").select("id,user_id,body,created_at,party_id").order("created_at", { ascending: false }).limit(1000),
       supabase.from("post_comments").select("id,author_id,body,created_at,post_id").order("created_at", { ascending: false }).limit(1000),
