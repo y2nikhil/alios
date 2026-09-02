@@ -43,7 +43,7 @@ export const Route = createFileRoute("/api/ai-insights")({
             method: "POST",
             headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
-              model: "google/gemini-3-flash-preview",
+              model: "google/gemini-2.5-flash",
               messages: [
                 { role: "system", content: "You are a productivity coach. Reply with ONE concise, specific insight (max 25 words) about the user's work patterns. Be punchy and actionable." },
                 { role: "user", content: `Last 7 days of status sessions: ${JSON.stringify(summary)}` },
