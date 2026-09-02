@@ -12,6 +12,8 @@ const TITLE = "ClassLab Blog | Study Guides, Exam Strategy & Student Productivit
 const DESC =
   "Study guides, exam preparation strategies, productivity systems and student life advice from the ClassLab team — practical articles for CAT, JEE, NEET, SSC, Banking and college students.";
 
+const PAGE = 10;
+
 export const Route = createFileRoute("/blog/")({
   loader: async () => {
     const { data } = await (supabase as any)
@@ -19,9 +21,10 @@ export const Route = createFileRoute("/blog/")({
       .select("id,slug,title,excerpt,cover_url,cover_alt,content,tags,published_at,created_at")
       .eq("status", "published")
       .order("published_at", { ascending: false })
-      .limit(60);
+      .limit(PAGE);
     return { posts: (data ?? []) as BlogPost[] };
   },
+
   head: ({ loaderData }) => ({
     meta: [
       { title: TITLE },
