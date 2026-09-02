@@ -55,6 +55,7 @@ function FeedPage() {
   const [tab, setTab] = useState<TabKey>("for-you");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     if (search.compose === "1") {
@@ -67,7 +68,7 @@ function FeedPage() {
       .from("posts")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(120);
+      .limit(limit);
     const list = (data ?? []) as Post[];
     setPosts(list);
     setAuthors(await fetchAuthors(list.map((p) => p.author_id)));
@@ -113,7 +114,7 @@ function FeedPage() {
       setSaved(smap);
     }
     setLoading(false);
-  }, [user]);
+  }, [user, limit]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -298,6 +299,14 @@ function FeedPage() {
                 onReact={react}
               />
             ))}
+            {posts.length >= limit && (
+              <button
+                onClick={() => setLimit((n) => n + 10)}
+                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold text-amber-200 hover:bg-white/[0.07] transition"
+              >
+                Show more posts
+              </button>
+            )}
           </div>
         )}
       </div>
