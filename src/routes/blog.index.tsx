@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { PublicShell } from "@/components/PublicShell";
 import { ArrowRight, PenLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,8 +80,25 @@ export const Route = createFileRoute("/blog/")({
 });
 
 function BlogIndex() {
-  const { posts } = Route.useLoaderData();
+  const { posts: initial } = Route.useLoaderData();
+  const [posts, setPosts] = useState<BlogPost[]>(initial);
+  const [done, setDone] = useState(initial.length < PAGE);
+  const [busy, setBusy] = useState(false);
   const [hero, ...rest] = posts;
+
+  const loadMore = async () => {
+    setBusy(true);
+    const { data } = await (supabase as any)
+      .from("blog_posts")
+      .select("id,slug,title,excerpt,cover_url,cover_alt,content,tags,published_at,created_at")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .range(posts.length, posts.length + PAGE - 1);
+    const next = (data ?? []) as BlogPost[];
+    setPosts((p) => [...p, ...next]);
+    if (next.length < PAGE) setDone(true);
+    setBusy(false);
+  };
 
   return (
     <main className="mx-auto w-full max-w-5xl px-5 py-12">
@@ -144,6 +162,16 @@ function BlogIndex() {
               </article>
             ))}
           </div>
+
+          {!done && (
+            <button
+              onClick={loadMore}
+              disabled={busy}
+              className="mt-8 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold text-amber-200 transition hover:bg-white/[0.07] disabled:opacity-60"
+            >
+              {busy ? "Loading…" : "Load more articles"}
+            </button>
+          )}
         </>
       )}
 
