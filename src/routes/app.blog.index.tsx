@@ -36,14 +36,32 @@ function AppBlog() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const load = async () => {
     const { data } = await (supabase as any)
       .from("blog_posts")
       .select("*")
-      .order("updated_at", { ascending: false });
-    setPosts((data ?? []) as BlogPost[]);
+      .order("updated_at", { ascending: false })
+      .limit(PAGE);
+    const initial = (data ?? []) as BlogPost[];
+    setPosts(initial);
+    setDone(initial.length < PAGE);
     setLoading(false);
+  };
+
+  const loadMore = async () => {
+    setBusy(true);
+    const { data } = await (supabase as any)
+      .from("blog_posts")
+      .select("*")
+      .order("updated_at", { ascending: false })
+      .range(posts.length, posts.length + PAGE - 1);
+    const next = (data ?? []) as BlogPost[];
+    setPosts((p) => [...p, ...next]);
+    if (next.length < PAGE) setDone(true);
+    setBusy(false);
   };
 
   useEffect(() => { load(); }, []);
