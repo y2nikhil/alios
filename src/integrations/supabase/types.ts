@@ -2434,6 +2434,7 @@ export type Database = {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
       }
+      mask_email: { Args: { _email: string }; Returns: string }
       move_to_dlq: {
         Args: {
           dlq_name: string
