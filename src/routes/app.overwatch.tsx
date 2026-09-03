@@ -88,7 +88,7 @@ function Overwatch() {
     const map: Record<string, AuxStatus> = {};
     ((st.data as AuxStatus[]) ?? []).forEach((x) => { map[x.id] = x; });
     setStatuses(map);
-    setEvents((ev.data as ActEvent[]) ?? []);
+    setEvents([]);
 
     const all: Msg[] = [
       ...((cm.data as any[]) ?? []).map((m) => ({ id: m.id, user_id: m.user_id, body: m.body, created_at: m.created_at, source: "Chat" as const, where: m.channel_id })),
