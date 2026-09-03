@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { signInWithUsername } from "@/lib/auth/login.functions";
+
 import { lovable } from "@/integrations/lovable/index";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
