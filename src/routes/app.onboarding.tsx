@@ -120,11 +120,8 @@ function OnboardingPage() {
         sessionStorage.removeItem("alios.onboarding.skipped");
       } catch {}
       toast.success("You're all set!");
-      if (res?.boardId) {
-        navigate({ to: "/app/mindmap/$boardId", params: { boardId: res.boardId } });
-      } else {
-        navigate({ to: "/app" });
-      }
+      navigate({ to: "/app" });
+
     } catch (e: any) {
       toast.error(e?.message ?? "Couldn't save. Try again.");
       setSubmitting(false);
