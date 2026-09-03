@@ -74,72 +74,9 @@ export const finalizeOnboarding = createServerFn({ method: "POST" })
       }
     }
 
-    // 3) Create mind-map roadmap board (nodes generated inline; AI enrichment is best-effort)
-    const boardTitle = `${data.exam.toUpperCase()} Roadmap ${data.attempt_year}`;
-    const { data: board, error: bErr } = await supabase
-      .from("mindmap_boards")
-      .insert({ user_id: userId, title: boardTitle, description: `Auto-generated ${data.exam} roadmap for a ${data.prep_stage}-stage aspirant.` })
-      .select("id")
-      .single();
-    if (bErr) throw new Error(bErr.message);
+    // 3) Mind-map roadmap is no longer auto-created (kept database usage low).
+    //    Users can create a board themselves from /app/mindmap.
 
-    // Basic phase → subject layout
-    const phases = data.prep_stage === "beginner"
-      ? ["Foundations", "Core Concepts", "Practice", "Mock Tests"]
-      : data.prep_stage === "revision"
-        ? ["Rapid Revision", "Weak Areas", "Full Mocks", "Analysis"]
-        : ["Full Mocks", "Error Log", "Sectional Sprints", "Final Polish"];
-
-    const subjectsBySlug: Record<string, string[]> = {
-      cat: ["Quant", "VARC", "DILR"],
-      jee: ["Physics", "Chemistry", "Maths"],
-      neet: ["Physics", "Chemistry", "Botany", "Zoology"],
-      railways: ["GA", "Maths", "Reasoning", "GS"],
-      ssc_upsc: ["GS", "CSAT", "Optional", "Current Affairs"],
-      banking: ["Quant", "Reasoning", "English", "GA"],
-    };
-    const subjects = subjectsBySlug[data.exam] ?? ["General"];
-
-    // Root
-    const rootId = crypto.randomUUID();
-    const nodes: any[] = [{
-      id: rootId, board_id: board.id, user_id: userId, node_type: "text",
-      position_x: 0, position_y: 0, width: 220, height: 90,
-      data: { label: `🎯 ${boardTitle}`, notes: data.goal ?? "" },
-      color: "#8b5cf6", tags: [],
-    }];
-    const edges: any[] = [];
-
-    phases.forEach((phase, pi) => {
-      const phaseId = crypto.randomUUID();
-      nodes.push({
-        id: phaseId, board_id: board.id, user_id: userId, node_type: "text",
-        position_x: -600 + pi * 400, position_y: 220, width: 200, height: 70,
-        data: { label: `Phase ${pi + 1}: ${phase}` }, color: "#22d3ee", tags: [],
-      });
-      edges.push({
-        id: crypto.randomUUID(), board_id: board.id, user_id: userId,
-        source_node_id: rootId, target_node_id: phaseId,
-      });
-      subjects.forEach((subj, si) => {
-        const nid = crypto.randomUUID();
-        const isWeak = (data.weak_subjects ?? []).some((w) => w.toLowerCase().includes(subj.toLowerCase()));
-        nodes.push({
-          id: nid, board_id: board.id, user_id: userId, node_type: "task",
-          position_x: -600 + pi * 400 + (si - subjects.length / 2) * 60,
-          position_y: 400 + si * 90, width: 180, height: 60,
-          data: { label: `${isWeak ? "⚠️ " : ""}${subj}`, done: false },
-          color: isWeak ? "#f43f5e" : "#10b981", tags: isWeak ? ["weak"] : [],
-        });
-        edges.push({
-          id: crypto.randomUUID(), board_id: board.id, user_id: userId,
-          source_node_id: phaseId, target_node_id: nid,
-        });
-      });
-    });
-
-    await supabase.from("mindmap_nodes").insert(nodes);
-    await supabase.from("mindmap_edges").insert(edges);
 
     // 4) Starter study plan via Lovable AI (best-effort)
     let plan: string | null = null;
@@ -171,5 +108,5 @@ export const finalizeOnboarding = createServerFn({ method: "POST" })
       }
     } catch { /* best effort */ }
 
-    return { boardId: board.id, joinedGroupId, plan };
+    return { boardId: null as string | null, joinedGroupId, plan };
   });

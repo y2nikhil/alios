@@ -107,7 +107,7 @@ function OnboardingPage() {
     setSubmitting(true);
     try {
       const hours = Number.isFinite(form.daily_hours) && form.daily_hours > 0 ? form.daily_hours : 4;
-      const res = await save({ data: { ...form, daily_hours: hours } });
+      await save({ data: { ...form, daily_hours: hours } });
       // Keep the home "Today's Focus" goal in sync with the declared daily capacity.
       if (user) {
         await supabase
@@ -120,11 +120,8 @@ function OnboardingPage() {
         sessionStorage.removeItem("alios.onboarding.skipped");
       } catch {}
       toast.success("You're all set!");
-      if (res?.boardId) {
-        navigate({ to: "/app/mindmap/$boardId", params: { boardId: res.boardId } });
-      } else {
-        navigate({ to: "/app" });
-      }
+      navigate({ to: "/app" });
+
     } catch (e: any) {
       toast.error(e?.message ?? "Couldn't save. Try again.");
       setSubmitting(false);
