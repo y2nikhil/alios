@@ -28,6 +28,8 @@ function GuestChrome({ children }: { children: ReactNode }) {
           </Link>
           <Link
             to="/search"
+            search={{ q: "" }}
+
             className="ml-auto hidden min-w-0 flex-1 max-w-md rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-muted-foreground hover:bg-white/[0.08] sm:block"
           >
             Search ClassLab…
