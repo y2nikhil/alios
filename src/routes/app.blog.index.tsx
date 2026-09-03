@@ -183,6 +183,16 @@ function AppBlog() {
           ))}
         </div>
       )}
+
+      {visible.length > 0 && !done && (
+        <button
+          onClick={loadMore}
+          disabled={busy}
+          className="mt-8 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold text-amber-200 transition hover:bg-white/[0.07] disabled:opacity-60"
+        >
+          {busy ? "Loading…" : "Show more"}
+        </button>
+      )}
     </div>
   );
 }
