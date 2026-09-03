@@ -107,7 +107,7 @@ function OnboardingPage() {
     setSubmitting(true);
     try {
       const hours = Number.isFinite(form.daily_hours) && form.daily_hours > 0 ? form.daily_hours : 4;
-      const res = await save({ data: { ...form, daily_hours: hours } });
+      await save({ data: { ...form, daily_hours: hours } });
       // Keep the home "Today's Focus" goal in sync with the declared daily capacity.
       if (user) {
         await supabase
