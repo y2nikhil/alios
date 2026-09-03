@@ -94,14 +94,22 @@ function LoginPage() {
   const onSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    let mail = identifier.trim();
+    const mail = identifier.trim();
     if (!mail.includes("@")) {
-      const { data, error } = await supabase.rpc("email_for_username", { _username: mail });
-      if (error || !data) {
+      // Username sign-in is resolved server-side so emails are never exposed.
+      const res = await signInWithUsername({ data: { username: mail, password } });
+      if (!res.ok) {
         setLoading(false);
-        return toast.error("No account with that username.");
+        return toast.error(res.error);
       }
-      mail = data as string;
+      const { error: sessErr } = await supabase.auth.setSession({
+        access_token: res.access_token,
+        refresh_token: res.refresh_token,
+      });
+      setLoading(false);
+      if (sessErr) return toast.error(sessErr.message);
+      toast.success("Welcome back");
+      return afterAuth();
     }
     const { error } = await supabase.auth.signInWithPassword({ email: mail, password });
     setLoading(false);
@@ -109,6 +117,7 @@ function LoginPage() {
     toast.success("Welcome back");
     afterAuth();
   };
+
 
   const onSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
