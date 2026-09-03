@@ -72,6 +72,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as AppMindmapIndexRouteImport } from './routes/app.mindmap.index'
 import { Route as AppBlogIndexRouteImport } from './routes/app.blog.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as AppUUserIdRouteImport } from './routes/app.u.$userId'
 import { Route as AppPostPostIdRouteImport } from './routes/app.post.$postId'
 import { Route as AppMindmapBoardIdRouteImport } from './routes/app.mindmap.$boardId'
@@ -406,6 +407,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppUUserIdRoute = AppUUserIdRouteImport.update({
   id: '/u/$userId',
   path: '/u/$userId',
@@ -563,6 +569,7 @@ export interface FileRoutesByFullPath {
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
@@ -643,6 +650,7 @@ export interface FileRoutesByTo {
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/app/blog': typeof AppBlogIndexRoute
   '/app/mindmap': typeof AppMindmapIndexRoute
@@ -725,6 +733,7 @@ export interface FileRoutesById {
   '/app/mindmap/$boardId': typeof AppMindmapBoardIdRoute
   '/app/post/$postId': typeof AppPostPostIdRoute
   '/app/u/$userId': typeof AppUUserIdRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/app/blog/': typeof AppBlogIndexRoute
   '/app/mindmap/': typeof AppMindmapIndexRoute
@@ -808,6 +817,7 @@ export interface FileRouteTypes {
     | '/app/mindmap/$boardId'
     | '/app/post/$postId'
     | '/app/u/$userId'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/app/blog/'
     | '/app/mindmap/'
@@ -888,6 +898,7 @@ export interface FileRouteTypes {
     | '/app/mindmap/$boardId'
     | '/app/post/$postId'
     | '/app/u/$userId'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/app/blog'
     | '/app/mindmap'
@@ -969,6 +980,7 @@ export interface FileRouteTypes {
     | '/app/mindmap/$boardId'
     | '/app/post/$postId'
     | '/app/u/$userId'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/app/blog/'
     | '/app/mindmap/'
@@ -1024,6 +1036,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksDispatchPushRoute: typeof ApiPublicHooksDispatchPushRoute
   ApiPublicHooksGenerateCollegeReviewsRoute: typeof ApiPublicHooksGenerateCollegeReviewsRoute
@@ -1477,6 +1490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/u/$userId': {
       id: '/app/u/$userId'
       path: '/u/$userId'
@@ -1702,6 +1722,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksDispatchPushRoute: ApiPublicHooksDispatchPushRoute,
   ApiPublicHooksGenerateCollegeReviewsRoute:
