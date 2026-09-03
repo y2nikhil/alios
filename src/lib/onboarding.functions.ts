@@ -108,5 +108,5 @@ export const finalizeOnboarding = createServerFn({ method: "POST" })
       }
     } catch { /* best effort */ }
 
-    return { boardId: board.id, joinedGroupId, plan };
+    return { boardId: null as string | null, joinedGroupId, plan };
   });
