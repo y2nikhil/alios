@@ -7,6 +7,8 @@ import { useRole } from "@/lib/use-role";
 import { readingMinutes, type BlogPost } from "@/lib/blog";
 import { ShareDialog } from "@/components/ShareDialog";
 
+const PAGE = 10;
+
 const GRADIENTS = [
   "from-amber-300 to-orange-500",
   "from-cyan-300 to-blue-500",
