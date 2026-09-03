@@ -7,6 +7,8 @@ import { useRole } from "@/lib/use-role";
 import { readingMinutes, type BlogPost } from "@/lib/blog";
 import { ShareDialog } from "@/components/ShareDialog";
 
+const PAGE = 10;
+
 const GRADIENTS = [
   "from-amber-300 to-orange-500",
   "from-cyan-300 to-blue-500",
@@ -34,14 +36,32 @@ function AppBlog() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const load = async () => {
     const { data } = await (supabase as any)
       .from("blog_posts")
       .select("*")
-      .order("updated_at", { ascending: false });
-    setPosts((data ?? []) as BlogPost[]);
+      .order("updated_at", { ascending: false })
+      .limit(PAGE);
+    const initial = (data ?? []) as BlogPost[];
+    setPosts(initial);
+    setDone(initial.length < PAGE);
     setLoading(false);
+  };
+
+  const loadMore = async () => {
+    setBusy(true);
+    const { data } = await (supabase as any)
+      .from("blog_posts")
+      .select("*")
+      .order("updated_at", { ascending: false })
+      .range(posts.length, posts.length + PAGE - 1);
+    const next = (data ?? []) as BlogPost[];
+    setPosts((p) => [...p, ...next]);
+    if (next.length < PAGE) setDone(true);
+    setBusy(false);
   };
 
   useEffect(() => { load(); }, []);
@@ -162,6 +182,16 @@ function AppBlog() {
             </article>
           ))}
         </div>
+      )}
+
+      {visible.length > 0 && !done && (
+        <button
+          onClick={loadMore}
+          disabled={busy}
+          className="mt-8 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold text-amber-200 transition hover:bg-white/[0.07] disabled:opacity-60"
+        >
+          {busy ? "Loading…" : "Show more"}
+        </button>
       )}
     </div>
   );
