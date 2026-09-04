@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { cachedQuery, invalidateCache, TTL } from "@/lib/cache";
 
 export type AppRole = "super_admin" | "admin" | "member";
 
@@ -11,6 +12,22 @@ type State = {
   isAdmin: boolean;
   isMember: boolean;
 };
+
+export function rolesKey(userId: string) {
+  return `roles:${userId}`;
+}
+
+/** Call after granting/revoking a role so cached readers pick it up. */
+export function invalidateRoles() {
+  invalidateCache("roles:");
+}
+
+export async function fetchRoles(userId: string): Promise<AppRole[]> {
+  return cachedQuery(rolesKey(userId), TTL.long, async () => {
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    return (data?.map((r) => r.role as AppRole)) ?? [];
+  });
+}
 
 export function useRole(): State {
   const { user } = useAuth();
@@ -26,12 +43,9 @@ export function useRole(): State {
         return;
       }
       setLoading(true);
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id);
+      const next = await fetchRoles(user.id);
       if (cancelled) return;
-      setRoles((data?.map((r) => r.role as AppRole)) ?? []);
+      setRoles(next);
       setLoading(false);
     }
     load();
