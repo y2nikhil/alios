@@ -323,6 +323,7 @@ export type Database = {
           tags: string[]
           title: string
           updated_at: string
+          word_count: number | null
         }
         Insert: {
           author_id: string
@@ -342,6 +343,7 @@ export type Database = {
           tags?: string[]
           title: string
           updated_at?: string
+          word_count?: number | null
         }
         Update: {
           author_id?: string
@@ -361,6 +363,7 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string
+          word_count?: number | null
         }
         Relationships: []
       }
