@@ -6,6 +6,7 @@ export type BlogPost = {
   cover_url: string | null;
   cover_alt: string | null;
   content: string;
+  word_count?: number | null;
   tags: string[] | null;
   status: string;
   show_toc: boolean;
@@ -26,6 +27,10 @@ export function slugify(text: string): string {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .slice(0, 80);
+}
+
+export function readingMinutesFromWords(words?: number | null): number {
+  return Math.max(1, Math.round((words ?? 0) / 220));
 }
 
 export function readingMinutes(md: string): number {
