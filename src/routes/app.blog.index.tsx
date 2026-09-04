@@ -4,7 +4,7 @@ import { BookOpen, GraduationCap, Loader2, PenLine, Plus, Sparkles, Trash2, Exte
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/lib/use-role";
-import { readingMinutes, type BlogPost } from "@/lib/blog";
+import { readingMinutesFromWords, type BlogPost } from "@/lib/blog";
 import { ShareDialog } from "@/components/ShareDialog";
 
 const PAGE = 10;
@@ -42,7 +42,7 @@ function AppBlog() {
   const load = async () => {
     const { data } = await (supabase as any)
       .from("blog_posts")
-      .select("*")
+      .select("id,slug,title,excerpt,cover_url,cover_alt,word_count,tags,status,updated_at,published_at,created_at")
       .order("updated_at", { ascending: false })
       .limit(PAGE);
     const initial = (data ?? []) as BlogPost[];
@@ -55,7 +55,7 @@ function AppBlog() {
     setBusy(true);
     const { data } = await (supabase as any)
       .from("blog_posts")
-      .select("*")
+      .select("id,slug,title,excerpt,cover_url,cover_alt,word_count,tags,status,updated_at,published_at,created_at")
       .order("updated_at", { ascending: false })
       .range(posts.length, posts.length + PAGE - 1);
     const next = (data ?? []) as BlogPost[];
@@ -152,7 +152,7 @@ function AppBlog() {
                     {(p.tags ?? []).slice(0, 2).map((t) => (
                       <span key={t} className="rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">{t}</span>
                     ))}
-                    <span className="text-[11px] text-muted-foreground">{readingMinutes(p.content)} min read</span>
+                    <span className="text-[11px] text-muted-foreground">{readingMinutesFromWords(p.word_count)} min read</span>
                   </div>
                   <h2 className="mt-2 text-base font-semibold leading-snug group-hover:text-amber-200">{p.title}</h2>
                   {p.excerpt && <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{p.excerpt}</p>}

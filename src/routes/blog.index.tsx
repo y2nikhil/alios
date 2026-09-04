@@ -3,7 +3,7 @@ import { useState } from "react";
 import { PublicShell } from "@/components/PublicShell";
 import { ArrowRight, PenLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { readingMinutes, type BlogPost } from "@/lib/blog";
+import { readingMinutesFromWords, type BlogPost } from "@/lib/blog";
 import { timeAgo } from "@/lib/feed";
 import { SignupSlider } from "@/components/blog/SignupSlider";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/blog/")({
   loader: async () => {
     const { data } = await (supabase as any)
       .from("blog_posts")
-      .select("id,slug,title,excerpt,cover_url,cover_alt,content,tags,published_at,created_at")
+      .select("id,slug,title,excerpt,cover_url,cover_alt,word_count,tags,published_at,created_at")
       .eq("status", "published")
       .order("published_at", { ascending: false })
       .limit(PAGE);
@@ -90,7 +90,7 @@ function BlogIndex() {
     setBusy(true);
     const { data } = await (supabase as any)
       .from("blog_posts")
-      .select("id,slug,title,excerpt,cover_url,cover_alt,content,tags,published_at,created_at")
+      .select("id,slug,title,excerpt,cover_url,cover_alt,word_count,tags,published_at,created_at")
       .eq("status", "published")
       .order("published_at", { ascending: false })
       .range(posts.length, posts.length + PAGE - 1);
@@ -135,7 +135,7 @@ function BlogIndex() {
               )}
               <div className="p-6">
                 <p className="text-[11px] uppercase tracking-wider text-amber-300">
-                  {(hero.tags?.[0] ?? "Featured")} · {readingMinutes(hero.content ?? "")} min read
+                  {(hero.tags?.[0] ?? "Featured")} · {readingMinutesFromWords(hero.word_count)} min read
                 </p>
                 <h2 className="mt-2 text-2xl font-bold leading-snug">{hero.title}</h2>
                 {hero.excerpt && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{hero.excerpt}</p>}
@@ -153,7 +153,7 @@ function BlogIndex() {
                   {p.cover_url && <img src={p.cover_url} alt={p.cover_alt ?? p.title} loading="lazy" className="h-40 w-full object-cover" />}
                   <div className="p-5">
                     <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                      {(p.tags?.[0] ?? "Article")} · {readingMinutes(p.content ?? "")} min · {timeAgo(p.published_at ?? p.created_at)}
+                      {(p.tags?.[0] ?? "Article")} · {readingMinutesFromWords(p.word_count)} min · {timeAgo(p.published_at ?? p.created_at)}
                     </p>
                     <h2 className="mt-2 text-base font-semibold leading-snug">{p.title}</h2>
                     {p.excerpt && <p className="mt-1.5 line-clamp-3 text-sm text-muted-foreground">{p.excerpt}</p>}

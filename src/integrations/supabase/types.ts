@@ -323,6 +323,7 @@ export type Database = {
           tags: string[]
           title: string
           updated_at: string
+          word_count: number | null
         }
         Insert: {
           author_id: string
@@ -342,6 +343,7 @@ export type Database = {
           tags?: string[]
           title: string
           updated_at?: string
+          word_count?: number | null
         }
         Update: {
           author_id?: string
@@ -361,6 +363,7 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string
+          word_count?: number | null
         }
         Relationships: []
       }
@@ -2395,17 +2398,8 @@ export type Database = {
         Returns: boolean
       }
       check_hour_awards: { Args: { _user: string }; Returns: undefined }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
       email_for_username: { Args: { _username: string }; Returns: string }
-      email_queue_dispatch: { Args: never; Returns: undefined }
       end_watch_party: { Args: { _party_id: string }; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
-      }
       find_user_by_email: { Args: { _email: string }; Returns: string }
       get_or_create_dm_thread: { Args: { _other: string }; Returns: string }
       get_user_email: { Args: { _user_id: string }; Returns: string }
@@ -2435,15 +2429,6 @@ export type Database = {
         Returns: boolean
       }
       mask_email: { Args: { _email: string }; Returns: string }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
       notify_user: {
         Args: {
           _body?: string
@@ -2572,14 +2557,6 @@ export type Database = {
         }[]
       }
       purge_old_data: { Args: never; Returns: undefined }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
-        }[]
-      }
       restore_account: { Args: { _user_id: string }; Returns: undefined }
       revoke_account: { Args: { _user_id: string }; Returns: undefined }
       slugify: { Args: { _txt: string }; Returns: string }
