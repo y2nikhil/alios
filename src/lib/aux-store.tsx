@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { cachedQuery, invalidateCache, TTL } from "@/lib/cache";
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
@@ -66,7 +67,9 @@ export function AuxProvider({ children }: { children: ReactNode }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const [stRes, actRes, todayRes] = await Promise.all([
-      supabase.from("aux_statuses").select("*").eq("user_id", user.id).order("sort_order"),
+      cachedQuery(`aux_statuses:${user.id}`, TTL.medium, () =>
+        supabase.from("aux_statuses").select("*").eq("user_id", user.id).order("sort_order"),
+      ),
       supabase.from("aux_sessions").select("*").eq("user_id", user.id).is("ended_at", null).order("started_at", { ascending: false }).limit(1),
       supabase.from("aux_sessions").select("*").eq("user_id", user.id).gte("started_at", today.toISOString()).order("started_at", { ascending: true }),
     ]);
