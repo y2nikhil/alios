@@ -47,7 +47,7 @@ export function ManagerNotes() {
     if (!user) return;
     const { data } = await supabase
       .from("manager_notes")
-      .select("*")
+      .select("id, author_id, body, color, pinned, team_id, target_user_id, created_at")
       .order("pinned", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(50);
@@ -55,8 +55,8 @@ export function ManagerNotes() {
     const emails = new Map<string, string>();
     await Promise.all(
       authors.map(async (a) => {
-        const { data: e } = await supabase.rpc("get_user_email", { _user_id: a });
-        if (e) emails.set(a, e as string);
+        const e = await cachedUserEmail(a);
+        if (e) emails.set(a, e);
       }),
     );
     setNotes(((data ?? []) as Note[]).map((n) => ({ ...n, author_email: emails.get(n.author_id) })));
@@ -64,13 +64,20 @@ export function ManagerNotes() {
 
   const loadTeams = useCallback(async () => {
     if (!user) return;
-    const { data: mems } = await supabase.from("team_members").select("team_id").eq("user_id", user.id).eq("status", "active");
-    const { data: owned } = await supabase.from("teams").select("id,name").eq("owner_id", user.id);
+    const { data: mems } = await cachedQuery(`team_members:${user.id}`, TTL.medium, () =>
+      supabase.from("team_members").select("team_id").eq("user_id", user.id).eq("status", "active"),
+    );
+    const { data: owned } = await cachedQuery(`teams_owned:${user.id}`, TTL.medium, () =>
+      supabase.from("teams").select("id,name").eq("owner_id", user.id),
+    );
     const ids = new Set<string>();
     (mems ?? []).forEach((m) => ids.add(m.team_id));
     (owned ?? []).forEach((t) => ids.add(t.id));
     if (ids.size === 0) return setTeams([]);
-    const { data } = await supabase.from("teams").select("id,name").in("id", Array.from(ids));
+    const idList = Array.from(ids).sort();
+    const { data } = await cachedQuery(`teams:${idList.join(",")}`, TTL.medium, () =>
+      supabase.from("teams").select("id,name").in("id", idList),
+    );
     setTeams((data ?? []) as Team[]);
   }, [user]);
 
@@ -246,8 +253,8 @@ function NoteCard({
     const emails = new Map<string, string>();
     await Promise.all(
       authors.map(async (a) => {
-        const { data: e } = await supabase.rpc("get_user_email", { _user_id: a });
-        if (e) emails.set(a, e as string);
+        const e = await cachedUserEmail(a);
+        if (e) emails.set(a, e);
       }),
     );
     setComments(((data ?? []) as Comment[]).map((c) => ({ ...c, author_email: emails.get(c.author_id) })));

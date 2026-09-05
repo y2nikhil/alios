@@ -32,9 +32,12 @@ function PresenceHeartbeat() {
   const { user } = useAuth();
   useEffect(() => {
     if (!user) return;
-    const beat = () => { (supabase as any).rpc("touch_presence"); };
+    const beat = () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      (supabase as any).rpc("touch_presence");
+    };
     beat();
-    const id = setInterval(beat, 60_000);
+    const id = setInterval(beat, 180_000);
     return () => clearInterval(id);
   }, [user]);
   return null;

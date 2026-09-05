@@ -232,19 +232,20 @@ export function AuxProvider({ children }: { children: ReactNode }) {
       sort_order: s.sort_order ?? statuses.length + 1, shortcut_key: s.shortcut_key ?? null,
     });
     if (error) toast.error(error.message);
-    else { toast.success("Status created"); refresh(); }
+    else { invalidateCache(`aux_statuses:${user.id}`); toast.success("Status created"); refresh(); }
   }, [user, statuses, refresh]);
 
   const updateStatus = useCallback(async (id: string, s: Partial<AuxStatus>) => {
     const { error } = await supabase.from("aux_statuses").update(s).eq("id", id);
-    if (error) toast.error(error.message); else refresh();
-  }, [refresh]);
+    if (error) toast.error(error.message);
+    else { if (user) invalidateCache(`aux_statuses:${user.id}`); refresh(); }
+  }, [refresh, user]);
 
   const deleteStatus = useCallback(async (id: string) => {
     const { error } = await supabase.from("aux_statuses").delete().eq("id", id);
     if (error) toast.error(error.message);
-    else { toast.success("Status deleted"); refresh(); }
-  }, [refresh]);
+    else { if (user) invalidateCache(`aux_statuses:${user.id}`); toast.success("Status deleted"); refresh(); }
+  }, [refresh, user]);
 
   const activeStatus = useMemo(
     () => statuses.find((s) => s.id === activeSession?.status_id) ?? null,
