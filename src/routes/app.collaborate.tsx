@@ -4,6 +4,7 @@ import {
   MessageSquare, Hash, Globe, Users, Plus, Tv, Sparkles, Loader2, UserPlus, Lock, Menu, X, Trash2, Shield,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { cachedUserEmail } from "@/lib/user-email";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -158,7 +159,7 @@ function CollaboratePage() {
     const emails = new Map<string, string>();
     await Promise.all((data ?? []).map(async (m: any) => {
       if (emails.has(m.user_id)) return;
-      const { data: e } = await supabase.rpc("get_user_email", { _user_id: m.user_id });
+      const e = await cachedUserEmail(m.user_id);
       if (e) emails.set(m.user_id, e as string);
     }));
     setMessages((data ?? []).map((m: any) => ({ ...m, email: emails.get(m.user_id) })));
@@ -174,7 +175,7 @@ function CollaboratePage() {
         { event: "INSERT", schema: "public", table: "chat_messages", filter: `channel_id=eq.${activeChannel}` },
         async (payload) => {
           const m = payload.new as Msg;
-          const { data: e } = await supabase.rpc("get_user_email", { _user_id: m.user_id });
+          const e = await cachedUserEmail(m.user_id);
           setMessages((prev) => [...prev, { ...m, email: (e as string) ?? undefined }]);
           setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
         })

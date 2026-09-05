@@ -15,6 +15,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { cachedQuery, TTL } from "@/lib/cache";
+import { cachedUserEmail } from "@/lib/user-email";
 
 type Note = {
   id: string;
@@ -246,7 +248,7 @@ function NoteCard({
   const loadComments = useCallback(async () => {
     const { data } = await supabase
       .from("note_comments")
-      .select("*")
+      .select("id, note_id, author_id, body, created_at")
       .eq("note_id", note.id)
       .order("created_at");
     const authors = Array.from(new Set((data ?? []).map((c) => c.author_id)));
