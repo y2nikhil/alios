@@ -49,7 +49,7 @@ export function ManagerNotes() {
     if (!user) return;
     const { data } = await supabase
       .from("manager_notes")
-      .select("id, author_id, body, color, pinned, team_id, target_user_id, created_at")
+      .select("id, author_id, body, color, pinned, team_id, recipient_id, created_at")
       .order("pinned", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(50);
@@ -66,19 +66,19 @@ export function ManagerNotes() {
 
   const loadTeams = useCallback(async () => {
     if (!user) return;
-    const { data: mems } = await cachedQuery(`team_members:${user.id}`, TTL.medium, () =>
-      supabase.from("team_members").select("team_id").eq("user_id", user.id).eq("status", "active"),
+    const { data: mems } = await cachedQuery(`team_members:${user.id}`, TTL.medium, async () =>
+      await supabase.from("team_members").select("team_id").eq("user_id", user.id).eq("status", "active"),
     );
-    const { data: owned } = await cachedQuery(`teams_owned:${user.id}`, TTL.medium, () =>
-      supabase.from("teams").select("id,name").eq("owner_id", user.id),
+    const { data: owned } = await cachedQuery(`teams_owned:${user.id}`, TTL.medium, async () =>
+      await supabase.from("teams").select("id,name").eq("owner_id", user.id),
     );
     const ids = new Set<string>();
     (mems ?? []).forEach((m) => ids.add(m.team_id));
     (owned ?? []).forEach((t) => ids.add(t.id));
     if (ids.size === 0) return setTeams([]);
     const idList = Array.from(ids).sort();
-    const { data } = await cachedQuery(`teams:${idList.join(",")}`, TTL.medium, () =>
-      supabase.from("teams").select("id,name").in("id", idList),
+    const { data } = await cachedQuery(`teams:${idList.join(",")}`, TTL.medium, async () =>
+      await supabase.from("teams").select("id,name").in("id", idList),
     );
     setTeams((data ?? []) as Team[]);
   }, [user]);
