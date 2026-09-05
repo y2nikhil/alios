@@ -5,7 +5,16 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/notifications")({
-  head: () => ({ meta: [{ title: "Notifications — ClassLab" }] }),
+  head: () => ({
+    meta: [
+      { title: "Notifications — ClassLab" },
+      { name: "description", content: "See your ClassLab alerts: task updates, mentions, focus milestones and group activity in one place." },
+      { property: "og:title", content: "Notifications — ClassLab" },
+      { property: "og:description", content: "See your ClassLab alerts: task updates, mentions, focus milestones and group activity in one place." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: NotificationsPage,
 });
 
