@@ -47,7 +47,10 @@ export function useFocusMilestones() {
     };
 
     check();
-    const i = setInterval(check, 60_000);
+    const i = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      check();
+    }, 120_000);
     return () => clearInterval(i);
   }, [user, activeSession, activeStatus]);
 }

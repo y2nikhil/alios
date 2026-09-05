@@ -141,7 +141,10 @@ export function useTodayAdherence() {
       );
     }
     compute();
-    const i = setInterval(compute, 60_000);
+    const i = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      compute();
+    }, 120_000);
     return () => {
       cancelled = true;
       clearInterval(i);

@@ -7,7 +7,7 @@ import { useRole } from "@/lib/use-role";
 import { PostCard } from "@/components/feed/PostCard";
 import { PostComposer } from "@/components/feed/PostComposer";
 import { FeedSidebar } from "@/components/feed/FeedSidebar";
-import { fetchAuthors, sortPosts, type Author, type Post, type SortKey } from "@/lib/feed";
+import { fetchAuthors, sortPosts, POST_COLUMNS, type Author, type Post, type SortKey } from "@/lib/feed";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/feed")({
@@ -66,7 +66,7 @@ function FeedPage() {
   const load = useCallback(async () => {
     const { data } = await supabase
       .from("posts")
-      .select("*")
+      .select(POST_COLUMNS)
       .order("created_at", { ascending: false })
       .limit(limit);
     const list = (data ?? []) as Post[];

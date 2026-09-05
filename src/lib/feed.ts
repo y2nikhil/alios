@@ -8,6 +8,9 @@ export type Author = {
   avatar_gradient: string | null;
 };
 
+export const POST_COLUMNS =
+  "id, author_id, title, body, media_url, media_kind, tag, slug, pinned, up_count, down_count, comment_count, created_at";
+
 export type Post = {
   id: string;
   author_id: string;
