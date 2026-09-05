@@ -47,15 +47,20 @@ export function useNotifications() {
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  useEffect(() => {
     if (!user) return;
+    // Unique channel name per mount: reusing a topic that is still closing
+    // throws "cannot add 'postgres_changes' callbacks for realtime:...".
     const ch = supabase
-      .channel(`notifs-${user.id}`)
+      .channel(`notifs-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
         (payload) => {
           const n = payload.new as Notification;
-          setItems((prev) => [n, ...prev].slice(0, 50));
+          setItems((prev) => (prev.some((p) => p.id === n.id) ? prev : [n, ...prev].slice(0, 50)));
           // Sound
           playNotificationSound(soundForCategory(n.type));
           // In-tab toast
@@ -65,12 +70,13 @@ export function useNotifications() {
             void showLocalNotification(n.title, n.body ?? undefined, n.link ?? undefined);
           }
         },
-      )
-      .subscribe();
+      );
+    ch.subscribe();
     return () => {
-      supabase.removeChannel(ch);
+      void supabase.removeChannel(ch);
     };
-  }, [user, load]);
+  }, [user]);
+
 
   const unread = items.filter((n) => !n.read_at).length;
 
